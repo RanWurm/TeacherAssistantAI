@@ -1,0 +1,228 @@
+### test_api.http
+############################################################
+# HEALTH CHECK
+############################################################
+GET http://localhost:3001/api/health
+Accept: application/json
+
+
+
+############################################################
+# =====================  ARTICLES  =========================
+############################################################
+
+### ARTICLES – Empty filters
+POST http://localhost:3001/api/articles/search
+Content-Type: application/json
+
+{}
+
+
+### ARTICLES – Subject filter  (mapped to Subjects table)
+POST http://localhost:3001/api/articles/search
+Content-Type: application/json
+
+{
+  "subject": "machine"
+}
+
+
+### ARTICLES – Author filter
+POST http://localhost:3001/api/articles/search
+Content-Type: application/json
+
+{
+  "author": "John"
+}
+
+
+### ARTICLES – Year range
+POST http://localhost:3001/api/articles/search
+Content-Type: application/json
+
+{
+  "fromYear": 2019,
+  "toYear": 2022
+}
+
+
+### ARTICLES – Keyword + Limit + Offset
+POST http://localhost:3001/api/articles/search
+Content-Type: application/json
+
+{
+  "keyword": "chemistry",
+  "limit": 5,
+  "offset": 0
+}
+
+
+### ARTICLES – Complex Filters
+POST http://localhost:3001/api/articles/search
+Content-Type: application/json
+
+{
+  "subject": "biology",
+  "fromYear": 2015,
+  "toYear": 2024,
+  "author": "Li",
+  "keyword": "cell",
+  "limit": 20,
+  "offset": 0
+}
+
+
+
+
+
+############################################################
+# =====================  AUTHORS  ==========================
+############################################################
+
+### AUTHORS – Empty filters
+POST http://localhost:3001/api/authors/search
+Content-Type: application/json
+
+{}
+
+
+### AUTHORS – Name filter
+POST http://localhost:3001/api/authors/search
+Content-Type: application/json
+
+{
+  "name": "Smith"
+}
+
+
+### AUTHORS – Affiliation filter
+POST http://localhost:3001/api/authors/search
+Content-Type: application/json
+
+{
+  "affiliation": "MIT"
+}
+
+
+### AUTHORS – Name + Affiliation + Pagination
+POST http://localhost:3001/api/authors/search
+Content-Type: application/json
+
+{
+  "name": "Li",
+  "affiliation": "Harvard",
+  "limit": 10,
+  "offset": 0
+}
+
+
+
+
+
+############################################################
+# =====================  JOURNALS  =========================
+############################################################
+
+### JOURNALS – Empty filters
+POST http://localhost:3001/api/journals/search
+Content-Type: application/json
+
+{}
+
+
+### JOURNALS – Name filter
+POST http://localhost:3001/api/journals/search
+Content-Type: application/json
+
+{
+  "name": "Nature"
+}
+
+
+### JOURNALS – Publisher filter
+POST http://localhost:3001/api/journals/search
+Content-Type: application/json
+
+{
+  "publisher": "Springer"
+}
+
+
+### JOURNALS – Combined filters + Pagination
+POST http://localhost:3001/api/journals/search
+Content-Type: application/json
+
+{
+  "name": "Science",
+  "publisher": "AAAS",
+  "limit": 5,
+  "offset": 0
+}
+
+
+
+
+
+############################################################
+# =====================  KEYWORDS  =========================
+############################################################
+
+### KEYWORDS – Empty filters
+POST http://localhost:3001/api/keywords/search
+Content-Type: application/json
+
+{}
+
+
+### KEYWORDS – Keyword filter
+POST http://localhost:3001/api/keywords/search
+Content-Type: application/json
+
+{
+  "keyword": "deep learning"
+}
+
+
+### KEYWORDS – Pagination
+POST http://localhost:3001/api/keywords/search
+Content-Type: application/json
+
+{
+  "keyword": "network",
+  "limit": 10,
+  "offset": 20
+}
+
+
+
+
+
+############################################################
+# =====================  SUBJECTS  =========================
+############################################################
+
+### SUBJECTS – Empty filters
+POST http://localhost:3001/api/subjects/search
+Content-Type: application/json
+
+{}
+
+
+### SUBJECTS – Subject name filter
+POST http://localhost:3001/api/subjects/search
+Content-Type: application/json
+
+{
+  "subject_name": "biology"
+}
+
+
+### SUBJECTS – Pagination
+POST http://localhost:3001/api/subjects/search
+Content-Type: application/json
+
+{
+  "subject_name": "math",
+  "limit": 10,
+  "offset": 0
+}
