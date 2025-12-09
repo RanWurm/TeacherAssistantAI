@@ -115,7 +115,7 @@ This creates all necessary tables, including:
 Pull and save raw articles:
 
 ```bash
-node data/etl/fetch_core.js
+node etl/fetch_core.js
 ```
 
 *Output:* `data/core_raw.json`
@@ -125,7 +125,7 @@ node data/etl/fetch_core.js
 Normalize and load raw data:
 
 ```bash
-node data/etl/load_to_mysql.js
+node etl/load_to_mysql.js
 ```
 
 ### 6. Verify Data Load
