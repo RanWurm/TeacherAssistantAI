@@ -1,0 +1,246 @@
+:root {
+  /* ===== PRIMARY COLOR SYSTEM ===== */
+  --primary-50:  #eef2ff;
+  --primary-100: #e0e7ff;
+  --primary-200: #c7d2fe;
+  --primary-300: #a5b4fc;
+  --primary-400: #818cf8;
+  --primary-500: #6366f1;   /* primary main */
+  --primary-600: #4f46e5;   /* darker primary – buttons */
+  --primary-700: #4338ca;
+  --primary-800: #3730a3;
+  --primary-900: #312e81;
+
+  /* Hover/Active shades */
+  --primary-hover:   var(--primary-600);
+  --primary-active:  var(--primary-700);
+
+  /* Text on primary */
+  --on-primary: #ffffff;
+
+  /* Primary RGB values for rgba usage */
+  --primary-500-rgb: 99, 102, 241;
+
+  /* ===== SECONDARY / GRAY SYSTEM ===== */
+  --gray-50:  #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b; /* secondary text */
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b; /* secondary main */
+  --gray-900: #0f172a;
+
+  --text-primary:   var(--gray-800);
+  --text-secondary: var(--gray-500);
+
+  /* ===== SUCCESS COLORS ===== */
+  --success-50:  #ecfdf5;
+  --success-100: #d1fae5;
+  --success-200: #a7f3d0;
+  --success-300: #6ee7b7;
+  --success-400: #34d399;
+  --success-500: #10b981;   /* main */
+  --success-600: #059669;
+  --success-700: #047857;
+
+  /* ===== WARNING COLORS ===== */
+  --warning-50:  #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
+  --warning-400: #fbbf24;
+  --warning-500: #f59e0b; /* main */
+  --warning-600: #d97706;
+
+  /* ===== ERROR COLORS ===== */
+  --error-50:  #fef2f2;
+  --error-100: #fee2e2;
+  --error-200: #fecaca;
+  --error-300: #fca5a5;
+  --error-400: #f87171;
+  --error-500: #ef4444; /* main */
+  --error-600: #dc2626;
+
+  /* ===== BACKGROUND & SURFACE ===== */
+  --background:       #f7f9fc;
+  --background-light-blue: #dbe7f5;
+  --surface:          #ffffff;
+  --surface-hover:    var(--gray-50);
+  --surface-elevated: var(--gray-100);
+
+  /* Inputs / cards */
+  --input-bg:         var(--surface);
+  --input-border:     var(--gray-300);
+  --input-border-hover: var(--gray-400);
+  --input-placeholder: var(--gray-400);
+
+  /* ===== BORDERS ===== */
+  --border-color:     var(--gray-200);
+  --border-strong:    var(--gray-300);
+
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 2px 6px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.12);
+
+  /* ===== TRANSITIONS ===== */
+  --transition: 150ms ease;
+
+  /* ===== RADIUS ===== */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* ===== INSIGHTS PAGE (from page.tsx) ===== */
+
+  /* Gradients for backgrounds and sections */
+  --bg-start: #e0e7ff;
+  --bg-via:   #f7f9fc;
+  --bg-end:   #e0e7ff;
+
+  --header-bg: 255,255,255;
+  --color-white: #ffffff;
+  --color-white-rgb: 255,255,255;
+
+  /* Card styling */
+  --card-bg: #fff;
+  --card-text: var(--text-primary);
+  --card-sub-text: var(--text-secondary);
+
+  /* Accent/Main color */
+  --accent-main: var(--primary-500);
+
+  /* Tab colors */
+  --tab-active-start: var(--primary-500);
+  --tab-active-end:   var(--primary-400);
+  --tab-inactive: var(--surface);
+  --tab-hover-bg: var(--gray-100);
+  --tab-hover-border: var(--primary-200);
+
+  /* Muted and subtle text colors */
+  --text-main: var(--text-primary);
+  --text-muted: var(--text-secondary);
+  --text-dim: var(--gray-500);
+  --text-subtle: var(--gray-400);
+
+  /* List hover and rank colors */
+  --list-hover-bg: var(--gray-50);
+  --list-rank-muted: var(--gray-400);
+
+  /* Timeline */
+  --timeline-track: var(--gray-200);
+  --timeline-fill-start: var(--primary-400);
+  --timeline-fill-end: var(--primary-600);
+
+  /* Trending fill */
+  --trending-fill-start: var(--warning-400);
+  --trending-fill-end: var(--warning-600);
+
+  /* Metric gradients */
+  --metric-blue-s:   #6366f1;
+  --metric-blue-e:   #818cf8;
+  --metric-purple-s: #a21caf;
+  --metric-pink-e:   #ec4899;
+  --metric-green-s:  #10b981;
+  --metric-green-e:  #22d3ee;
+  --metric-orange-s: #f59e42;
+  --metric-red-e:    #f87171;
+
+  /* Grow up/down colors */
+  --grow-up:   #059669;
+  --grow-up-bg: #ecfdf5;
+  --grow-down: #dc2626;
+  --grow-down-bg: #fee2e2;
+
+  /* Table styling */
+  --table-header-bg: var(--gray-100);
+  --table-header-text: var(--gray-600);
+  --table-row-hover: var(--gray-50);
+
+  --border-color-light: var(--gray-100);
+
+  /* Badges */
+  --badge-blue-bg: #e0e7ff;
+  --badge-blue-text: #3730a3;
+  --badge-green-bg: #dcfce7;
+  --badge-green-text: #065f46;
+  --badge-orange-bg: #fef3c7;
+  --badge-orange-text: #b45309;
+
+  /* Rank colors */
+  --rank-first: #f59e42;  /* Orange for 1st */
+  --rank-second: #a3a3a3; /* Gray for 2nd */
+  --rank-third: #818cf8;  /* Indigo for 3rd */
+}
+
+[data-theme="dark"] {
+  --background: #0f172a;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-dim: #64748b;
+  --text-subtle: #94a3b8;
+
+  --border-color: #334155;
+  --border-color-light: #1e293b; /* much lighter in dark */
+
+  --header-bg: 30,41,59;
+  --color-white: #1e293b;
+  --color-white-rgb: 30,41,59;
+
+  --card-bg: #22243a;
+  --card-text: var(--text-primary);
+  --card-sub-text: var(--text-secondary);
+
+  --tab-inactive: #253051;
+  --tab-hover-bg: #283356;
+  --tab-hover-border: #334155; 
+
+  --list-hover-bg: #19223a;
+  --list-rank-muted: #64748b;
+
+  --timeline-track: #22243a;
+  --timeline-fill-start: #6366f1;
+  --timeline-fill-end: #818cf8;
+
+  --trending-fill-start: #fbbf24;
+  --trending-fill-end: #f59e0b;
+
+  --metric-blue-s:   #3730a3;
+  --metric-blue-e:   #6366f1;
+  --metric-purple-s: #7c3aed;
+  --metric-pink-e:   #ec4899;
+  --metric-green-s:  #059669;
+  --metric-green-e:  #34d399;
+  --metric-orange-s: #b45309;
+  --metric-red-e:    #dc2626;
+
+  --grow-up:   #10b981;
+  --grow-up-bg: #065f46;
+  --grow-down: #ef4444;
+  --grow-down-bg: #7f1d1d;
+
+  --table-header-bg: #19223a;
+  --table-header-text: #f1f5f9;
+  --table-row-hover: #1e233a;
+
+  --badge-blue-bg: #312e81;
+  --badge-blue-text: #a5b4fc;
+  --badge-green-bg: #064e3b;
+  --badge-green-text: #6ee7b7;
+  --badge-orange-bg: #78350f;
+  --badge-orange-text: #fde68a;
+
+  --rank-first: #fbbf24;
+  --rank-second: #a3a3a3;
+  --rank-third: #6366f1;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 2px 6px rgba(0,0,0,0.45);
+  --shadow-lg: 0 4px 10px rgba(0,0,0,0.5);
+}

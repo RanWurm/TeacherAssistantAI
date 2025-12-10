@@ -1,27 +1,28 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import "./globals.css";
-import { TopNav } from "@/app/components/top-nav";
+import { TopNav } from "../components/nav/TopNav";
+import "../styles/globals.css";
 
 export const metadata: Metadata = {
   title: "Research Assistant",
   description: "AI-powered academic research assistant",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
-      <body className="h-full bg-slate-950 text-slate-100">
-        <div className="min-h-screen flex flex-col">
-          <TopNav />
-          <main className="flex-1">
+      <body className="h-full flex flex-col" style={{ background: "var(--background-light-blue)" }}>
+        
+        {/* Navbar */}
+        <TopNav />
+
+        {/* Main content wrapper */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <main className="flex-1 min-h-0 overflow-hidden">
             {children}
           </main>
         </div>
+
       </body>
     </html>
   );
