@@ -137,8 +137,8 @@ export default function SearchPage() {
           className="
             md:w-72 w-full
             md:sticky md:top-8
-            bg-[color:var(--surface)]
-            border border-[color:var(--border-color)]
+            bg-(--surface)
+            border border-(--border-color)
             rounded-2xl p-4
             shadow-md md:self-start self-auto
             mb-4 md:mb-0
@@ -153,8 +153,8 @@ export default function SearchPage() {
         <main
           className="
             flex-1
-            bg-[color:var(--surface)]
-            border border-[color:var(--border-color)]
+            bg-(--surface)
+            border border-(--border-color)
             rounded-2xl p-4 shadow-lg
             overflow-hidden
             flex flex-col
@@ -165,7 +165,7 @@ export default function SearchPage() {
           style={{ minHeight: 0, display: 'flex', flexDirection: 'column' }}
         >
           {/* Header & sort sticky on desktop for recall */}
-          <div className="flex flex-col gap-4 sticky top-0 z-10 bg-[color:var(--surface)] pb-2 md:-mx-4 md:px-4">
+          <div className="flex flex-col gap-4 sticky top-0 z-10 bg-(--surface) pb-2 md:-mx-4 md:px-4">
             <ResultsHeader
               count={papers.length}
               sortBy={sortBy}
@@ -177,7 +177,7 @@ export default function SearchPage() {
 
           <div className="flex-1 min-h-0 overflow-auto">
             {papers.length === 0 ? (
-              <div className="py-16 flex flex-col items-center justify-center text-center text-[color:var(--text-secondary)]">
+              <div className="py-16 flex flex-col items-center justify-center text-center text-(--text-secondary)">
                 <span className="text-xl font-semibold mb-2">No papers found</span>
                 <span className="text-sm">Try relaxing your filters or searching for another topic.</span>
               </div>

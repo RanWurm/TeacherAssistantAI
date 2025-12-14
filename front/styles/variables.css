@@ -197,6 +197,7 @@
   --card-text: var(--text-primary);
   --card-sub-text: var(--text-secondary);
 
+  /* Journals Table: background/border highlight in dark mode */
   --tab-inactive: #253051;
   --tab-hover-bg: #283356;
   --tab-hover-border: #334155; 

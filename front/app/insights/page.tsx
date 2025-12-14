@@ -14,7 +14,7 @@ export default function InsightsPage() {
   const [timeRange, setTimeRange] = useState<'1y' | '3y' | '5y' | 'all'>('5y');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-start)] via-[var(--bg-via)] to-[var(--bg-end)]">
+    <div className="min-h-screen bg-linear-to-br from-(--bg-start) via-(--bg-via) to-(--bg-end)">
       <InsightsHeader />
 
       <div className="max-w-7xl mx-auto px-6 py-6">

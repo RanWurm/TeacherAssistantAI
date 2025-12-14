@@ -7,12 +7,12 @@ interface SearchHeaderProps {
 
 export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps) {
   return (
-    <header className="border-b border-[color:var(--border-color)] bg-gradient-to-b from-[var(--surface)] to-transparent shadow-sm">
+    <header className="border-b border-(--border-color) bg-linear-to-b from-(--surface) to-transparent shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-5">
         {/* Title and subtitle */}
         <div className="flex flex-col items-center gap-2">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[var(--primary-700)] to-[var(--primary-400)] flex items-center justify-center shadow-xl border-2 border-[color:var(--primary-200)] animate-pulse-slow">
+            <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-(--primary-700) to-(--primary-400) flex items-center justify-center shadow-xl border-2 border-(--primary-200) animate-pulse-slow">
               {/* Keep a logo here if needed */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -32,8 +32,8 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
               </svg>
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--primary-600)] to-[var(--primary-400)] bg-clip-text text-transparent">Academic Search</h1>
-              <p className="text-xs sm:text-sm text-[color:var(--text-secondary)] text-center mt-0.5">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-linear-to-r from-(--primary-600) to-(--primary-400) bg-clip-text text-transparent">Academic Search</h1>
+              <p className="text-xs sm:text-sm text-(--text-secondary) text-center mt-0.5">
                 Discover and analyze millions of scholarly papers
               </p>
             </div>
@@ -58,16 +58,16 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
                 className="
                   w-full
                   pl-14 pr-16 py-4
-                  rounded-2xl border border-[color:var(--border-color)]
-                  focus:border-[color:var(--primary-600)]
-                  focus:ring-4 focus:ring-[color:var(--primary-400)]/20
+                  rounded-2xl border border-(--border-color)
+                  focus:border-(--primary-600)
+                  focus:ring-4 focus:ring-(--primary-400)/20
                   outline-none
                   transition-all duration-200
                   text-base
-                  bg-[color:var(--surface-alt)]
+                  bg-(--surface-alt)
                   shadow-md hover:shadow-lg
-                  text-[color:var(--text-primary)]
-                  placeholder:text-[color:var(--text-secondary)]/80
+                  text-(--text-primary)
+                  placeholder:text-(--text-secondary)/80
                   "
                 aria-label="Search academic papers"
               />
@@ -83,7 +83,7 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
                   strokeWidth={2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="lucide lucide-search w-5 h-5 text-[color:var(--primary-500)]"
+                  className="lucide lucide-search w-5 h-5 text-(--primary-500)"
                   aria-hidden="true"
                 >
                   <path d="m21 21-4.34-4.34"></path>
@@ -93,7 +93,7 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
               {/* Enter button */}
               <button
                 type="submit"
-                className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-[color:var(--primary-700)] hover:text-[color:var(--primary-900)] px-3 py-1 rounded-lg bg-transparent transition-colors focus:outline-none cursor-pointer"
+                className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-(--primary-700) hover:text-(--primary-900) px-3 py-1 rounded-lg bg-transparent transition-colors focus:outline-none cursor-pointer"
                 aria-label="Submit search"
                 tabIndex={0}
               >
@@ -119,7 +119,7 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
 
         {/* Filters Callout */}
         <div className="flex items-center gap-2 justify-center">
-          <span className="rounded-lg bg-[color:var(--surface-alt)] px-2.5 py-1 flex items-center gap-2 shadow border border-[color:var(--border-color)] text-[color:var(--primary-700)] font-medium text-sm tracking-tight">
+          <span className="rounded-lg bg-(--surface-alt) px-2.5 py-1 flex items-center gap-2 shadow border border-(--border-color) text-(--primary-700) font-medium text-sm tracking-tight">
             <SlidersHorizontal className="w-4 h-4" />
             Filters always visible
           </span>

@@ -68,7 +68,7 @@ export function FiltersSidebar({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="ml-2 mt-1 text-xs text-[color:var(--primary-600)] hover:underline focus:underline focus:outline-none transition"
+          className="ml-2 mt-1 text-xs text-(--primary-600) hover:underline focus:underline focus:outline-none transition"
           aria-expanded={open}
           aria-label={open ? `Show less items` : `Show all items`}
         >
@@ -89,8 +89,8 @@ export function FiltersSidebar({
       }}
     >
       <header className="flex items-center gap-2 mb-2 px-2">
-        <Filter className="w-5 h-5 text-[color:var(--primary-700)]" />
-        <span className="font-bold text-lg text-[color:var(--text-primary)]">Filters</span>
+        <Filter className="w-5 h-5 text-(--primary-700)" />
+        <span className="font-bold text-lg text-(--text-primary)">Filters</span>
       </header>
       {/* CollapsibleList component for Topics and Authors */}
       <>
@@ -119,7 +119,7 @@ export function FiltersSidebar({
         <select
           value={selectedJournal}
           onChange={e => setSelectedJournal(e.target.value)}
-          className="w-full border rounded-lg py-1.5 px-2 bg-[color:var(--surface-alt)] focus:ring focus:ring-[color:var(--primary-500)]/20"
+          className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
           style={{ overflowX: 'hidden' }}
         >
           <option value="all">All Journals</option>
@@ -131,7 +131,7 @@ export function FiltersSidebar({
         <select
           value={selectedType}
           onChange={e => setSelectedType(e.target.value)}
-          className="w-full border rounded-lg py-1.5 px-2 bg-[color:var(--surface-alt)] focus:ring focus:ring-[color:var(--primary-500)]/20"
+          className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
           style={{ overflowX: 'hidden' }}
         >
           <option value="all">All Types</option>
@@ -148,10 +148,10 @@ export function FiltersSidebar({
               step={0.1}
               value={minImpact}
               onChange={e => setMinImpact(+e.target.value)}
-              className="w-full border rounded-lg py-1.5 px-2 bg-[color:var(--surface-alt)] focus:ring focus:ring-[color:var(--primary-500)]/20"
+              className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
               placeholder="Min"
             />
-            <span className="absolute right-2 text-xs text-[color:var(--text-secondary)]">min</span>
+            <span className="absolute right-2 text-xs text-(--text-secondary)">min</span>
           </div>
         </Section>
 
@@ -162,10 +162,10 @@ export function FiltersSidebar({
               min={0}
               value={minCitations}
               onChange={e => setMinCitations(+e.target.value)}
-              className="w-full border rounded-lg py-1.5 px-2 bg-[color:var(--surface-alt)] focus:ring focus:ring-[color:var(--primary-500)]/20"
+              className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
               placeholder="Min"
             />
-            <span className="absolute right-2 text-xs text-[color:var(--text-secondary)]">min</span>
+            <span className="absolute right-2 text-xs text-(--text-secondary)">min</span>
           </div>
         </Section>
       </div>
@@ -178,17 +178,17 @@ export function FiltersSidebar({
             min={1900}
             max={yearRange.max}
             onChange={e => setYearRange({ ...yearRange, min: +e.target.value })}
-            className="w-1/2 border rounded-lg py-1.5 px-2 bg-[color:var(--surface-alt)] focus:ring focus:ring-[color:var(--primary-500)]/20"
+            className="w-1/2 border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
             placeholder="From"
           />
-          <span className="px-2 text-[color:var(--text-secondary)] text-sm font-medium flex items-center">–</span>
+          <span className="px-2 text-(--text-secondary) text-sm font-medium flex items-center">–</span>
           <input
             type="number"
             value={yearRange.max}
             min={yearRange.min}
             max={2100}
             onChange={e => setYearRange({ ...yearRange, max: +e.target.value })}
-            className="w-1/2 border rounded-lg py-1.5 px-2 bg-[color:var(--surface-alt)] focus:ring focus:ring-[color:var(--primary-500)]/20"
+            className="w-1/2 border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
             placeholder="To"
           />
         </div>
@@ -198,7 +198,7 @@ export function FiltersSidebar({
         <select
           value={selectedLanguage}
           onChange={e => setSelectedLanguage(e.target.value)}
-          className="w-full border rounded-lg py-1.5 px-2 bg-[color:var(--surface-alt)] focus:ring focus:ring-[color:var(--primary-500)]/20"
+          className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
           style={{ overflowX: 'hidden' }}
         >
           {LANGUAGES.map(l => <option key={l}>{l}</option>)}
@@ -211,7 +211,7 @@ export function FiltersSidebar({
 // Improved checkbox: nicer spacing and modern toggle style
 function checkbox(value: string, list: string[], set: (v: string[]) => void) {
   return (
-    <label key={value} className="flex items-center gap-2 text-[color:var(--text-primary)] text-sm py-0.5 cursor-pointer" style={{ overflowX: 'hidden' }}>
+    <label key={value} className="flex items-center gap-2 text-(--text-primary) text-sm py-0.5 cursor-pointer" style={{ overflowX: 'hidden' }}>
       <input
         type="checkbox"
         checked={list.includes(value)}
@@ -220,7 +220,7 @@ function checkbox(value: string, list: string[], set: (v: string[]) => void) {
             ? list.filter(v => v !== value)
             : [...list, value])
         }
-        className="accent-[color:var(--primary-500)] rounded border-gray-300 focus:ring-[color:var(--primary-400)]"
+        className="accent-(--primary-500) rounded border-gray-300 focus:ring-(--primary-400)"
       />
       <span className="truncate">{value}</span>
     </label>
@@ -230,7 +230,7 @@ function checkbox(value: string, list: string[], set: (v: string[]) => void) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-2 last:mb-0" style={{ overflowX: 'hidden' }}>
-      <h3 className="font-semibold text-[color:var(--text-secondary)] text-xs uppercase tracking-wider mb-1 px-1">{title}</h3>
+      <h3 className="font-semibold text-(--text-secondary) text-xs uppercase tracking-wider mb-1 px-1">{title}</h3>
       <div>{children}</div>
     </section>
   );

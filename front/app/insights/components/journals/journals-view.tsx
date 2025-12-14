@@ -2,10 +2,39 @@ import { JournalsTable } from './journals-table';
 
 export function JournalsView() {
   return (
-    <div className="bg-[color:var(--card-bg)] rounded-2xl border border-[color:var(--border-color)] shadow-sm overflow-hidden">
-      <div className="p-6 border-b border-[color:var(--border-color-light)]">
-        <h2 className="text-lg font-semibold text-[color:var(--card-text)] mb-1">Top Academic Journals</h2>
-        <p className="text-sm text-[color:var(--card-sub-text)]">Leading journals by publications and impact factor</p>
+    <div
+      style={{
+        background: 'var(--card-bg)',
+        borderRadius: 'var(--radius-lg)',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--shadow-sm)',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          padding: '1.5rem',
+          borderBottom: '1px solid var(--border-color-light)',
+        }}
+      >
+        <h2
+          style={{
+            fontSize: '1.125rem',
+            fontWeight: 600,
+            color: 'var(--card-text)',
+            marginBottom: '0.25rem',
+          }}
+        >
+          Top Academic Journals
+        </h2>
+        <p
+          style={{
+            fontSize: '0.875rem',
+            color: 'var(--card-sub-text)',
+          }}
+        >
+          Leading journals by publications and impact factor
+        </p>
       </div>
       <JournalsTable />
     </div>

@@ -50,11 +50,11 @@ export function Pagination({
       <button
         disabled={safeCurrent === 1}
         onClick={() => handleClick(safeCurrent - 1)}
-        className={`px-3 py-2 rounded-lg border border-[color:var(--border-color)] text-sm font-medium 
+        className={`px-3 py-2 rounded-lg border border-(--border-color) text-sm font-medium 
           flex items-center gap-1
           ${safeCurrent === 1
             ? "opacity-40 cursor-not-allowed"
-            : "hover:bg-[color:var(--surface-hover)] transition-colors text-[color:var(--text-secondary)]"}`}
+            : "hover:bg-(--surface-hover) transition-colors text-(--text-secondary)"}`}
         aria-label="Previous page"
         tabIndex={safeCurrent === 1 ? -1 : 0}
       >
@@ -66,7 +66,7 @@ export function Pagination({
         p === "..." ? (
           <span
             key={"ellipsis" + idx}
-            className="px-2 text-[color:var(--text-secondary)] pointer-events-none select-none"
+            className="px-2 text-(--text-secondary) pointer-events-none select-none"
           >
             <MoreHorizontal className="w-4 h-4" />
           </span>
@@ -78,8 +78,8 @@ export function Pagination({
             className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors min-w-[36px]
               ${
                 p === safeCurrent
-                  ? "bg-[color:var(--primary-600)] shadow"
-                  : "border border-[color:var(--border-color)] text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-hover)]"
+                  ? "bg-(--primary-600) shadow"
+                  : "border border-(--border-color) text-(--text-secondary) hover:bg-(--surface-hover)"
               }`}
             style={p === safeCurrent ? { color: "var(--on-primary)" } : {}}
             disabled={p === safeCurrent}
@@ -93,11 +93,11 @@ export function Pagination({
       <button
         disabled={safeCurrent === total}
         onClick={() => handleClick(safeCurrent + 1)}
-        className={`px-3 py-2 rounded-lg border border-[color:var(--border-color)] text-sm font-medium 
+        className={`px-3 py-2 rounded-lg border border-(--border-color) text-sm font-medium 
           flex items-center gap-1
           ${safeCurrent === total
             ? "opacity-40 cursor-not-allowed"
-            : "hover:bg-[color:var(--surface-hover)] transition-colors text-[color:var(--text-secondary)]"}`}
+            : "hover:bg-(--surface-hover) transition-colors text-(--text-secondary)"}`}
         aria-label="Next page"
         tabIndex={safeCurrent === total ? -1 : 0}
       >
