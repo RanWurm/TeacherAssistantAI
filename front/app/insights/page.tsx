@@ -5,13 +5,15 @@ import '../../styles/variables.css';
 import { InsightsHeader } from './components/insights-header';
 import { ViewTabs } from './components/view-tabs';
 import { OverviewView } from './components/overview/overview-view';
-import { TrendingTopicsView } from './components/trending-topics/trending-topics-view';
+import { TrendsView } from './components/trends/trends-view';
 import { ResearchersView } from './components/researchers/researchers-view';
 import { JournalsView } from './components/journals/journals-view';
+import { CrossAnalysisView } from './components/cross-analysis/cross-analysis-view';
+import type { ViewType, TimeRange } from './types/insights.types';
 
 export default function InsightsPage() {
-  const [selectedView, setSelectedView] = useState<'overview' | 'topics' | 'researchers' | 'journals'>('overview');
-  const [timeRange, setTimeRange] = useState<'1y' | '3y' | '5y' | 'all'>('5y');
+  const [selectedView, setSelectedView] = useState<ViewType>('overview');
+  const [timeRange, setTimeRange] = useState<TimeRange>('5y');
 
   return (
     <div className="min-h-screen bg-linear-to-br from-(--bg-start) via-(--bg-via) to-(--bg-end)">
@@ -24,10 +26,11 @@ export default function InsightsPage() {
           timeRange={timeRange}
           setTimeRange={setTimeRange}
         />
-        {selectedView === 'overview' && <OverviewView />}
-        {selectedView === 'topics' && <TrendingTopicsView />}
-        {selectedView === 'researchers' && <ResearchersView />}
-        {selectedView === 'journals' && <JournalsView />}
+        {selectedView === 'overview' && <OverviewView timeRange={timeRange} />}
+        {selectedView === 'trends' && <TrendsView timeRange={timeRange} />}
+        {selectedView === 'researchers' && <ResearchersView timeRange={timeRange} />}
+        {selectedView === 'journals' && <JournalsView timeRange={timeRange} />}
+        {selectedView === 'cross' && <CrossAnalysisView timeRange={timeRange} />}
       </div>
     </div>
   );

@@ -1,43 +1,22 @@
-import { JournalsTable } from './journals-table';
+import { TopJournalsTable } from './top-journals-table';
+import { CitationVolatilityChart } from './citation-volatility-table';
+import type { TimeRange } from '../../types/insights.types';
 
-export function JournalsView() {
+interface JournalsViewProps {
+  timeRange: TimeRange;
+}
+
+export function JournalsView({ timeRange }: JournalsViewProps) {
   return (
-    <div
-      style={{
-        background: 'var(--card-bg)',
-        borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--border-color)',
-        boxShadow: 'var(--shadow-sm)',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          padding: '1.5rem',
-          borderBottom: '1px solid var(--border-color-light)',
-        }}
-      >
-        <h2
-          style={{
-            fontSize: '1.125rem',
-            fontWeight: 600,
-            color: 'var(--card-text)',
-            marginBottom: '0.25rem',
-          }}
-        >
-          Top Academic Journals
-        </h2>
-        <p
-          style={{
-            fontSize: '0.875rem',
-            color: 'var(--card-sub-text)',
-          }}
-        >
-          Leading journals by publications and impact factor
-        </p>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">Journals</h2>
+          <p className="text-sm text-gray-600 mt-0.5">Top journals and citation analysis</p>
+        </div>
       </div>
-      <JournalsTable />
+      <TopJournalsTable timeRange={timeRange} />
+      <CitationVolatilityChart />
     </div>
   );
 }
-

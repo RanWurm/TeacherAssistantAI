@@ -1,30 +1,30 @@
-import { BarChart3, TrendingUp, Users, BookOpen, LucideIcon } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, BookOpen, Network, LucideIcon } from 'lucide-react';
+import type { ViewType, TimeRange } from '../types/insights.types';
 
 interface Tab {
-  id: 'overview' | 'topics' | 'researchers' | 'journals';
+  id: ViewType;
   label: string;
   icon: LucideIcon;
 }
 
 const tabs: Tab[] = [
   { id: 'overview', label: 'Overview', icon: BarChart3 },
-  { id: 'topics', label: 'Trending Topics', icon: TrendingUp },
-  { id: 'researchers', label: 'Top Researchers', icon: Users },
-  { id: 'journals', label: 'Top Journals', icon: BookOpen },
+  { id: 'trends', label: 'Trends', icon: TrendingUp },
+  { id: 'researchers', label: 'Researchers', icon: Users },
+  { id: 'journals', label: 'Journals', icon: BookOpen },
+  { id: 'cross', label: 'Cross-Analysis', icon: Network },
 ];
 
 interface ViewTabsProps {
-  selectedView: 'overview' | 'topics' | 'researchers' | 'journals';
-  setSelectedView: (view: 'overview' | 'topics' | 'researchers' | 'journals') => void;
-  timeRange: '1y' | '3y' | '5y' | 'all';
-  setTimeRange: (range: '1y' | '3y' | '5y' | 'all') => void;
+  selectedView: ViewType;
+  setSelectedView: (view: ViewType) => void;
+  timeRange: TimeRange;
+  setTimeRange: (range: TimeRange) => void;
 }
 
 export function ViewTabs({ selectedView, setSelectedView, timeRange, setTimeRange }: ViewTabsProps) {
   return (
     <div className="w-full mb-6">
-
-      {/* Tabs Row and Time Range Selector in Same Row (larger select and tabs) */}
       <div className="flex items-center gap-4 overflow-x-auto pb-2 mb-4 flex-wrap">
         <div className="flex gap-3">
           {tabs.map((tab) => {
@@ -35,8 +35,8 @@ export function ViewTabs({ selectedView, setSelectedView, timeRange, setTimeRang
                 onClick={() => setSelectedView(tab.id)}
                 className={`flex items-center gap-2 px-4.5 py-2.5 rounded-2xl font-semibold text-sm transition-all whitespace-nowrap ${
                   selectedView === tab.id
-                    ? "bg-gradient-to-r from-[var(--tab-active-start)] to-[var(--tab-active-end)] shadow-lg"
-                    : "bg-[color:var(--tab-inactive)] hover:bg-[color:var(--tab-hover-bg)] hover:border-[color:var(--tab-hover-border)]"
+                    ? "bg-linear-to-r from-(--tab-active-start) to-(--tab-active-end) shadow-lg"
+                    : "bg-(--tab-inactive) hover:bg-(--tab-hover-bg) hover:border-(--tab-hover-border)"
                 }`}
                 style={selectedView === tab.id ? { color: "var(--on-primary)" } : {}}
               >
@@ -48,8 +48,8 @@ export function ViewTabs({ selectedView, setSelectedView, timeRange, setTimeRang
         </div>
         <select
           value={timeRange}
-          onChange={(e) => setTimeRange(e.target.value as '1y' | '3y' | '5y' | 'all')}
-          className="px-4.5 py-2.5 rounded-2xl border border-[color:var(--border-color)] text-sm font-semibold text-[color:var(--text-main)] focus:outline-none focus:border-[color:var(--accent-main)] focus:border-[1.5px] bg-[color:var(--color-white)] ml-auto"
+          onChange={(e) => setTimeRange(e.target.value as TimeRange)}
+          className="px-4.5 py-2.5 rounded-2xl border border-(--border-color) text-sm font-semibold text-(--text-main) focus:outline-none focus:border-(--accent-main) focus:border-[1.5px] bg-white ml-auto"
           style={{ minWidth: '110px' }}
         >
           <option value="1y">Last Year</option>
@@ -58,7 +58,6 @@ export function ViewTabs({ selectedView, setSelectedView, timeRange, setTimeRang
           <option value="all">All Time</option>
         </select>
       </div>
-
     </div>
   );
 }
