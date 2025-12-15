@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { MOCK_CITATION_VOLATILITY } from '../../data/mock';
 import { Book, BarChart2, TrendingUp, Hash } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
 
 type Datum = {
   journalName: string;
@@ -23,6 +24,7 @@ type Datum = {
 };
 
 function TooltipContent({ active, payload }: any) {
+  const { t } = useTranslation();
   if (!active || !payload?.length) return null;
   const d: Datum = payload[0].payload;
 
@@ -36,25 +38,40 @@ function TooltipContent({ active, payload }: any) {
       <div className="flex flex-col gap-1 text-gray-800">
         <div className="flex items-center gap-2">
           <BarChart2 className="w-3.5 h-3.5 text-gray-400" />
-          <span>Avg. Citations<span className="mx-1">•</span>
+          <span>
+            {t('insights.journals.citationVolatilityChart.tooltip.avgCitations')}
+            <span className="mx-1">•</span>
             <span className="font-semibold text-violet-700">{d.avgCitations.toFixed(1)}</span>
           </span>
         </div>
         <div className="flex items-center gap-2">
           <TrendingUp className="w-3.5 h-3.5 text-gray-400" />
-          <span>Volatility (std)<span className="mx-1">•</span>
+          <span>
+            {t('insights.journals.citationVolatilityChart.tooltip.volatility')}
+            <span className="mx-1">•</span>
             <span className="font-semibold text-blue-700">{d.citationStdDev.toFixed(1)}</span>
           </span>
         </div>
         <div className="flex items-center gap-2">
           <Hash className="w-3.5 h-3.5 text-gray-400" />
-          <span>Articles<span className="mx-1">•</span>
+          <span>
+            {t('insights.journals.citationVolatilityChart.tooltip.articles')}
+            <span className="mx-1">•</span>
             <span className="font-semibold text-gray-900">{d.articleCount.toLocaleString()}</span>
           </span>
         </div>
         <div className="flex items-center gap-2 mt-1 text-gray-500">
           <span className="inline-block bg-gray-100 px-2 py-0.5 rounded">
-            Range: <span className="font-medium text-gray-600">{d.minCitations} – {d.maxCitations}</span>
+            <Trans
+              i18nKey="insights.journals.citationVolatilityChart.tooltip.range"
+              values={{ min: d.minCitations, max: d.maxCitations }}
+              components={{
+                1: <span className="font-medium text-gray-600" />,
+                2: <span className="font-medium text-gray-600" />
+              }}
+            >
+              Range: <span className="font-medium text-gray-600">{d.minCitations}</span> – <span className="font-medium text-gray-600">{d.maxCitations}</span>
+            </Trans>
           </span>
         </div>
       </div>
@@ -62,12 +79,10 @@ function TooltipContent({ active, payload }: any) {
   );
 }
 
-// Custom label renderer for each scatter dot to show journal name
 function DotLabel(props: any) {
   const { x, y, index } = props;
   const datum = MOCK_CITATION_VOLATILITY[index];
   if (!datum) return null;
-  // Make label a little bigger and visually centered above the dot
   return (
     <Text
       x={x}
@@ -89,6 +104,8 @@ function DotLabel(props: any) {
 }
 
 export function CitationVolatilityChart() {
+  const { t } = useTranslation();
+
   const xVals = MOCK_CITATION_VOLATILITY.map(d => d.avgCitations);
   const yVals = MOCK_CITATION_VOLATILITY.map(d => d.citationStdDev);
 
@@ -100,12 +117,13 @@ export function CitationVolatilityChart() {
       {/* Header */}
       <div className="mb-3">
         <h3 className="text-sm font-semibold text-gray-900">
-          Citation Volatility Map
+          {t('insights.journals.citationVolatilityChart.title')}
         </h3>
         <p className="text-xs text-gray-600 mt-1">
-          Each dot represents a <b>journal</b>. Position shows citation impact and stability. <br />
+          <Trans i18nKey="insights.journals.citationVolatilityChart.description" components={{ 1: <b /> }} />
+          <br />
           <span className="text-[0.95em] text-gray-500">
-            <b>Tip:</b> Journal name is shown above each dot.
+            <Trans i18nKey="insights.journals.citationVolatilityChart.tip" components={{ 1: <b /> }} />
           </span>
         </p>
       </div>
@@ -117,21 +135,19 @@ export function CitationVolatilityChart() {
           <div className="flex items-start gap-2">
             <BarChart2 className="w-4 h-4 text-indigo-400 mt-0.5" />
             <span>
-              <b>X-axis:</b> Average citations per article  
-              <span className="text-gray-400">→ further right = higher impact</span>
+              <Trans i18nKey="insights.journals.citationVolatilityChart.howToRead.xAxis" components={{ 1: <b />, 2: <span className="text-gray-400" /> }} />
             </span>
           </div>
           <div className="flex items-start gap-2">
             <TrendingUp className="w-4 h-4 text-pink-500 mt-0.5" />
             <span>
-              <b>Y-axis:</b> Citation volatility (std dev)  
-              <span className="text-gray-400">→ higher = less predictable</span>
+              <Trans i18nKey="insights.journals.citationVolatilityChart.howToRead.yAxis" components={{ 1: <b />, 2: <span className="text-gray-400" /> }} />
             </span>
           </div>
           <div className="flex items-start gap-2">
             <Hash className="w-4 h-4 text-gray-400 mt-0.5" />
             <span>
-              <b>Bubble size:</b> Number of articles published
+              <Trans i18nKey="insights.journals.citationVolatilityChart.howToRead.bubbleSize" components={{ 1: <b /> }} />
             </span>
           </div>
         </div>
@@ -148,7 +164,7 @@ export function CitationVolatilityChart() {
                 tickLine={false}
               >
                 <Label
-                  value="Average Citations"
+                  value={t('insights.journals.citationVolatilityChart.xAxisLabel')}
                   position="insideBottom"
                   offset={-8}
                   className="text-xs text-gray-500"
@@ -163,7 +179,7 @@ export function CitationVolatilityChart() {
                 tickLine={false}
               >
                 <Label
-                  value="Volatility (Std Dev)"
+                  value={t('insights.journals.citationVolatilityChart.yAxisLabel')}
                   angle={-90}
                   position="insideLeft"
                   offset={6}
@@ -171,7 +187,6 @@ export function CitationVolatilityChart() {
                 />
               </YAxis>
 
-              {/* Reference lines = mental model, not decoration */}
               <ReferenceLine
                 x={avgX}
                 stroke="#e5e7eb"

@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Pagination({
   current = 1,
@@ -9,7 +10,7 @@ export function Pagination({
   total?: number;
   onPageChange?: (page: number) => void;
 }) {
-  // Fix: Avoid buggy rendering, boundary cases, non-sensical page values
+  const { t } = useTranslation();
 
   // Clamp current within bounds
   const safeCurrent = Math.max(1, Math.min(current, Math.max(total, 1)));
@@ -55,11 +56,11 @@ export function Pagination({
           ${safeCurrent === 1
             ? "opacity-40 cursor-not-allowed"
             : "hover:bg-(--surface-hover) transition-colors text-(--text-secondary)"}`}
-        aria-label="Previous page"
+        aria-label={t("search.pagination.prev", "Previous page")}
         tabIndex={safeCurrent === 1 ? -1 : 0}
       >
         <ChevronLeft className="w-4 h-4" />
-        <span className="hidden sm:inline">Prev</span>
+        <span className="hidden sm:inline">{t("search.pagination.prev", "Prev")}</span>
       </button>
 
       {pages.map((p, idx) =>
@@ -98,10 +99,10 @@ export function Pagination({
           ${safeCurrent === total
             ? "opacity-40 cursor-not-allowed"
             : "hover:bg-(--surface-hover) transition-colors text-(--text-secondary)"}`}
-        aria-label="Next page"
+        aria-label={t("search.pagination.next", "Next page")}
         tabIndex={safeCurrent === total ? -1 : 0}
       >
-        <span className="hidden sm:inline">Next</span>
+        <span className="hidden sm:inline">{t("search.pagination.next", "Next")}</span>
         <ChevronRight className="w-4 h-4" />
       </button>
     </nav>

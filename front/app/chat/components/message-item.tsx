@@ -1,11 +1,14 @@
 import { Sparkles, Database } from 'lucide-react';
 import { Message } from '../data/mock';
+import { useTranslation } from 'react-i18next';
 
 interface MessageItemProps {
   message: Message;
 }
 
 export function MessageItem({ message }: MessageItemProps) {
+  const { t } = useTranslation();
+
   return (
     <div
       className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -43,7 +46,7 @@ export function MessageItem({ message }: MessageItemProps) {
                 <Sparkles className="w-3.5 h-3.5" style={{ color: "var(--on-primary)" }} />
               </div>
               <span className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
-                AI Response
+                {t('chat.messageItem.aiResponseLabel')}
               </span>
             </div>
           )}
@@ -69,14 +72,14 @@ export function MessageItem({ message }: MessageItemProps) {
                 <div className="flex items-center gap-2 mb-2">
                   <Database className="w-3.5 h-3.5" style={{ color: "var(--text-secondary)" }} />
                   <span className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
-                    SQL Query Executed
+                    {t('chat.messageItem.sqlQueryExecutedLabel')}
                   </span>
                 </div>
                 <code className="text-xs font-mono" style={{ color: "var(--text-primary)" }}>
                   {message.sqlQuery}
                 </code>
               </div>
-              {message.resultsCount && (
+              {typeof message.resultsCount === 'number' && (
                 <div className="mt-2 flex items-center gap-2 text-xs" style={{ color: "var(--text-subtle)" }}>
                   <span
                     className="inline-flex items-center px-2 py-1 rounded-full font-medium"
@@ -85,7 +88,7 @@ export function MessageItem({ message }: MessageItemProps) {
                       color: "var(--grow-up)"
                     }}
                   >
-                    {message.resultsCount.toLocaleString()} results
+                    {t('chat.messageItem.resultsCountLabel', { count: message.resultsCount })}
                   </span>
                 </div>
               )}
@@ -112,4 +115,3 @@ export function MessageItem({ message }: MessageItemProps) {
     </div>
   );
 }
-

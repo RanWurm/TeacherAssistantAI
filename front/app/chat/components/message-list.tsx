@@ -3,6 +3,7 @@ import { MessageItem } from './message-item';
 import { Message } from '../data/mock';
 import { Loader } from '../../../components/ui/Loader';
 import { ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface MessageListProps {
   messages: Message[];
@@ -10,6 +11,7 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages, isLoading }: MessageListProps) {
+  const { t } = useTranslation();
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showScrollDown, setShowScrollDown] = useState(false);
@@ -69,7 +71,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
               <div className="flex items-center gap-3">
                 <Loader size="md" />
                 <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                  מחפש מאמרים ומייצר רעיון מחקר...
+                  {t('chat.messageList.loadingMessage')}
                 </span>
               </div>
             </div>
@@ -81,7 +83,7 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
 
       {showScrollDown && (
         <button
-          aria-label="גלול לתחתית"
+          aria-label={t('chat.messageList.scrollToBottomLabel')}
           onClick={scrollToBottom}
           className="fixed z-40 left-1/2 transform -translate-x-1/2 bottom-1/6 bg-white/90 border border-gray-200 shadow-lg rounded-full p-2 transition-opacity hover:bg-gray-50"
           style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09)' }}

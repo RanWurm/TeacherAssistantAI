@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { TopNav } from "../components/nav/TopNav";
 import "../styles/globals.css";
+import I18nProvider from '../i18n/I18nProvider';
 
 export const metadata: Metadata = {
   title: "Research Assistant",
@@ -12,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="h-full">
       <body className="h-full flex flex-col" style={{ background: "var(--background-light-blue)" }}>
-        
+      <I18nProvider>
         {/* Navbar */}
         <TopNav />
 
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </main>
         </div>
+        </I18nProvider>
 
       </body>
     </html>

@@ -1,12 +1,14 @@
 import { Calendar } from 'lucide-react';
 import { MOCK_PUBLICATIONS_TIMELINE } from '../../data/mock';
 import type { TimeRange } from '../../types/insights.types';
+import { useTranslation } from 'react-i18next';
 
 interface PublicationsTimelineProps {
   timeRange: TimeRange;
 }
 
 export function PublicationsTimeline({ timeRange }: PublicationsTimelineProps) {
+  const { t } = useTranslation();
   const timeline = MOCK_PUBLICATIONS_TIMELINE;
   const maxArticles = Math.max(...timeline.map(t => t.articleCount));
 
@@ -14,13 +16,17 @@ export function PublicationsTimeline({ timeRange }: PublicationsTimelineProps) {
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="w-4 h-4 text-gray-500" />
-        <h3 className="text-sm font-semibold text-gray-900">Publications Timeline</h3>
+        <h3 className="text-sm font-semibold text-gray-900">
+          {t('insights.overview.publicationsTimeline.title')}
+        </h3>
       </div>
       <div className="space-y-3">
         {timeline.map((point, idx) => {
           const articlePercent = (point.articleCount / maxArticles) * 100;
           const prevPoint = idx > 0 ? timeline[idx - 1] : null;
-          const growth = prevPoint ? ((point.articleCount - prevPoint.articleCount) / prevPoint.articleCount * 100) : null;
+          const growth = prevPoint && prevPoint.articleCount > 0
+            ? ((point.articleCount - prevPoint.articleCount) / prevPoint.articleCount * 100)
+            : null;
 
           return (
             <div key={point.year} className="flex items-center gap-3 group hover:bg-gray-50 -mx-2 px-2 py-1.5 rounded transition-colors">
@@ -29,18 +35,32 @@ export function PublicationsTimeline({ timeRange }: PublicationsTimelineProps) {
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-semibold text-gray-900">{point.articleCount.toLocaleString()}</span>
-                    <span className="text-xs text-gray-500">articles</span>
-                    {growth !== null && (
+                    <span className="text-xs text-gray-500">{t('insights.overview.publicationsTimeline.articles')}</span>
+                    {growth !== null && Number.isFinite(growth) && (
                       <span className={`text-xs font-medium ${
                         growth >= 0 ? 'text-green-600' : 'text-red-600'
                       }`}>
                         {growth >= 0 ? '+' : ''}{growth.toFixed(1)}%
+                        {` `}
+                        <span className="sr-only">
+                          {t('insights.overview.publicationsTimeline.growthRate', {
+                            percent: growth.toFixed(1)
+                          })}
+                        </span>
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-3 text-xs text-gray-500">
-                    <span>{point.authorCount.toLocaleString()} authors</span>
-                    <span>{point.journalCount.toLocaleString()} journals</span>
+                    <span>
+                      {t('insights.overview.publicationsTimeline.authors', {
+                        count: point.authorCount
+                      })}
+                    </span>
+                    <span>
+                      {t('insights.overview.publicationsTimeline.journals', {
+                        count: point.journalCount
+                      })}
+                    </span>
                   </div>
                 </div>
                 <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -57,4 +77,3 @@ export function PublicationsTimeline({ timeRange }: PublicationsTimelineProps) {
     </div>
   );
 }
-

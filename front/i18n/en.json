@@ -1,0 +1,291 @@
+{
+    "nav": {
+        "languageToggle": {
+            "ariaLabel": "Toggle language",
+            "english": "EN",
+            "hebrew": "HE"
+        },
+        "navLinks": {
+            "chat": "Chat",
+            "search": "Search",
+            "insights": "Statistics"
+        },
+        "navLogo": {
+            "mainTitle": "Research Assistant",
+            "subtitle": "AI-Powered Research Ideas"
+        }
+    },
+    "chat": {
+        "title": "Research Assistant",
+        "input": {
+            "placeholder": "Describe your research area or ask a question...",
+            "submitButtonLabel": "Send",
+            "loadingLabel": "Loading...",
+            "footer": "Research Assistant AI uses OpenAlex dataset metadata to generate research ideas"
+        },
+        "messageItem": {
+            "aiResponseLabel": "AI Response",
+            "sqlQueryExecutedLabel": "SQL Query Executed",
+            "resultsCountLabel": "{{count}} results"
+        },
+        "messageList": {
+            "loadingMessage": "Searching for articles and generating a research idea...",
+            "scrollToBottomLabel": "Scroll to bottom"
+        }
+    },
+    "insights": {
+        "header": {
+            "title": "Research Analytics",
+            "subtitle": "Insights from CORE dataset"
+        },
+        "pageTitle": "Insights",
+        "tabs": {
+            "overview": "Overview",
+            "trends": "Trends",
+            "researchers": "Researchers",
+            "journals": "Journals",
+            "cross": "Cross Analysis"
+        },
+        "timeRanges": {
+            "1y": "Past 1 year",
+            "3y": "Past 3 years",
+            "5y": "Past 5 years",
+            "all": "All time"
+        },
+        "cross": {
+            "title": "Cross-Analysis",
+            "subtitle": "Cross-domain relationships and comparisons",
+            "subjectJournalHeatmap": {
+                "title": "Subject × Journal Distribution",
+                "description": "Heatmap showing where research volume concentrates across subjects and journals. Darker cells indicate stronger alignment.",
+                "maxCellLabel": "Max cell value",
+                "intensity": {
+                    "high": "High",
+                    "medium": "Medium",
+                    "low": "Low",
+                    "veryLow": "Very low"
+                },
+                "subjectLabel": "Subject",
+                "accessibleLabel": {
+                    "none": "{{subject}} × {{journal}}: no articles",
+                    "articles": "{{subject}} × {{journal}}: {{count}} articles"
+                }
+            },
+            "languageImpactBarChart": {
+                "title": "Language Comparison",
+                "description": "Top 5 languages ranked by <1>{{metric}}</1>. {{description}}",
+                "metric": {
+                    "avgCitations": "Average Citations",
+                    "articleCount": "Article Volume",
+                    "totalCitations": "Total Citations",
+                    "uniqueJournals": "Journal Diversity"
+                },
+                "metricDescription": {
+                    "avgCitations": "Average impact per article",
+                    "articleCount": "Number of published articles",
+                    "totalCitations": "Overall citation volume",
+                    "uniqueJournals": "Breadth across journals"
+                },
+                "yAxisLabel": {
+                    "avgCitations": "Avg citations",
+                    "articleCount": "Articles",
+                    "totalCitations": "Total citations",
+                    "uniqueJournals": "Journals"
+                },
+                "tooltip": {
+                    "avgCitations": "Avg citations",
+                    "articleCount": "Articles",
+                    "totalCitations": "Total citations",
+                    "uniqueJournals": "Journals"
+                },
+                "showingTop": "Showing top 5 languages",
+                "timeRange": {
+                    "1y": "Last year",
+                    "3y": "Last 3 years",
+                    "5y": "Last 5 years",
+                    "all": "All time"
+                }
+            },
+            "multidisciplinaryVsSingle": {
+                "title": "Multidisciplinary vs Single-Subject",
+                "description": "Comparing breadth-driven research with focused single-subject publications.",
+                "multiSubject": "Multi-Subject",
+                "singleSubject": "Single-Subject",
+                "articlesLabel": "Articles",
+                "avgCitationsLabel": "Avg Citations",
+                "citationsLabel": "Citations",
+                "authorsLabel": "{{count}} authors",
+                "journalsLabel": "{{count}} journals"
+            }
+        },
+        "journals": {
+            "topJournalsTable": {
+                "title": "Journals",
+                "subtitle": "Top journals and citation analysis",
+                "rank": "Rank",
+                "journal": "Journal",
+                "publisher": "Publisher",
+                "articles": "Articles",
+                "authors": "Authors",
+                "subjects": "Subjects",
+                "citations": "Citations",
+                "impactFactor": "Impact Factor",
+                "noData": "No journals to display",
+                "highImpact": "High Impact",
+                "citationVolume": "{{count}} citations",
+                "articleCount": "{{count}} articles",
+                "authorCount": "{{count}} authors",
+                "subjectCount": "{{count}} subjects"
+            },
+            "citationVolatilityChart": {
+                "title": "Citation Volatility Map",
+                "header": "Citation Volatility Map",
+                "description": "Each dot represents a <1>journal</1>. Position shows citation impact and stability.",
+                "tip": "<1>Tip:</1> Journal name is shown above each dot.",
+                "howToRead": {
+                    "xAxis": "<1>X-axis:</1> Average citations per article <2>→ further right = higher impact</2>",
+                    "yAxis": "<1>Y-axis:</1> Citation volatility (std dev) <2>→ higher = less predictable</2>",
+                    "bubbleSize": "<1>Bubble size:</1> Number of articles published"
+                },
+                "tooltip": {
+                    "avgCitations": "Avg. Citations",
+                    "volatility": "Volatility (std)",
+                    "articles": "Articles",
+                    "range": "Range: <1>{{min}}</1> – <2>{{max}}</2>"
+                },
+                "xAxisLabel": "Average Citations",
+                "yAxisLabel": "Volatility (Std Dev)"
+            }
+        },
+        "researchers": {
+            "topResearchers": {
+                "title": "Researchers",
+                "subtitle": "Profiles and research diversity insights",
+                "topResearcherTitle": "Top Researcher",
+                "topResearcherDescription": "Explore top researchers ranked by total citations. Each card highlights their publication and impact metrics, research breadth (journals and subjects), and key distinguishing features.",
+                "researcher": {
+                    "affiliationFallback": "N/A",
+                    "articles": "{{count}} papers",
+                    "avgCitations": "{{count}} avg",
+                    "journals": "{{count}} journals",
+                    "subjects": "{{count}} subjects",
+                    "rankGold": "🥇",
+                    "rankSilver": "🥈",
+                    "rankBronze": "🥉",
+                    "rankOther": "#{{rank}}",
+                    "insight": {
+                        "multidisciplinary": "Highly multidisciplinary",
+                        "recentHighImpact": "Recent high impact",
+                        "consistentlyHighImpact": "Consistently high impact",
+                        "focusedProfile": "Focused research profile"
+                    }
+                }
+            },
+            "multidisciplinaryResearchers": {
+                "title": "Multidisciplinary Researchers",
+                "description": "Researchers with the broadest disciplinary spread across domains.",
+                "domains": "{{count}} domains",
+                "affiliationFallback": "N/A",
+                "subjectsShowMore": "+{{count}} more",
+                "articles": "{{count}} articles",
+                "avgCitations": "{{count}} avg citations"
+            }
+        },
+        "trends": {
+            "trendingTopicsTable": {
+                "title": "Trending Research Topics",
+                "subtitle": "See the leaders and top risers in research, ranked by volume and growth rate. Hover over a topic for more info.",
+                "firstPlace": "First Place",
+                "secondPlace": "Second Place",
+                "thirdPlace": "Third Place",
+                "period": "Period",
+                "articles": "Articles",
+                "growth": "Growth",
+                "timeRange": "Time range",
+                "placeLabels": {
+                    "1": "First Place",
+                    "2": "Second Place",
+                    "3": "Third Place"
+                }
+            },
+            "keywordGrowthTable": {
+                "title": "Keyword Growth by Year",
+                "subtitle": "This table visualizes the year-over-year growth in article counts for key research keywords. Green bars and numbers show positive growth, while red shows declines.",
+                "previous": "Prev: {{count}}",
+                "growth": "Growth"
+            },
+            "keywordCrossDomain": {
+                "title": "Keywords Across Domains",
+                "domains": "{{count}} domains",
+                "articles": "{{count}} articles",
+                "showMore": "+{{count}} more",
+                "revealHint": "Reveal cross-domain connections"
+            }
+        },
+        "overview": {
+            "metricsCards": {
+                "articles": "Articles",
+                "authors": "Authors",
+                "journals": "Journals",
+                "avgCitations": "Avg Citations",
+                "subjects": "Subjects",
+                "keywords": "Keywords",
+                "multiSubject": "Multi-Subject",
+                "multiAuthor": "Multi-Author"
+            },
+            "publicationsTimeline": {
+                "title": "Publications Timeline",
+                "articles": "articles",
+                "authors": "{{count}} authors",
+                "journals": "{{count}} journals",
+                "growthRate": "{{percent}}% change"
+            },
+            "multidisciplinarySummary": {
+                "title": "Multidisciplinary Summary",
+                "singleSubject": "Single-Subject",
+                "multiSubject": "Multi-Subject",
+                "avgSubjectsPerArticle": "Avg Subjects per Article",
+                "highMultidisciplinarity": "High multidisciplinarity",
+                "lowerMultidisciplinarity": "Lower multidisciplinarity",
+                "mostCommonCombination": "Most Common Subject Combination",
+                "articlesLabel": "({{count}} articles)"
+            },
+            "overviewView": {
+                "title": "Overview",
+                "subtitle": "System-wide research distribution and activity."
+            }
+        }
+    },
+    "search": {
+        "empty": {
+            "title": "No papers found",
+            "subtitle": "Try relaxing your filters or searching for another topic."
+        },
+        "sort": {
+            "citations": "Most Cited",
+            "year": "Most Recent",
+            "impact": "Highest Impact"
+        },
+        "filters": {
+            "topics": "Topics",
+            "authors": "Authors",
+            "journal": "Journal",
+            "type": "Type",
+            "yearRange": "Year Range",
+            "minCitations": "Min Citations",
+            "minImpact": "Min Impact Factor",
+            "language": "Language"
+        },
+        "searchHeader": {
+            "title": "Academic Search",
+            "subtitle": "Discover and analyze millions of scholarly papers",
+            "inputPlaceholder": "Search by title, author, keywords, or topic...",
+            "inputAriaLabel": "Search academic papers",
+            "submitAriaLabel": "Submit search"
+        },
+        "resultsHeader": {
+            "resultsCount": "{{count}} papers found",
+            "sortLabel": "Sort:"
+        }
+    }
+}

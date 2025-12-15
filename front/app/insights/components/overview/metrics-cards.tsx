@@ -1,6 +1,7 @@
 import { FileText, Users, BookOpen, TrendingUp, Tag, Hash, Layers, UserCheck, LucideIcon } from 'lucide-react';
 import { MOCK_OVERVIEW_METRICS } from '../../data/mock';
 import type { TimeRange } from '../../types/insights.types';
+import { useTranslation } from 'react-i18next';
 
 const metricGradients = [
   "bg-gradient-to-br from-[var(--metric-blue-s)] to-[var(--metric-blue-e)]",
@@ -10,7 +11,7 @@ const metricGradients = [
 ];
 
 interface MetricCard {
-  label: string;
+  i18nKey: string;
   value: number;
   icon: LucideIcon;
   colorIdx: number;
@@ -22,16 +23,18 @@ interface MetricsCardsProps {
 }
 
 export function MetricsCards({ }: MetricsCardsProps) {
+  const { t } = useTranslation();
+
   const m = MOCK_OVERVIEW_METRICS;
   const cards: MetricCard[] = [
-    { label: 'Articles', value: m.totalArticles, icon: FileText, colorIdx: 0 },
-    { label: 'Authors', value: m.totalAuthors, icon: Users, colorIdx: 1 },
-    { label: 'Journals', value: m.totalJournals, icon: BookOpen, colorIdx: 2 },
-    { label: 'Avg Citations', value: m.avgCitationsPerArticle, icon: TrendingUp, colorIdx: 3, format: v => v.toFixed(1) },
-    { label: 'Subjects', value: m.totalSubjects, icon: Hash, colorIdx: 1 },
-    { label: 'Keywords', value: m.totalKeywords, icon: Tag, colorIdx: 2 },
-    { label: 'Multi-Subject', value: m.articlesWithMultipleSubjects, icon: Layers, colorIdx: 3 },
-    { label: 'Multi-Author', value: m.articlesWithMultipleAuthors, icon: UserCheck, colorIdx: 0 },
+    { i18nKey: 'insights.overview.metricsCards.articles', value: m.totalArticles, icon: FileText, colorIdx: 0 },
+    { i18nKey: 'insights.overview.metricsCards.authors', value: m.totalAuthors, icon: Users, colorIdx: 1 },
+    { i18nKey: 'insights.overview.metricsCards.journals', value: m.totalJournals, icon: BookOpen, colorIdx: 2 },
+    { i18nKey: 'insights.overview.metricsCards.avgCitations', value: m.avgCitationsPerArticle, icon: TrendingUp, colorIdx: 3, format: v => v.toFixed(1) },
+    { i18nKey: 'insights.overview.metricsCards.subjects', value: m.totalSubjects, icon: Hash, colorIdx: 1 },
+    { i18nKey: 'insights.overview.metricsCards.keywords', value: m.totalKeywords, icon: Tag, colorIdx: 2 },
+    { i18nKey: 'insights.overview.metricsCards.multiSubject', value: m.articlesWithMultipleSubjects, icon: Layers, colorIdx: 3 },
+    { i18nKey: 'insights.overview.metricsCards.multiAuthor', value: m.articlesWithMultipleAuthors, icon: UserCheck, colorIdx: 0 },
   ];
 
   return (
@@ -49,7 +52,9 @@ export function MetricsCards({ }: MetricsCardsProps) {
               <Icon className="w-4 h-4" style={{ color: 'var(--on-primary)' }} />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-(--card-sub-text) leading-none truncate">{metric.label}</p>
+              <p className="text-sm text-(--card-sub-text) leading-none truncate">
+                {t(metric.i18nKey)}
+              </p>
               <div className="h-1" />
               <p className="text-lg font-bold text-(--card-text) leading-none">{displayValue}</p>
             </div>

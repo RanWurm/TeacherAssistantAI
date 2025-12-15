@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../../styles/variables.css';
 import { MessageList } from './components/message-list';
 import { ChatInput } from './components/chat-input';
@@ -10,6 +11,7 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,13 +29,16 @@ export default function ChatScreen() {
     setIsLoading(true);
 
     setTimeout(() => {
+      const resultsCount = Math.floor(Math.random() * 500 + 100);
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `מצאתי ${Math.floor(Math.random() * 500 + 100)} מאמרים רלוונטיים בנושא "${input}". על בסיס המטא־דאטה, אני ממליץ לחקור את הקשר בין...`,
+        // Use the proper i18n key from en.json for an AI response dummy, using provided keys ("chat.messageItem.aiResponseLabel" or similar)
+        // We'll use a template to show a result count, topic, and a static response for illustration
+        content: `${t('chat.messageItem.aiResponseLabel')}: "${input}"\n${t('chat.messageItem.resultsCountLabel', { count: resultsCount })}`,
         timestamp: new Date(),
-        sqlQuery: "SELECT ...",
-        resultsCount: Math.floor(Math.random() * 500 + 100),
+        sqlQuery: 'SELECT ...',
+        resultsCount: resultsCount,
       };
 
       setMessages(prev => [...prev, assistantMessage]);

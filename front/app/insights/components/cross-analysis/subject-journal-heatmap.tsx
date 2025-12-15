@@ -1,25 +1,21 @@
 import { Grid3x3 } from 'lucide-react';
 import { MOCK_SUBJECT_JOURNAL_HEATMAP } from '../../data/mock';
 import type { TimeRange } from '../../types/insights.types';
+import { useTranslation } from 'react-i18next';
 
 interface SubjectJournalHeatmapProps {
   timeRange: TimeRange;
 }
 
-const intensityDescriptors = [
-  { label: 'High', color: 'bg-blue-700' },
-  { label: 'Medium', color: 'bg-blue-500' },
-  { label: 'Low', color: 'bg-blue-300' },
-  { label: 'Very low', color: 'bg-blue-100' },
+const intensityLevels = [
+  { i18nKey: 'high', color: 'bg-blue-700' },
+  { i18nKey: 'medium', color: 'bg-blue-500' },
+  { i18nKey: 'low', color: 'bg-blue-300' },
+  { i18nKey: 'veryLow', color: 'bg-blue-100' },
 ];
 
-function getAccessibleLabel(count: number, subject: string, journal: string) {
-  return count === 0
-    ? `${subject} × ${journal}: no articles`
-    : `${subject} × ${journal}: ${count.toLocaleString()} articles`;
-}
-
 export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps) {
+  const { t } = useTranslation();
   const heatmap = MOCK_SUBJECT_JOURNAL_HEATMAP;
   const maxCount = Math.max(...heatmap.map(h => h.articleCount));
   const subjects = Array.from(new Set(heatmap.map(h => h.subjectName)));
@@ -39,18 +35,33 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
     return 'bg-blue-100 text-gray-800';
   };
 
+  const getAccessibleLabel = (count: number, subject: string, journal: string) => {
+    if (count === 0) {
+      return t('insights.cross.subjectJournalHeatmap.accessibleLabel.none', {
+        subject,
+        journal,
+        defaultValue: '{{subject}} × {{journal}}: no articles',
+      });
+    }
+    return t('insights.cross.subjectJournalHeatmap.accessibleLabel.articles', {
+      subject,
+      journal,
+      count: count,
+      defaultValue: '{{subject}} × {{journal}}: {{count}} articles',
+    });
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
       <div className="flex items-center gap-2 mb-2">
         <Grid3x3 className="w-4 h-4 text-gray-500" />
         <h3 className="text-sm font-semibold text-gray-900">
-          Subject × Journal Distribution
+          {t('insights.cross.subjectJournalHeatmap.title')}
         </h3>
       </div>
 
       <p className="text-xs text-gray-600 mb-4 max-w-3xl">
-        Heatmap showing where research volume concentrates across subjects and journals.
-        Darker cells indicate stronger alignment.
+        {t('insights.cross.subjectJournalHeatmap.description')}
       </p>
 
       <div className="overflow-x-auto border border-gray-100 rounded-md">
@@ -58,7 +69,7 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
           <thead className="bg-gray-50">
             <tr>
               <th className="sticky left-0 bg-gray-50 z-10 text-left px-3 py-2 font-semibold text-gray-700 border-r border-gray-200">
-                Subject
+                {t('insights.cross.subjectJournalHeatmap.subjectLabel')}
               </th>
               {journals.map(journal => (
                 <th
@@ -79,9 +90,7 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
                 </td>
 
                 {journals.map(journal => {
-                  const count =
-                    heatmapMap.get(`${subject}-${journal}`) ?? 0;
-
+                  const count = heatmapMap.get(`${subject}-${journal}`) ?? 0;
                   return (
                     <td
                       key={journal}
@@ -102,15 +111,15 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
 
       <div className="mt-4 pt-3 border-t border-gray-200 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-600">
         <div className="flex items-center gap-4">
-          {intensityDescriptors.map(d => (
-            <span key={d.label} className="flex items-center gap-1.5">
+          {intensityLevels.map(d => (
+            <span key={d.i18nKey} className="flex items-center gap-1.5">
               <span className={`w-3 h-3 rounded ${d.color}`} />
-              {d.label}
+              {t(`insights.cross.subjectJournalHeatmap.intensity.${d.i18nKey}`)}
             </span>
           ))}
         </div>
         <span className="text-gray-500">
-          Max cell value: <b className="text-gray-800">{maxCount.toLocaleString()}</b>
+          {t('insights.cross.subjectJournalHeatmap.maxCellLabel')}: <b className="text-gray-800">{maxCount.toLocaleString()}</b>
         </span>
       </div>
     </div>

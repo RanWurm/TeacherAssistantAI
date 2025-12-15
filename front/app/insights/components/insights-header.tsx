@@ -1,6 +1,9 @@
 import { BarChart3 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function InsightsHeader() {
+  const { t } = useTranslation();
+
   return (
     <header
       className="z-30 border-b border-(--border-color) m-0 px-10 py-10"
@@ -14,10 +17,10 @@ export function InsightsHeader() {
 
           <div>
             <h1 className="text-4xl font-extrabold text-(--text-main) text-center">
-              Research Analytics
+              {t('insights.header.title')}
             </h1>
             <p className="text-lg text-(--text-muted) text-center mt-1">
-              Insights from CORE dataset
+              {t('insights.header.subtitle')}
             </p>
           </div>
         </div>

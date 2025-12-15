@@ -7,6 +7,7 @@ import {
   Info,
   TrendingUp,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { MOCK_TRENDING_TOPICS } from '../../data/mock';
 import type { TimeRange } from '../../types/insights.types';
 
@@ -33,6 +34,7 @@ function TopicTooltip({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <div
@@ -51,15 +53,15 @@ function TopicTooltip({
             <span className="truncate">{topic.keyword}</span>
           </div>
           <div className="flex justify-between py-0.5">
-            <span className="text-gray-400">Period</span>
+            <span className="text-gray-400">{t('insights.trends.trendingTopicsTable.period')}</span>
             <span className="font-medium text-gray-700">{topic.firstAppearanceYear}–{topic.latestYear}</span>
           </div>
           <div className="flex justify-between py-0.5">
-            <span className="text-gray-400">Articles</span>
+            <span className="text-gray-400">{t('insights.trends.trendingTopicsTable.articles')}</span>
             <span className="font-medium text-gray-700">{topic.articleCount.toLocaleString()}</span>
           </div>
           <div className="flex justify-between py-0.5">
-            <span className="text-gray-400">Growth</span>
+            <span className="text-gray-400">{t('insights.trends.trendingTopicsTable.growth')}</span>
             <span className="flex items-center gap-1 text-gray-800">
               {topic.growthRate > 0 ? '+' : ''}
               {topic.growthRate.toFixed(1)}%
@@ -67,8 +69,8 @@ function TopicTooltip({
             </span>
           </div>
           <div className="flex justify-between py-0.5 text-gray-300 border-t border-dashed border-blue-100 mt-1.5 pt-1.5">
-            <span>Time range</span>
-            <span>{timeRange}</span>
+            <span>{t('insights.trends.trendingTopicsTable.timeRange')}</span>
+            <span>{t(`insights.timeRanges.${timeRange}`)}</span>
           </div>
         </div>
       )}
@@ -78,6 +80,7 @@ function TopicTooltip({
 
 /* ---------- Main Component ---------- */
 export function TrendingTopicsTable({ timeRange }: TrendingTopicsTableProps) {
+  const { t } = useTranslation();
   const ranked = useMemo(() => {
     return [...MOCK_TRENDING_TOPICS].sort((a, b) =>
       b.articleCount !== a.articleCount
@@ -96,12 +99,11 @@ export function TrendingTopicsTable({ timeRange }: TrendingTopicsTableProps) {
           <TrendingUp className="w-5 h-5 text-sky-500" />
         </span>
         <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-          Trending Research Topics
+          {t('insights.trends.trendingTopicsTable.title')}
         </h3>
       </div>
       <p className="text-sm text-gray-500 mb-7">
-        See the leaders and top risers in research, ranked by volume and growth rate.
-        Hover over a topic for more info.
+        {t('insights.trends.trendingTopicsTable.subtitle')}
       </p>
 
       {/* ---------- PODIUM ---------- */}
@@ -179,6 +181,8 @@ function PodiumItem({
   highlight?: boolean;
   timeRange: TimeRange;
 }) {
+  const { t } = useTranslation();
+
   if (!topic) return <div />;
 
   const sizeMap = {
@@ -187,9 +191,8 @@ function PodiumItem({
     sm: 'h-28 min-h-[5.5rem]',
   };
 
-  // English labels
-  const placeLabel =
-    place === 1 ? 'First Place' : place === 2 ? 'Second Place' : 'Third Place';
+  // i18n place labels
+  const placeLabel = t(`insights.trends.trendingTopicsTable.placeLabels.${place}`);
 
   // Color and effect for podium
   const borderColor =

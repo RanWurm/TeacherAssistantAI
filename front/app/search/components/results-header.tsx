@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ResultsHeaderProps {
   count: number;
@@ -7,14 +7,29 @@ interface ResultsHeaderProps {
 }
 
 export function ResultsHeader({ count, sortBy, setSortBy }: ResultsHeaderProps) {
+  const { t } = useTranslation();
+
   return (
-    <div className="flex justify-between mb-4">
-      <span>{count} papers found</span>
-      <select value={sortBy} onChange={e => setSortBy(e.target.value)}>
-        <option value="citations">Most Cited</option>
-        <option value="year">Most Recent</option>
-        <option value="impact">Highest Impact</option>
-      </select>
+    <div className="flex justify-between mb-4 items-end">
+      <span>
+        {t('search.resultsHeader.resultsCount', {
+          count,
+          defaultValue: '{{count}} papers found',
+        })}
+      </span>
+      <label className="flex items-center gap-2 text-sm text-(--text-secondary)">
+        <span className="font-medium">{t('search.resultsHeader.sortLabel', { defaultValue: 'Sort:' })}</span>
+        <select
+          value={sortBy}
+          onChange={e => setSortBy(e.target.value)}
+          className="border border-(--border-color) rounded-md px-3 py-1 bg-(--surface) text-(--text-primary) focus:outline-none focus:ring-2 focus:ring-(--primary-300) transition"
+          aria-label={t('search.resultsHeader.sortLabel', { defaultValue: 'Sort:' })}
+        >
+          <option value="citations">{t('search.sort.citations', { defaultValue: 'Most Cited' })}</option>
+          <option value="year">{t('search.sort.year', { defaultValue: 'Most Recent' })}</option>
+          <option value="impact">{t('search.sort.impact', { defaultValue: 'Highest Impact' })}</option>
+        </select>
+      </label>
     </div>
   );
 }

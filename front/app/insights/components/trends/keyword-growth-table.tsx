@@ -1,4 +1,5 @@
 import { BarChart3 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { MOCK_KEYWORD_GROWTH } from '../../data/mock';
 import type { TimeRange } from '../../types/insights.types';
 
@@ -7,6 +8,7 @@ interface KeywordGrowthTableProps {
 }
 
 export function KeywordGrowthTable({ }: KeywordGrowthTableProps) {
+  const { t } = useTranslation();
   const growth = MOCK_KEYWORD_GROWTH;
   const maxCount = Math.max(...growth.map(g => g.articleCount));
   const keywords = Array.from(new Set(growth.map(g => g.keyword)));
@@ -15,11 +17,12 @@ export function KeywordGrowthTable({ }: KeywordGrowthTableProps) {
     <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6">
       <div className="flex items-center gap-2 mb-1.5">
         <BarChart3 className="w-4 h-4 text-gray-500" />
-        <h3 className="text-sm font-semibold text-gray-900">Keyword Growth by Year</h3>
+        <h3 className="text-sm font-semibold text-gray-900">
+          {t('insights.trends.keywordGrowthTable.title')}
+        </h3>
       </div>
       <p className="text-xs text-gray-600 mb-3">
-        This table visualizes the year-over-year growth in article counts for key research keywords.
-        Green bars and numbers show positive growth, while red shows declines.
+        {t('insights.trends.keywordGrowthTable.subtitle')}
       </p>
       <div className="space-y-4">
         {keywords.map((keyword) => {
@@ -40,13 +43,16 @@ export function KeywordGrowthTable({ }: KeywordGrowthTableProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">Prev: {item.previousYearCount.toLocaleString()}</span>
+                          <span className="text-xs text-gray-500">
+                            {t('insights.trends.keywordGrowthTable.previous', { count: item.previousYearCount })}
+                          </span>
                           <span className="text-sm font-semibold text-gray-900">{item.articleCount.toLocaleString()}</span>
                         </div>
                         <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
                           isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                         }`}>
-                          {isPositive ? '+' : ''}{item.growth}
+                          {isPositive ? '+' : ''}
+                          {item.growth}
                         </span>
                       </div>
                       <div className="relative h-1.5 bg-gray-100 rounded-full overflow-hidden">

@@ -1,31 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function LanguageToggle() {
-  const [language, setLanguage] = useState<"en" | "he">("en");
+  const { i18n, t } = useTranslation();
 
-  const handleToggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "he" : "en"));
+  const toggleLanguage = () => {
+    const next = i18n.language === "en" ? "he" : "en";
+    i18n.changeLanguage(next);
   };
 
   return (
-    <div className="flex items-center flex-shrink-0">
+    <div className="flex items-center shrink-0">
       <button
         className="px-3 py-1 rounded-lg border text-sm font-medium"
         style={{
           background: "var(--surface)",
           color: "var(--text-primary)",
           borderColor: "var(--border-color)",
-          transition: "background var(--transition), color var(--transition), border-color var(--transition)",
+          transition:
+            "background var(--transition), color var(--transition), border-color var(--transition)",
+          cursor: "pointer",
         }}
         type="button"
-        onClick={handleToggleLanguage}
-        aria-label="Toggle language"
+        onClick={toggleLanguage}
+        aria-label={t("nav.languageToggle.ariaLabel")}
       >
-        {language === "en" ? "HE" : "EN"}
+        {i18n.language === "en"
+          ? t("nav.languageToggle.hebrew")
+          : t("nav.languageToggle.english")}
       </button>
     </div>
   );
 }
-

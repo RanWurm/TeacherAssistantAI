@@ -12,6 +12,7 @@ import {
 import { Globe } from 'lucide-react';
 import { MOCK_LANGUAGE_IMPACT } from '../../data/mock';
 import type { TimeRange } from '../../types/insights.types';
+import { useTranslation } from 'react-i18next';
 
 /* =======================
    Types
@@ -36,43 +37,7 @@ interface LanguageImpactBarChartProps {
 }
 
 /* =======================
-   Comparison options
-======================= */
-
-const COMPARISON_OPTIONS: {
-  key: CompareKey;
-  label: string;
-  description: string;
-  yAxisLabel: string;
-}[] = [
-  {
-    key: 'avgCitations',
-    label: 'Average Citations',
-    description: 'Average impact per article',
-    yAxisLabel: 'Avg citations',
-  },
-  {
-    key: 'articleCount',
-    label: 'Article Volume',
-    description: 'Number of published articles',
-    yAxisLabel: 'Articles',
-  },
-  {
-    key: 'totalCitations',
-    label: 'Total Citations',
-    description: 'Overall citation volume',
-    yAxisLabel: 'Total citations',
-  },
-  {
-    key: 'uniqueJournals',
-    label: 'Journal Diversity',
-    description: 'Breadth across journals',
-    yAxisLabel: 'Journals',
-  },
-];
-
-/* =======================
-   Tooltip
+   Tooltip, mapped/labels from i18n
 ======================= */
 
 function LanguageTooltip({
@@ -82,6 +47,8 @@ function LanguageTooltip({
   active?: boolean;
   payload?: Array<{ payload: LanguageDatum }>;
 }) {
+  // FIX: prefix all t keys with 'insights.cross.'
+  const { t } = useTranslation();
   if (!active || !payload || !payload[0]) return null;
   const d = payload[0].payload;
 
@@ -93,10 +60,18 @@ function LanguageTooltip({
       </div>
 
       <div className="space-y-0.5 text-gray-700">
-        <div>Avg citations: <b>{d.avgCitations.toFixed(1)}</b></div>
-        <div>Articles: <b>{d.articleCount.toLocaleString()}</b></div>
-        <div>Total citations: <b>{d.totalCitations.toLocaleString()}</b></div>
-        <div>Journals: <b>{d.uniqueJournals}</b></div>
+        <div>
+          {t('insights.cross.languageImpactBarChart.tooltip.avgCitations')}: <b>{d.avgCitations.toFixed(1)}</b>
+        </div>
+        <div>
+          {t('insights.cross.languageImpactBarChart.tooltip.articleCount')}: <b>{d.articleCount.toLocaleString()}</b>
+        </div>
+        <div>
+          {t('insights.cross.languageImpactBarChart.tooltip.totalCitations')}: <b>{d.totalCitations.toLocaleString()}</b>
+        </div>
+        <div>
+          {t('insights.cross.languageImpactBarChart.tooltip.uniqueJournals')}: <b>{d.uniqueJournals}</b>
+        </div>
       </div>
     </div>
   );
@@ -109,6 +84,42 @@ function LanguageTooltip({
 export function LanguageImpactBarChart({
   timeRange,
 }: LanguageImpactBarChartProps) {
+  // FIX: prefix all t keys with 'insights.cross.'
+  const { t } = useTranslation();
+
+  // The metrics and their i18n-driven labels/descriptions
+  const COMPARISON_OPTIONS: {
+    key: CompareKey;
+    label: string;
+    description: string;
+    yAxisLabel: string;
+  }[] = [
+    {
+      key: 'avgCitations',
+      label: t('insights.cross.languageImpactBarChart.metric.avgCitations'),
+      description: t('insights.cross.languageImpactBarChart.metricDescription.avgCitations'),
+      yAxisLabel: t('insights.cross.languageImpactBarChart.yAxisLabel.avgCitations'),
+    },
+    {
+      key: 'articleCount',
+      label: t('insights.cross.languageImpactBarChart.metric.articleCount'),
+      description: t('insights.cross.languageImpactBarChart.metricDescription.articleCount'),
+      yAxisLabel: t('insights.cross.languageImpactBarChart.yAxisLabel.articleCount'),
+    },
+    {
+      key: 'totalCitations',
+      label: t('insights.cross.languageImpactBarChart.metric.totalCitations'),
+      description: t('insights.cross.languageImpactBarChart.metricDescription.totalCitations'),
+      yAxisLabel: t('insights.cross.languageImpactBarChart.yAxisLabel.totalCitations'),
+    },
+    {
+      key: 'uniqueJournals',
+      label: t('insights.cross.languageImpactBarChart.metric.uniqueJournals'),
+      description: t('insights.cross.languageImpactBarChart.metricDescription.uniqueJournals'),
+      yAxisLabel: t('insights.cross.languageImpactBarChart.yAxisLabel.uniqueJournals'),
+    },
+  ];
+
   const [compareBy, setCompareBy] = useState<CompareKey>('avgCitations');
 
   const currentMeta = COMPARISON_OPTIONS.find(o => o.key === compareBy)!;
@@ -116,7 +127,7 @@ export function LanguageImpactBarChart({
   const data = useMemo<LanguageDatum[]>(() => {
     return [...MOCK_LANGUAGE_IMPACT]
       .sort((a, b) => b[compareBy] - a[compareBy])
-      .slice(0, 5); // Top 5 only
+      .slice(0, 5);
   }, [compareBy]);
 
   return (
@@ -126,15 +137,18 @@ export function LanguageImpactBarChart({
         <div>
           <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
             <Globe className="w-4 h-4 text-gray-500" />
-            Language Comparison
+            {t('insights.cross.languageImpactBarChart.title')}
           </h3>
           <p className="text-xs text-gray-600 mt-0.5 max-w-md">
-            Top 5 languages ranked by <b>{currentMeta.label}</b>.
-            {` ${currentMeta.description}.`}
+            {/* Use 1 (bold) for <1>{{metric}}</1> as in en.json */}
+            {t('insights.cross.languageImpactBarChart.description', {
+              metric: currentMeta.label,
+              description: currentMeta.description,
+              1: (chunks: React.ReactNode) => <b>{chunks}</b>,
+            })}
           </p>
         </div>
-
-        {/* Comparison selector */}
+        {/* Metric selector */}
         <select
           value={compareBy}
           onChange={e => setCompareBy(e.target.value as CompareKey)}
@@ -185,19 +199,13 @@ export function LanguageImpactBarChart({
         </ResponsiveContainer>
       </div>
 
-      {/* Footer */}
+      {/* Footer (i18n) */}
       <div className="flex justify-between mt-2 text-xs text-gray-500">
         <span>
-          Showing top 5 languages
+          {t('insights.cross.languageImpactBarChart.showingTop')}
         </span>
         <span>
-          {timeRange === '1y'
-            ? 'Last year'
-            : timeRange === '3y'
-            ? 'Last 3 years'
-            : timeRange === '5y'
-            ? 'Last 5 years'
-            : 'All time'}
+          {t(`insights.cross.languageImpactBarChart.timeRange.${timeRange}`)}
         </span>
       </div>
     </div>

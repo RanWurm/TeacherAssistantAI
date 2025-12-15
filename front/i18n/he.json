@@ -1,0 +1,287 @@
+{
+    "nav": {
+        "languageToggle": {
+            "ariaLabel": "החלפת שפה",
+            "english": "EN",
+            "hebrew": "HE"
+        },
+        "navLinks": {
+            "chat": "צ'אט",
+            "search": "חיפוש",
+            "insights": "סטטיסטיקה"
+        },
+        "navLogo": {
+            "mainTitle": "עוזר מחקר",
+            "subtitle": "רעיונות מחקר מונעי בינה מלאכותית"
+        }
+    },
+    "chat": {
+        "title": "עוזר מחקר",
+        "input": {
+            "placeholder": "תאר את תחום המחקר שלך או שאל שאלה...",
+            "submitButtonLabel": "שלח",
+            "loadingLabel": "טוען...",
+            "footer": "עוזר מחקר AI משתמש במטא-דאטה של מאגר OpenAlex כדי להפיק רעיונות מחקר"
+        },
+        "messageItem": {
+            "aiResponseLabel": "תשובת הבינה המלאכותית",
+            "sqlQueryExecutedLabel": "שאילתת SQL שבוצעה",
+            "resultsCountLabel": "{{count}} תוצאות"
+        },
+        "messageList": {
+            "loadingMessage": "מחפש מאמרים ומפיק רעיון מחקר...",
+            "scrollToBottomLabel": "גלול לתחתית"
+        }
+    },
+    "insights": {
+        "pageTitle": "תובנות",
+        "tabs": {
+            "overview": "סקירה כללית",
+            "trends": "מגמות",
+            "researchers": "חוקרים",
+            "journals": "כתבי עת",
+            "cross": "ניתוח רוחבי"
+        },
+        "timeRanges": {
+            "1y": "שנה אחרונה",
+            "3y": "שלוש השנים האחרונות",
+            "5y": "חמש השנים האחרונות",
+            "all": "כל הזמנים"
+        },
+        "cross": {
+            "title": "ניתוח רוחבי",
+            "subtitle": "קשרים והשוואות בין תחומים",
+            "subjectJournalHeatmap": {
+                "title": "התפלגות תחום × כתב עת",
+                "description": "מפת חום המציגה היכן מתרכז נפח המחקר בין תחומים וכתבי עת. תאים כהים יותר מעידים על התאמה חזקה.",
+                "maxCellLabel": "ערך תא מרבי",
+                "intensity": {
+                    "high": "גבוה",
+                    "medium": "בינוני",
+                    "low": "נמוך",
+                    "veryLow": "נמוך מאוד"
+                },
+                "subjectLabel": "תחום",
+                "accessibleLabel": {
+                    "none": "{{subject}} × {{journal}}: ללא מאמרים",
+                    "articles": "{{subject}} × {{journal}}: {{count}} מאמרים"
+                }
+            },
+            "languageImpactBarChart": {
+                "title": "השוואת שפות",
+                "description": "5 השפות המובילות בדירוג לפי <1>{{metric}}</1>. {{description}}",
+                "metric": {
+                    "avgCitations": "ציטוטים ממוצעים",
+                    "articleCount": "נפח מאמרים",
+                    "totalCitations": "סך הציטוטים",
+                    "uniqueJournals": "גיוון כתבי עת"
+                },
+                "metricDescription": {
+                    "avgCitations": "השפעה ממוצעת לכל מאמר",
+                    "articleCount": "מספר מאמרים שפורסמו",
+                    "totalCitations": "סך כל הציטוטים",
+                    "uniqueJournals": "פיזור בכתבי עת"
+                },
+                "yAxisLabel": {
+                    "avgCitations": "ציטוטים ממוצעים",
+                    "articleCount": "מאמרים",
+                    "totalCitations": "סך הציטוטים",
+                    "uniqueJournals": "כתבי עת"
+                },
+                "tooltip": {
+                    "avgCitations": "ציטוטים ממוצעים",
+                    "articleCount": "מאמרים",
+                    "totalCitations": "סך הציטוטים",
+                    "uniqueJournals": "כתבי עת"
+                },
+                "showingTop": "מציג את 5 השפות המובילות",
+                "timeRange": {
+                    "1y": "שנה אחרונה",
+                    "3y": "שלוש השנים האחרונות",
+                    "5y": "חמש השנים האחרונות",
+                    "all": "כל הזמנים"
+                }
+            },
+            "multidisciplinaryVsSingle": {
+                "title": "רב-תחומי מול חד-תחומי",
+                "description": "השוואת מחקרים ממוקדי רוחב ומחקרים ממוקדים-תחום.",
+                "multiSubject": "רב-תחומי",
+                "singleSubject": "חד-תחומי",
+                "articlesLabel": "מאמרים",
+                "avgCitationsLabel": "ציטוטים ממוצעים",
+                "citationsLabel": "ציטוטים",
+                "authorsLabel": "{{count}} מחברים",
+                "journalsLabel": "{{count}} כתבי עת"
+            }
+        },
+        "researchers": {
+            "topResearchers": {
+                "title": "חוקרים",
+                "subtitle": "תובנות על חוקרים ופרופילי גיוון מחקר",
+                "topResearcherTitle": "החוקר המוביל",
+                "topResearcherDescription": "גלו חוקרים מובילים לפי דירוג סך הציטוטים. כל כרטיס מדגיש את מדדי הפרסומים וההשפעה, גיוון המחקר (כתבי עת ותחומים) ותכונות מפתח ייחודיות.",
+                "researcher": {
+                    "affiliationFallback": "ללא",
+                    "articles": "{{count}} מאמרים",
+                    "avgCitations": "{{count}} ממוצע",
+                    "journals": "{{count}} כתבי עת",
+                    "subjects": "{{count}} תחומים",
+                    "rankGold": "🥇",
+                    "rankSilver": "🥈",
+                    "rankBronze": "🥉",
+                    "rankOther": "#{{rank}}",
+                    "insight": {
+                        "multidisciplinary": "רב-תחומי מאוד",
+                        "recentHighImpact": "השפעה גבוהה לאחרונה",
+                        "consistentlyHighImpact": "השפעה גבוהה בעקביות",
+                        "focusedProfile": "פרופיל מחקר ממוקד"
+                    }
+                }
+            },
+            "multidisciplinaryResearchers": {
+                "title": "חוקרים רב-תחומיים",
+                "description": "חוקרים עם פיזור תחומים רחב ביותר.",
+                "domains": "{{count}} תחומים",
+                "affiliationFallback": "ללא",
+                "subjectsShowMore": "+{{count}} נוספים",
+                "articles": "{{count}} מאמרים",
+                "avgCitations": "{{count}} ציטוטים ממוצעים"
+            }
+        },
+        "trends": {
+            "trendingTopicsTable": {
+                "title": "נושאים מחקריים מובילים",
+                "subtitle": "ראו את המובילים ואת המגמות העולות במחקר, מדורגים לפי נפח וקצב צמיחה. רחפו עם העכבר מעל נושא למידע נוסף.",
+                "firstPlace": "מקום ראשון",
+                "secondPlace": "מקום שני",
+                "thirdPlace": "מקום שלישי",
+                "period": "תקופה",
+                "articles": "מאמרים",
+                "growth": "צמיחה",
+                "timeRange": "טווח זמן",
+                "placeLabels": {
+                    "1": "מקום ראשון",
+                    "2": "מקום שני",
+                    "3": "מקום שלישי"
+                }
+            },
+            "keywordGrowthTable": {
+                "title": "גידול מילות מפתח לפי שנה",
+                "subtitle": "טבלה זו מציגה את הצמיחה משנה לשנה בנפח מאמרים עבור מילות מפתח מחקריות מרכזיות. ירוק מסמן גידול, אדום מסמן ירידה.",
+                "previous": "קודם: {{count}}",
+                "growth": "צמיחה"
+            },
+            "keywordCrossDomain": {
+                "title": "מילים חוצות תחומים",
+                "domains": "{{count}} תחומים",
+                "articles": "{{count}} מאמרים",
+                "showMore": "+{{count}} נוספים",
+                "revealHint": "חשיפת קשרים בין-תחומיים"
+            }
+        },
+        "overview": {
+            "metricsCards": {
+                "articles": "מאמרים",
+                "authors": "מחברים",
+                "journals": "כתבי עת",
+                "avgCitations": "ציטוטים ממוצעים",
+                "subjects": "תחומים",
+                "keywords": "מילות מפתח",
+                "multiSubject": "רב-תחומי",
+                "multiAuthor": "רב-מחבר"
+            },
+            "publicationsTimeline": {
+                "title": "ציר זמן פרסומים",
+                "articles": "מאמרים",
+                "authors": "{{count}} מחברים",
+                "journals": "{{count}} כתבי עת",
+                "growthRate": "{{percent}}% שינוי"
+            },
+            "multidisciplinarySummary": {
+                "title": "סיכום רב-תחומיות",
+                "singleSubject": "חד-תחומי",
+                "multiSubject": "רב-תחומי",
+                "avgSubjectsPerArticle": "תחומים ממוצעים למאמר",
+                "highMultidisciplinarity": "רב-תחומיות גבוהה",
+                "lowerMultidisciplinarity": "רב-תחומיות נמוכה",
+                "mostCommonCombination": "השילוב התחומי הנפוץ ביותר",
+                "articlesLabel": "({{count}} מאמרים)"
+            },
+            "overviewView": {
+                "title": "סקירה כללית",
+                "subtitle": "פיזור ומדדי מחקר מערכתיים."
+            }
+        },
+        "journals": {
+            "topJournalsTable": {
+                "title": "כתבי עת",
+                "subtitle": "כתבי העת המובילים וניתוח ציטוטים",
+                "rank": "דירוג",
+                "journal": "כתב עת",
+                "publisher": "מוציא לאור",
+                "articles": "מאמרים",
+                "authors": "מחברים",
+                "subjects": "תחומים",
+                "citations": "ציטוטים",
+                "impactFactor": "פקטור השפעה",
+                "noData": "אין כתבי עת להצגה",
+                "highImpact": "השפעה גבוהה",
+                "citationVolume": "{{count}} ציטוטים",
+                "articleCount": "{{count}} מאמרים",
+                "authorCount": "{{count}} מחברים",
+                "subjectCount": "{{count}} תחומים"
+            },
+            "citationVolatilityChart": {
+                "title": "מפת תנודתיות הציטוטים",
+                "header": "מפת תנודתיות הציטוטים",
+                "description": "כל נקודה מייצגת <1>כתב עת</1>. המיקום מייצג את השפעת הציטוטים ויציבותם.",
+                "tip": "<1>טיפ:</1> שם כתב העת מוצג מעל כל נקודה.",
+                "howToRead": {
+                    "xAxis": "<1>ציר X:</1> ממוצע ציטוטים למאמר <2>→ יותר ימינה = השפעה גבוהה יותר</2>",
+                    "yAxis": "<1>ציר Y:</1> תנודתיות ציטוטים (סטיית תקן) <2>→ גבוה = פחות צפוי</2>",
+                    "bubbleSize": "<1>גודל הבועה:</1> מספר המאמרים שפורסמו"
+                },
+                "tooltip": {
+                    "avgCitations": "ממוצע ציטוטים",
+                    "volatility": "תנודתיות (סטיית תקן)",
+                    "articles": "מאמרים",
+                    "range": "טווח: <1>{{min}}</1> – <2>{{max}}</2>"
+                },
+                "xAxisLabel": "ממוצע ציטוטים",
+                "yAxisLabel": "תנודתיות (סטיית תקן)"
+            }
+        }
+    },
+    "search": {
+        "empty": {
+            "title": "לא נמצאו מאמרים",
+            "subtitle": "נסה להרחיב את הסינון או לחפש נושא אחר."
+        },
+        "sort": {
+            "citations": "המצוטטים ביותר",
+            "year": "החדשים ביותר",
+            "impact": "בעלי ההשפעה הגבוהה ביותר"
+        },
+        "filters": {
+            "topics": "נושאים",
+            "authors": "מחברים",
+            "journal": "כתב עת",
+            "type": "סוג",
+            "yearRange": "טווח שנים",
+            "minCitations": "מס' ציטוטים מינימלי",
+            "minImpact": "פקטור השפעה מינימלי",
+            "language": "שפה"
+        },
+        "searchHeader": {
+            "title": "חיפוש אקדמי",
+            "subtitle": "גלה ונתח מיליוני מאמרים מדעיים",
+            "inputPlaceholder": "חפש לפי כותרת, מחבר, מילות מפתח או נושא...",
+            "inputAriaLabel": "חפש מאמרים אקדמיים",
+            "submitAriaLabel": "שלח חיפוש"
+        },
+        "resultsHeader": {
+            "resultsCount": "{{count}} מאמרים נמצאו",
+            "sortLabel": "מיון:"
+        }
+    }
+}

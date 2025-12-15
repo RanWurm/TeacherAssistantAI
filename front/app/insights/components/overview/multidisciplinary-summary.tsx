@@ -1,6 +1,7 @@
 import { Layers } from 'lucide-react';
 import { MOCK_MULTIDISCIPLINARY_SUMMARY } from '../../data/mock';
 import type { TimeRange } from '../../types/insights.types';
+import { useTranslation } from 'react-i18next';
 
 interface MultidisciplinarySummaryProps {
   timeRange: TimeRange;
@@ -41,6 +42,7 @@ function ProgressBar({
 }
 
 export function MultidisciplinarySummary({ timeRange }: MultidisciplinarySummaryProps) {
+  const { t } = useTranslation();
   const summary = MOCK_MULTIDISCIPLINARY_SUMMARY;
   const totalArticles = summary.singleSubjectArticles + summary.multiSubjectArticles;
   const singlePercent = totalArticles > 0 ? (summary.singleSubjectArticles / totalArticles) * 100 : 0;
@@ -50,38 +52,38 @@ export function MultidisciplinarySummary({ timeRange }: MultidisciplinarySummary
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <div className="flex items-center gap-2 mb-5">
         <Layers className="w-5 h-5 text-purple-600" />
-        <h3 className="text-base font-semibold text-gray-900">Multidisciplinary Summary</h3>
+        <h3 className="text-base font-semibold text-gray-900">{t('insights.overview.multidisciplinarySummary.title')}</h3>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
         <ProgressBar
           percent={singlePercent}
           color="bg-gray-400"
-          label="Single-Subject"
+          label={t('insights.overview.multidisciplinarySummary.singleSubject')}
           count={summary.singleSubjectArticles}
         />
         <ProgressBar
           percent={multiPercent}
           color="bg-purple-500"
-          label="Multi-Subject"
+          label={t('insights.overview.multidisciplinarySummary.multiSubject')}
           count={summary.multiSubjectArticles}
           highlight
         />
         <div className="flex flex-col items-start justify-between gap-1">
-          <div className="text-xs text-gray-600 mb-0.5">Avg Subjects per Article</div>
+          <div className="text-xs text-gray-600 mb-0.5">{t('insights.overview.multidisciplinarySummary.avgSubjectsPerArticle')}</div>
           <div className="text-2xl font-bold text-purple-700 leading-tight">
             {summary.avgSubjectsPerArticle.toFixed(1)}
           </div>
           <div className="text-[10px] text-gray-400">
-            {(summary.avgSubjectsPerArticle >= 2
-              ? 'High multidisciplinarity'
-              : 'Lower multidisciplinarity')}
+            {summary.avgSubjectsPerArticle >= 2
+              ? t('insights.overview.multidisciplinarySummary.highMultidisciplinarity')
+              : t('insights.overview.multidisciplinarySummary.lowerMultidisciplinarity')}
           </div>
         </div>
       </div>
 
       <div className="pt-4 border-t border-gray-100">
-        <div className="text-xs text-gray-600 mb-2">Most Common Subject Combination</div>
+        <div className="text-xs text-gray-600 mb-2">{t('insights.overview.multidisciplinarySummary.mostCommonCombination')}</div>
         <div className="flex items-center gap-2 flex-wrap">
           {summary.mostCommonSubjectCombination.subjects.map((subject, idx) => (
             <span
@@ -92,7 +94,7 @@ export function MultidisciplinarySummary({ timeRange }: MultidisciplinarySummary
             </span>
           ))}
           <span className="text-xs text-gray-500 ml-1">
-            ({summary.mostCommonSubjectCombination.articleCount.toLocaleString()} articles)
+            {t('insights.overview.multidisciplinarySummary.articlesLabel', { count: summary.mostCommonSubjectCombination.articleCount })}
           </span>
         </div>
       </div>

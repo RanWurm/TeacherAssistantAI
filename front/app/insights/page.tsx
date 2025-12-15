@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../../styles/variables.css';
 import { InsightsHeader } from './components/insights-header';
 import { ViewTabs } from './components/view-tabs';
@@ -12,6 +13,7 @@ import { CrossAnalysisView } from './components/cross-analysis/cross-analysis-vi
 import type { ViewType, TimeRange } from './types/insights.types';
 
 export default function InsightsPage() {
+  const { t } = useTranslation();
   const [selectedView, setSelectedView] = useState<ViewType>('overview');
   const [timeRange, setTimeRange] = useState<TimeRange>('5y');
 
@@ -20,6 +22,9 @@ export default function InsightsPage() {
       <InsightsHeader />
 
       <div className="max-w-7xl mx-auto px-6 py-6">
+        <h1 className="text-3xl font-bold mb-6" style={{ color: "var(--text-primary)" }}>
+          {t('insights.pageTitle')}
+        </h1>
         <ViewTabs
           selectedView={selectedView}
           setSelectedView={setSelectedView}

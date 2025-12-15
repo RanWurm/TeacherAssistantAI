@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Send, Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ChatInputProps {
   input: string;
@@ -10,8 +11,9 @@ interface ChatInputProps {
 
 export function ChatInput({ input, setInput, isLoading, onSubmit }: ChatInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
-  // כשהטעינה מסתיימת, תחזיר focus
+  // When loading finishes, return focus to input
   useEffect(() => {
     if (!isLoading) {
       inputRef.current?.focus();
@@ -39,6 +41,11 @@ export function ChatInput({ input, setInput, isLoading, onSubmit }: ChatInputPro
                 background: "linear-gradient(135deg, var(--primary-600), var(--primary-500))",
                 color: "var(--on-primary)",
               }}
+              aria-label={
+                isLoading
+                  ? t('chat.input.loadingLabel')
+                  : t('chat.input.submitButtonLabel')
+              }
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -48,11 +55,11 @@ export function ChatInput({ input, setInput, isLoading, onSubmit }: ChatInputPro
             </button>
 
             <input
-              ref={inputRef}              // ← החלק החשוב
+              ref={inputRef}
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="תאר את תחום המחקר שלך או שאל שאלה..."
+              placeholder={t('chat.input.placeholder')}
               disabled={isLoading}
               className="w-full px-5 py-4 pl-14 rounded-2xl text-sm shadow-sm outline-none text-right"
               style={{
@@ -66,7 +73,7 @@ export function ChatInput({ input, setInput, isLoading, onSubmit }: ChatInputPro
         </form>
 
         <p className="text-xs mt-3 text-center" style={{ color: "var(--text-subtle)" }}>
-          Research Assistant AI uses OpenAlex dataset metadata to generate research ideas
+          {t('chat.input.footer')}
         </p>
       </div>
     </div>

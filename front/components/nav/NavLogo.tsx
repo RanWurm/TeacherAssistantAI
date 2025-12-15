@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { Brain } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function NavLogo() {
+  const { t } = useTranslation();
+
   return (
     <Link href="/chat" className="flex items-center gap-3 group">
       <div
@@ -22,7 +25,7 @@ export function NavLogo() {
             color: "var(--text-primary)",
           }}
         >
-          Research Assistant
+          {t("nav.navLogo.mainTitle")}
         </span>
         <span
           className="text-xs"
@@ -30,10 +33,9 @@ export function NavLogo() {
             color: "var(--text-secondary)",
           }}
         >
-          AI-Powered Research Ideas
+          {t("nav.navLogo.subtitle")}
         </span>
       </div>
     </Link>
   );
 }
-

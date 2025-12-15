@@ -1,12 +1,15 @@
 import { MOCK_TOP_RESEARCHERS } from '../../data/mock';
 import { ResearcherProfileCard } from './researcher-profile-card';
 import type { TimeRange } from '../../types/insights.types';
+import { useTranslation } from 'react-i18next';
 
 interface ResearcherGridProps {
   timeRange: TimeRange;
 }
 
 export function ResearcherGrid({ timeRange }: ResearcherGridProps) {
+  const { t } = useTranslation();
+
   // Sort researchers by total citations in descending order
   const sorted = [...MOCK_TOP_RESEARCHERS].sort(
     (a, b) => b.totalCitations - a.totalCitations
@@ -18,10 +21,10 @@ export function ResearcherGrid({ timeRange }: ResearcherGridProps) {
   return (
     <div>
       <h3 className="text-sm font-semibold text-gray-900 mb-1.5">
-        Top Researcher
+        {t('insights.researchers.topResearchers.topResearcherTitle')}
       </h3>
       <div className="text-xs text-gray-600 mb-3">
-        Explore top researchers ranked by total citations. Each card highlights their publication and impact metrics, research breadth (journals and subjects), and key distinguishing features.
+        {t('insights.researchers.topResearchers.topResearcherDescription')}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

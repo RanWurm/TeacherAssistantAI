@@ -1,5 +1,6 @@
 import { Users, Calendar, TrendingUp, BookOpen, ExternalLink } from 'lucide-react';
 import { Paper } from '../data/mock';
+import { useTranslation } from 'react-i18next';
 
 interface ResultCardProps {
   paper: Paper;
@@ -11,6 +12,7 @@ type PaperWithAbstract = Paper & { abstract?: string };
 export function ResultCard({ paper }: ResultCardProps) {
   // Type assertion for extended properties if needed
   const localPaper = paper as PaperWithAbstract;
+  const { t } = useTranslation();
 
   return (
     <article className="relative bg-(--surface) rounded-2xl border border-(--border-color) shadow-md hover:shadow-xl hover:border-(--primary-300) transition-all p-6 group">
@@ -21,10 +23,10 @@ export function ResultCard({ paper }: ResultCardProps) {
         rel="noopener noreferrer"
         className="absolute top-5 right-5 z-20 p-2 rounded-lg bg-linear-to-br from-(--primary-600) to-(--primary-500) hover:shadow-xl hover:scale-110 transition-all flex items-center justify-center group/external"
         style={{ color: "var(--on-primary)" }}
-        title="Open DOI"
+        title={t("search.resultsHeader.openDoi", "Open DOI")}
       >
         <ExternalLink className="w-5 h-5" />
-        <span className="sr-only">Open publication DOI</span>
+        <span className="sr-only">{t("search.resultsHeader.openDoi", "Open publication DOI")}</span>
       </a>
       <div className="flex flex-col sm:flex-row gap-6">
         {/* Icon for visual interest */}
@@ -32,7 +34,7 @@ export function ResultCard({ paper }: ResultCardProps) {
           <BookOpen className="w-10 h-10 text-(--primary-400) mb-2 drop-shadow" />
           {localPaper.impactFactor != null && (
             <span className="text-xs text-(--primary-800) font-semibold bg-(--primary-100) rounded-lg px-2 py-0.5 mt-1">
-              IF: {localPaper.impactFactor}
+              {t("search.sort.impact", "IF")}: {localPaper.impactFactor}
             </span>
           )}
         </div>
@@ -52,7 +54,7 @@ export function ResultCard({ paper }: ResultCardProps) {
             </div>
             <div className="flex items-center gap-1.5 text-xs sm:text-sm">
               <TrendingUp className="w-4 h-4" />
-              <span className="font-semibold">{localPaper.citations.toLocaleString()} citations</span>
+              <span className="font-semibold">{localPaper.citations.toLocaleString()} {t("search.sort.citations", "citations")}</span>
             </div>
             {localPaper.journal && (
               <div className="flex items-center gap-1.5 text-xs sm:text-sm px-2 py-0.5 rounded bg-(--primary-50) text-(--primary-700) font-medium border border-(--primary-100)">
@@ -82,7 +84,7 @@ export function ResultCard({ paper }: ResultCardProps) {
             {localPaper.language && (
               <span
                 className="ml-2 px-2 py-0.5 rounded bg-(--gray-200) text-(--text-secondary) text-xs font-medium border border-(--gray-300)"
-                title="Language"
+                title={t("search.filters.language", "Language")}
               >
                 {localPaper.language.toUpperCase()}
               </span>
@@ -90,7 +92,7 @@ export function ResultCard({ paper }: ResultCardProps) {
             {localPaper.type && (
               <span
                 className="ml-2 px-2 py-0.5 rounded bg-(--gray-50) text-(--gray-700) text-xs font-medium border border-(--gray-200)"
-                title="Type"
+                title={t("search.filters.type", "Type")}
               >
                 {localPaper.type}
               </span>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Network } from 'lucide-react';
 import { MOCK_KEYWORD_CROSS_DOMAIN } from '../../data/mock';
 import type { TimeRange } from '../../types/insights.types';
@@ -8,6 +9,7 @@ interface KeywordCrossDomainProps {
 }
 
 export function KeywordCrossDomain({ }: KeywordCrossDomainProps) {
+  const { t } = useTranslation();
   const crossDomain = MOCK_KEYWORD_CROSS_DOMAIN;
   // Track which keywords are "expanded" to show all subjects
   const [expanded, setExpanded] = useState<{ [keyword: string]: boolean }>({});
@@ -20,7 +22,9 @@ export function KeywordCrossDomain({ }: KeywordCrossDomainProps) {
     <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6">
       <div className="flex items-center gap-2 mb-4">
         <Network className="w-4 h-4 text-gray-500" />
-        <h3 className="text-sm font-semibold text-gray-900">Keywords Across Domains</h3>
+        <h3 className="text-sm font-semibold text-gray-900">
+          {t('insights.trends.keywordCrossDomain.title')}
+        </h3>
       </div>
       <div className="space-y-4">
         {crossDomain.map((item, idx) => {
@@ -39,11 +43,11 @@ export function KeywordCrossDomain({ }: KeywordCrossDomainProps) {
                 <div className="flex items-center gap-2">
                   <span className="text-base font-medium text-gray-900">{item.keyword}</span>
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 border border-purple-100 text-xs font-semibold text-purple-700">
-                    {item.subjectCount} domains
+                    {t('insights.trends.keywordCrossDomain.domains', { count: item.subjectCount })}
                   </span>
                 </div>
                 <span className="text-xs text-gray-500 font-normal">
-                  {item.articleCount.toLocaleString()} articles
+                  {t('insights.trends.keywordCrossDomain.articles', { count: item.articleCount })}
                 </span>
               </div>
 
@@ -61,10 +65,10 @@ export function KeywordCrossDomain({ }: KeywordCrossDomainProps) {
                   <button
                     type="button"
                     className="px-2 py-0.5 text-xs text-gray-500 border border-dashed border-gray-300 bg-white rounded-full hover:bg-gray-100 focus:outline-none transition"
-                    aria-label={`Reveal ${remainingCount} more domains`}
+                    aria-label={t('insights.trends.keywordCrossDomain.showMore', { count: remainingCount })}
                     onClick={() => handleExpand(item.keyword)}
                   >
-                    +{remainingCount} more
+                    {t('insights.trends.keywordCrossDomain.showMore', { count: remainingCount })}
                   </button>
                 )}
               </div>
@@ -72,7 +76,7 @@ export function KeywordCrossDomain({ }: KeywordCrossDomainProps) {
               {/* Reveal hint for more subjects */}
               {hasMore && (
                 <div className="mt-0.5 text-xs text-gray-400 italic">
-                  Reveal cross-domain connections
+                  {t('insights.trends.keywordCrossDomain.revealHint')}
                 </div>
               )}
             </div>

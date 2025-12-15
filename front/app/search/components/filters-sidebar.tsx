@@ -2,6 +2,9 @@ import React from 'react';
 import { Filter } from 'lucide-react';
 import { MOCK_PAPERS, LANGUAGES, TYPES } from '../data/mock';
 
+// --- i18n import and hook setup ---
+import { useTranslation } from 'react-i18next';
+
 interface FiltersSidebarProps {
   selectedTopics: string[];
   setSelectedTopics: (v: string[]) => void;
@@ -38,6 +41,7 @@ export function FiltersSidebar({
   minImpact, setMinImpact,
   selectedLanguage, setSelectedLanguage,
 }: FiltersSidebarProps) {
+  const { t } = useTranslation();
   const topics = Array.from(new Set(MOCK_PAPERS.flatMap(p => p.topics)));
   const authors = Array.from(new Set(MOCK_PAPERS.flatMap(p => p.authors)));
   const journals = Array.from(new Set(MOCK_PAPERS.map(p => p.journal).filter(Boolean)));
@@ -70,9 +74,12 @@ export function FiltersSidebar({
           onClick={() => setOpen((v) => !v)}
           className="ml-2 mt-1 text-xs text-(--primary-600) hover:underline focus:underline focus:outline-none transition"
           aria-expanded={open}
-          aria-label={open ? `Show less items` : `Show all items`}
+          aria-label={open ? t('search.filters.showLess', { defaultValue: 'Show less items' }) : t('search.filters.showAll', { defaultValue: `Show all items` })}
         >
-          {open ? 'Show less' : `Show all (${items.length})`}
+          {open
+            ? t('search.filters.showLess', { defaultValue: 'Show less' })
+            : t('search.filters.showAll', { defaultValue: `Show all (${items.length})`, count: items.length, total: items.length })
+          }
         </button>
       </>
     );
@@ -90,21 +97,23 @@ export function FiltersSidebar({
     >
       <header className="flex items-center gap-2 mb-2 px-2">
         <Filter className="w-5 h-5 text-(--primary-700)" />
-        <span className="font-bold text-lg text-(--text-primary)">Filters</span>
+        <span className="font-bold text-lg text-(--text-primary)">
+          {t('search.filters.title', { defaultValue: 'Filters' })}
+        </span>
       </header>
       {/* CollapsibleList component for Topics and Authors */}
       <>
-        <Section title="Topics">
+        <Section title={t('search.filters.topics', { defaultValue: 'Topics' })}>
           <CollapsibleList
             items={topics}
-            renderItem={t => (
-              <li key={t} className="list-none">{checkbox(t, selectedTopics, setSelectedTopics)}</li>
+            renderItem={tpc => (
+              <li key={tpc} className="list-none">{checkbox(tpc, selectedTopics, setSelectedTopics)}</li>
             )}
             threshold={3}
           />
         </Section>
 
-        <Section title="Authors">
+        <Section title={t('search.filters.authors', { defaultValue: 'Authors' })}>
           <CollapsibleList
             items={authors}
             renderItem={a => (
@@ -115,32 +124,32 @@ export function FiltersSidebar({
         </Section>
       </>
 
-      <Section title="Journal">
+      <Section title={t('search.filters.journal', { defaultValue: 'Journal' })}>
         <select
           value={selectedJournal}
           onChange={e => setSelectedJournal(e.target.value)}
           className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
           style={{ overflowX: 'hidden' }}
         >
-          <option value="all">All Journals</option>
+          <option value="all">{t('search.filters.allJournals', { defaultValue: 'All Journals' })}</option>
           {journals.map(j => <option key={j}>{j}</option>)}
         </select>
       </Section>
 
-      <Section title="Type">
+      <Section title={t('search.filters.type', { defaultValue: 'Type' })}>
         <select
           value={selectedType}
           onChange={e => setSelectedType(e.target.value)}
           className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
           style={{ overflowX: 'hidden' }}
         >
-          <option value="all">All Types</option>
-          {TYPES.map(t => <option key={t}>{t}</option>)}
+          <option value="all">{t('search.filters.allTypes', { defaultValue: 'All Types' })}</option>
+          {TYPES.map(tval => <option key={tval}>{tval}</option>)}
         </select>
       </Section>
 
       <div className="grid grid-cols-2 gap-4">
-        <Section title="Impact Factor">
+        <Section title={t('search.filters.minImpact', { defaultValue: 'Min Impact Factor' })}>
           <div className="relative flex items-center">
             <input
               type="number"
@@ -149,13 +158,13 @@ export function FiltersSidebar({
               value={minImpact}
               onChange={e => setMinImpact(+e.target.value)}
               className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
-              placeholder="Min"
+              placeholder={t('search.filters.minImpact', { defaultValue: 'Min Impact Factor' })}
             />
-            <span className="absolute right-2 text-xs text-(--text-secondary)">min</span>
+            <span className="absolute right-2 text-xs text-(--text-secondary)">{t('search.filters.minShort', { defaultValue: 'min' })}</span>
           </div>
         </Section>
 
-        <Section title="Citations">
+        <Section title={t('search.filters.minCitations', { defaultValue: 'Min Citations' })}>
           <div className="relative flex items-center">
             <input
               type="number"
@@ -163,14 +172,14 @@ export function FiltersSidebar({
               value={minCitations}
               onChange={e => setMinCitations(+e.target.value)}
               className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
-              placeholder="Min"
+              placeholder={t('search.filters.minCitations', { defaultValue: 'Min Citations' })}
             />
-            <span className="absolute right-2 text-xs text-(--text-secondary)">min</span>
+            <span className="absolute right-2 text-xs text-(--text-secondary)">{t('search.filters.minShort', { defaultValue: 'min' })}</span>
           </div>
         </Section>
       </div>
 
-      <Section title="Year Range">
+      <Section title={t('search.filters.yearRange', { defaultValue: 'Year Range' })}>
         <div className="flex gap-2">
           <input
             type="number"
@@ -179,7 +188,7 @@ export function FiltersSidebar({
             max={yearRange.max}
             onChange={e => setYearRange({ ...yearRange, min: +e.target.value })}
             className="w-1/2 border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
-            placeholder="From"
+            placeholder={t('search.filters.yearFrom', { defaultValue: 'From' })}
           />
           <span className="px-2 text-(--text-secondary) text-sm font-medium flex items-center">–</span>
           <input
@@ -189,12 +198,12 @@ export function FiltersSidebar({
             max={2100}
             onChange={e => setYearRange({ ...yearRange, max: +e.target.value })}
             className="w-1/2 border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
-            placeholder="To"
+            placeholder={t('search.filters.yearTo', { defaultValue: 'To' })}
           />
         </div>
       </Section>
 
-      <Section title="Language">
+      <Section title={t('search.filters.language', { defaultValue: 'Language' })}>
         <select
           value={selectedLanguage}
           onChange={e => setSelectedLanguage(e.target.value)}
@@ -227,6 +236,7 @@ function checkbox(value: string, list: string[], set: (v: string[]) => void) {
   );
 }
 
+// Title now expects a translated string
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mb-2 last:mb-0" style={{ overflowX: 'hidden' }}>

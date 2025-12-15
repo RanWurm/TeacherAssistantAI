@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../../styles/variables.css';
 import { SearchHeader } from './components/search-header';
 import { FiltersSidebar } from './components/filters-sidebar';
@@ -12,6 +13,7 @@ const INITIAL_YEAR_RANGE = { min: 2015, max: 2024 };
 type SortOption = 'citations' | 'year' | 'impact';
 
 export default function SearchPage() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
@@ -176,14 +178,7 @@ export default function SearchPage() {
           </div>
 
           <div className="flex-1 min-h-0 overflow-auto">
-            {papers.length === 0 ? (
-              <div className="py-16 flex flex-col items-center justify-center text-center text-(--text-secondary)">
-                <span className="text-xl font-semibold mb-2">No papers found</span>
-                <span className="text-sm">Try relaxing your filters or searching for another topic.</span>
-              </div>
-            ) : (
-              <ResultsList papers={papers} />
-            )}
+            <ResultsList papers={papers} />
           </div>
         </main>
       </div>

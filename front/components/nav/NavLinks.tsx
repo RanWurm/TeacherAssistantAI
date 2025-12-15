@@ -1,14 +1,16 @@
 import Link from "next/link";
-import { NAV_ITEMS } from "./nav.config";
+import { useNavItems } from "./nav.config";
 
 interface NavLinksProps {
   activePath: string;
 }
 
 export function NavLinks({ activePath }: NavLinksProps) {
+  const navItems = useNavItems();
+
   return (
     <nav className="flex items-center gap-1">
-      {NAV_ITEMS.map((link) => {
+      {navItems.map((link) => {
         const active = activePath === link.href;
         const Icon = link.icon;
 
@@ -33,15 +35,16 @@ export function NavLinks({ activePath }: NavLinksProps) {
             }
             className={`
               flex items-center gap-2 px-4 py-2 font-medium text-sm
-              ${!active ? "hover:bg-[var(--surface-hover)] hover:text-[var(--text-primary)]" : ""}
+              ${!active ? "hover:bg-(--surface-hover) hover:text-(--text-primary)" : ""}
             `}
           >
             <Icon className="w-4 h-4" />
-            <span className="hidden sm:inline">{link.label}</span>
+            <span className="hidden sm:inline">
+              {link.label}
+            </span>
           </Link>
         );
       })}
     </nav>
   );
 }
-
