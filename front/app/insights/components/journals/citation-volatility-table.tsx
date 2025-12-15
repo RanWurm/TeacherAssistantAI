@@ -174,15 +174,20 @@ export function CitationVolatilityChart() {
               <YAxis
                 type="number"
                 dataKey="citationStdDev"
-                tick={{ fontSize: 11 }}
+                orientation="left"
+                tick={{
+                  fontSize: 11,
+                  dx: -5,
+                  direction: "ltr", 
+                }}
                 axisLine={{ stroke: '#ddd' }}
                 tickLine={false}
               >
                 <Label
                   value={t('insights.journals.citationVolatilityChart.yAxisLabel')}
                   angle={-90}
-                  position="insideLeft"
-                  offset={6}
+                  position="center"
+                  dx={-10}
                   className="text-xs text-gray-500"
                 />
               </YAxis>

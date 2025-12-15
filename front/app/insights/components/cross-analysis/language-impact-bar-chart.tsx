@@ -12,7 +12,7 @@ import {
 import { Globe } from 'lucide-react';
 import { MOCK_LANGUAGE_IMPACT } from '../../data/mock';
 import type { TimeRange } from '../../types/insights.types';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 
 /* =======================
    Types
@@ -47,7 +47,6 @@ function LanguageTooltip({
   active?: boolean;
   payload?: Array<{ payload: LanguageDatum }>;
 }) {
-  // FIX: prefix all t keys with 'insights.cross.'
   const { t } = useTranslation();
   if (!active || !payload || !payload[0]) return null;
   const d = payload[0].payload;
@@ -84,7 +83,6 @@ function LanguageTooltip({
 export function LanguageImpactBarChart({
   timeRange,
 }: LanguageImpactBarChartProps) {
-  // FIX: prefix all t keys with 'insights.cross.'
   const { t } = useTranslation();
 
   // The metrics and their i18n-driven labels/descriptions
@@ -139,14 +137,18 @@ export function LanguageImpactBarChart({
             <Globe className="w-4 h-4 text-gray-500" />
             {t('insights.cross.languageImpactBarChart.title')}
           </h3>
-          <p className="text-xs text-gray-600 mt-0.5 max-w-md">
-            {/* Use 1 (bold) for <1>{{metric}}</1> as in en.json */}
-            {t('insights.cross.languageImpactBarChart.description', {
-              metric: currentMeta.label,
-              description: currentMeta.description,
-              1: (chunks: React.ReactNode) => <b>{chunks}</b>,
-            })}
-          </p>
+          <span className="text-xs text-gray-600 mt-0.5 max-w-md inline-block">
+            <Trans
+              i18nKey="insights.cross.languageImpactBarChart.description"
+              values={{
+                metric: currentMeta.label,
+                description: currentMeta.description,
+              }}
+              components={{
+                1: <b />,
+              }}
+            />
+          </span>
         </div>
         {/* Metric selector */}
         <select
@@ -176,13 +178,14 @@ export function LanguageImpactBarChart({
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, dx: -5, direction: "ltr" }}
               axisLine={{ stroke: '#ddd' }}
               tickLine={false}
               label={{
                 value: currentMeta.yAxisLabel,
                 angle: -90,
-                position: 'insideLeft',
+                position: 'center',
+                dx: -40,
                 style: { fontSize: 12, fill: '#6b7280' },
               }}
             />

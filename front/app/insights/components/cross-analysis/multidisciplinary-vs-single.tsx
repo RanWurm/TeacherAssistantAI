@@ -8,10 +8,11 @@ interface MultidisciplinaryVsSingleProps {
 }
 
 export function MultidisciplinaryVsSingle({ timeRange }: MultidisciplinaryVsSingleProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const comparison = MOCK_MULTIDISCIPLINARY_COMPARISON;
   const maxArticles = Math.max(...comparison.map(c => c.articleCount));
   const maxCitations = Math.max(...comparison.map(c => c.totalCitations));
+  const isRtl = i18n.dir() === 'rtl';
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
@@ -31,7 +32,12 @@ export function MultidisciplinaryVsSingle({ timeRange }: MultidisciplinaryVsSing
           const isMulti = item.category === 'multi-subject';
           const articlePercent = (item.articleCount / maxArticles) * 100;
           const citationPercent = (item.totalCitations / maxCitations) * 100;
-          
+          // Determine correct direction for the fill bar
+          const positionClass = isRtl
+            ? "absolute inset-y-0 right-0 rounded-full transition-all duration-700"
+            : "absolute inset-y-0 left-0 rounded-full transition-all duration-700";
+          const fillColorClass = isMulti ? 'bg-purple-500' : 'bg-blue-500';
+
           return (
             <div
               key={idx}
@@ -76,9 +82,7 @@ export function MultidisciplinaryVsSingle({ timeRange }: MultidisciplinaryVsSing
                 </div>
                 <div className="relative h-2 bg-white rounded-full overflow-hidden border border-gray-200">
                   <div
-                    className={`absolute inset-y-0 left-0 rounded-full transition-all duration-700 ${
-                      isMulti ? 'bg-purple-500' : 'bg-blue-500'
-                    }`}
+                    className={`${positionClass} ${fillColorClass}`}
                     style={{ width: `${citationPercent}%` }}
                   />
                 </div>

@@ -41,7 +41,7 @@ export function FiltersSidebar({
   minImpact, setMinImpact,
   selectedLanguage, setSelectedLanguage,
 }: FiltersSidebarProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const topics = Array.from(new Set(MOCK_PAPERS.flatMap(p => p.topics)));
   const authors = Array.from(new Set(MOCK_PAPERS.flatMap(p => p.authors)));
   const journals = Array.from(new Set(MOCK_PAPERS.map(p => p.journal).filter(Boolean)));
@@ -148,36 +148,64 @@ export function FiltersSidebar({
         </select>
       </Section>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Section title={t('search.filters.minImpact', { defaultValue: 'Min Impact Factor' })}>
-          <div className="relative flex items-center">
+      <Section
+        title={
+          i18n.language === 'he'
+            ? t('search.filters.minImpact')
+            : t('search.filters.minImpact', { defaultValue: 'Min Impact Factor' })
+        }
+      >
+        <div className="flex items-end">
+          <div className="relative w-full flex items-center">
             <input
               type="number"
               min={0}
               step={0.1}
               value={minImpact}
               onChange={e => setMinImpact(+e.target.value)}
-              className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
-              placeholder={t('search.filters.minImpact', { defaultValue: 'Min Impact Factor' })}
+              className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt)
+                     focus:ring focus:ring-(--primary-500)/20"
+              placeholder={
+                i18n.language === 'he'
+                  ? t('search.filters.minImpact')
+                  : t('search.filters.minImpact', { defaultValue: 'Min Impact Factor' })
+              }
             />
-            <span className="absolute right-2 text-xs text-(--text-secondary)">{t('search.filters.minShort', { defaultValue: 'min' })}</span>
+            <span
+              className={`absolute text-xs text-(--text-secondary)
+            ${i18n.language === 'he' ? 'left-2' : 'right-2'}`}
+            >
+              {i18n.language === 'he'
+                ? t('search.filters.minShort')
+                : t('search.filters.minShort', { defaultValue: 'min' })}
+            </span>
           </div>
-        </Section>
+        </div>
+      </Section>
 
-        <Section title={t('search.filters.minCitations', { defaultValue: 'Min Citations' })}>
-          <div className="relative flex items-center">
+      <Section title={t('search.filters.minCitations', { defaultValue: 'Min Citations' })}>
+        <div className="flex items-end">
+          <div className="relative w-full flex items-center">
             <input
               type="number"
               min={0}
               value={minCitations}
               onChange={e => setMinCitations(+e.target.value)}
-              className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
+              className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt)
+                     focus:ring focus:ring-(--primary-500)/20"
               placeholder={t('search.filters.minCitations', { defaultValue: 'Min Citations' })}
             />
-            <span className="absolute right-2 text-xs text-(--text-secondary)">{t('search.filters.minShort', { defaultValue: 'min' })}</span>
+            <span
+              className={`absolute text-xs text-(--text-secondary)
+            ${i18n.language === 'he' ? 'left-2' : 'right-2'}`}
+            >
+              {i18n.language === 'he'
+                ? t('search.filters.minShort')
+                : t('search.filters.minShort', { defaultValue: 'min' })}
+            </span>
           </div>
-        </Section>
-      </div>
+        </div>
+      </Section>
 
       <Section title={t('search.filters.yearRange', { defaultValue: 'Year Range' })}>
         <div className="flex gap-2">

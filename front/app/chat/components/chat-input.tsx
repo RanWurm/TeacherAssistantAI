@@ -11,7 +11,7 @@ interface ChatInputProps {
 
 export function ChatInput({ input, setInput, isLoading, onSubmit }: ChatInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // When loading finishes, return focus to input
   useEffect(() => {
@@ -19,6 +19,14 @@ export function ChatInput({ input, setInput, isLoading, onSubmit }: ChatInputPro
       inputRef.current?.focus();
     }
   }, [isLoading]);
+
+  // Direction for input/layout depends on language (he/en)
+  let dir: "rtl" | "ltr" = "ltr";
+  if (i18n.language === "he") {
+    dir = "rtl";
+  } else if (i18n.language === "en") {
+    dir = "ltr";
+  }
 
   return (
     <div
@@ -29,14 +37,15 @@ export function ChatInput({ input, setInput, isLoading, onSubmit }: ChatInputPro
         borderTop: "1px solid var(--border-color)",
         boxShadow: "0 -2px 10px rgba(0,0,0,0.06)",
       }}
+      dir={dir}
     >
       <div className="max-w-5xl mx-auto">
         <form onSubmit={onSubmit}>
-          <div className="relative flex flex-row-reverse items-center">
+          <div className={`relative flex ${dir === "rtl" ? "flex-row-reverse" : "flex-row"} items-center`}>
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="absolute left-3 w-10 h-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-50 hover:cursor-pointer"
+              className={`absolute ${dir === "rtl" ? "left-3" : "right-3"} w-10 h-10 rounded-xl flex items-center justify-center transition-all disabled:opacity-50 hover:cursor-pointer`}
               style={{
                 background: "linear-gradient(135deg, var(--primary-600), var(--primary-500))",
                 color: "var(--on-primary)",
@@ -61,13 +70,14 @@ export function ChatInput({ input, setInput, isLoading, onSubmit }: ChatInputPro
               onChange={(e) => setInput(e.target.value)}
               placeholder={t('chat.input.placeholder')}
               disabled={isLoading}
-              className="w-full px-5 py-4 pl-14 rounded-2xl text-sm shadow-sm outline-none text-right"
+              className={`w-full px-5 py-4 pl-14 rounded-2xl text-sm shadow-sm outline-none ${dir === "rtl" ? "text-right" : "text-left"}`}
               style={{
                 border: "2px solid var(--border-color)",
                 background: isLoading ? "var(--gray-100)" : "var(--input-bg)",
                 color: "var(--text-primary)",
-                direction: "rtl",
+                direction: dir,
               }}
+              dir={dir}
             />
           </div>
         </form>

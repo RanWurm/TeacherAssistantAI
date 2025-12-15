@@ -62,7 +62,7 @@ function TopicTooltip({
           </div>
           <div className="flex justify-between py-0.5">
             <span className="text-gray-400">{t('insights.trends.trendingTopicsTable.growth')}</span>
-            <span className="flex items-center gap-1 text-gray-800">
+            <span className="flex items-center gap-1 text-gray-800" dir="ltr">
               {topic.growthRate > 0 ? '+' : ''}
               {topic.growthRate.toFixed(1)}%
               <GrowthArrow rate={topic.growthRate} />
@@ -154,6 +154,7 @@ export function TrendingTopicsTable({ timeRange }: TrendingTopicsTableProps) {
                     ? 'bg-red-100 text-red-600'
                     : 'bg-gray-100 text-gray-500'
                 }`}
+                dir="ltr"
               >
                 {topic.growthRate > 0 ? '+' : ''}
                 {topic.growthRate.toFixed(1)}%
@@ -223,7 +224,7 @@ function PodiumItem({
         <span className="text-lg font-bold text-blue-900 mb-1">
           {topic.articleCount.toLocaleString()}
         </span>
-        <span className="flex items-center gap-1 text-sm mt-0.5">
+        <span className="flex items-center gap-1 text-sm mt-0.5" dir="ltr">
           {topic.growthRate > 0 ? '+' : ''}
           {topic.growthRate.toFixed(1)}%
           <GrowthArrow rate={topic.growthRate} />

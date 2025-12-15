@@ -29,7 +29,9 @@ export function ResearcherProfileCard({
   maxCitations,
   timeRange,
 }: ResearcherProfileCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const isRtl = i18n.dir() === 'rtl';
 
   const initials = researcher.name
     .split(' ')
@@ -72,7 +74,9 @@ export function ResearcherProfileCard({
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition relative">
       {/* Rank badge */}
-      <div className="absolute top-4 right-4 text-base font-bold text-gray-800 bg-gray-100 px-4 py-2 rounded-lg shadow-sm">
+      <div
+        className={`absolute top-4 ${isRtl ? 'left-4' : 'right-4'} text-base font-bold text-gray-800 bg-gray-100 px-4 py-2 rounded-lg shadow-sm`}
+      >
         {rankLabel}
       </div>
 

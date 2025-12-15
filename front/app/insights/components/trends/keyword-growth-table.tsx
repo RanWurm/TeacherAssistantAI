@@ -48,9 +48,12 @@ export function KeywordGrowthTable({ }: KeywordGrowthTableProps) {
                           </span>
                           <span className="text-sm font-semibold text-gray-900">{item.articleCount.toLocaleString()}</span>
                         </div>
-                        <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
-                          isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                        }`}>
+                        <span
+                          dir="ltr"
+                          className={`text-xs font-medium px-1.5 py-0.5 rounded  ${
+                            isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          }`}
+                        >
                           {isPositive ? '+' : ''}
                           {item.growth}
                         </span>

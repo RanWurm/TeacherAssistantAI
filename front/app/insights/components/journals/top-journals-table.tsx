@@ -9,39 +9,90 @@ interface TopJournalsTableProps {
 
 // Mix of "journals-table" row/column structure with line bars + highlight/impact details for each row.
 export function TopJournalsTable({ }: TopJournalsTableProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === 'rtl';
   const journals = MOCK_TOP_JOURNALS;
+
+  const textAlignClass = isRtl ? 'text-right' : 'text-left';
 
   return (
     <div className="overflow-x-auto bg-white border border-gray-200 rounded-lg">
       <table className="w-full">
         <thead className="bg-(--table-header-bg)">
           <tr>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-(--table-header-text)">
+            <th
+              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
+            >
               {t('insights.journals.topJournalsTable.rank')}
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-(--table-header-text)">
+            <th
+              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
+            >
               {t('insights.journals.topJournalsTable.journal')}
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-(--table-header-text)">
+            <th
+              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
+            >
               {t('insights.journals.topJournalsTable.publisher')}
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-(--table-header-text)">
+            <th
+              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
+            >
               {t('insights.journals.topJournalsTable.articles')}
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-(--table-header-text)">
+            <th
+              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
+            >
               {t('insights.journals.topJournalsTable.authors')}
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-(--table-header-text)">
+            <th
+              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
+            >
               {t('insights.journals.topJournalsTable.subjects')}
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-(--table-header-text)">
+            <th
+              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
+            >
               {t('insights.journals.topJournalsTable.citations')}
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-(--table-header-text)">
-              {t('insights.journals.topJournalsTable.impactFactor')}
+            <th
+              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
+            >
+              <div className="relative inline-flex items-center gap-1 group">
+                <span>
+                  {t('insights.journals.topJournalsTable.impactFactor')}
+                </span>
+                {/* Info icon */}
+                <span className="cursor-help text-(--text-secondary)">ⓘ</span>
+
+                {/* Tooltip */}
+                <div
+                  className={`
+                    absolute z-50
+                    top-full mt-2
+                    ${isRtl ? 'right-1/2 translate-x-[90%]' : 'right-1/2 -translate-x-[10%]'}
+
+                    max-w-[180px] w-max
+                    rounded-lg border border-(--border-color)
+                    bg-white p-3 text-[11px] leading-relaxed
+                    text-(--text-primary) shadow-lg
+
+                    opacity-0 scale-95
+                    transition-all duration-150
+                    group-hover:opacity-100 group-hover:scale-100
+
+                    ${isRtl ? 'text-right' : 'text-left'}
+                  `}
+                >
+                  <strong className="block mb-1">
+                    {t('insights.journals.topJournalsTable.impactFactor')}
+                  </strong>
+                  <p className="mb-1">
+                    {t('insights.journals.topJournalsTable.impactTooltip')}
+                  </p>
+                </div>
+              </div>
             </th>
-            <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-(--table-header-text)"></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-(--border-color-light)">
@@ -60,9 +111,8 @@ export function TopJournalsTable({ }: TopJournalsTableProps) {
                 <tr key={journal.journalId} className="hover:bg-(--table-row-hover) transition-colors group">
                   {/* Rank with highlight for top 3 */}
                   <td className="px-6 py-4 align-top">
-                    <span className={`text-sm font-medium ${
-                      idx < 3 ? 'text-yellow-700 font-bold' : 'text-(--list-rank-muted)'
-                    }`}>
+                    <span className={`text-sm font-medium ${idx < 3 ? 'text-yellow-700 font-bold' : 'text-(--list-rank-muted)'
+                      }`}>
                       {idx < 3 ? '★' : `#${idx + 1}`}
                     </span>
                   </td>
@@ -72,9 +122,8 @@ export function TopJournalsTable({ }: TopJournalsTableProps) {
                       <span className="font-semibold text-(--text-main) whitespace-nowrap truncate">{journal.name}</span>
                       <div className="flex items-center gap-1">
                         {journal.impactFactor && (
-                          <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded ${
-                            isHighImpact ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'
-                          }`}>
+                          <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded ${isHighImpact ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'
+                            }`}>
                             <Star className="w-3 h-3" />
                             {journal.impactFactor.toFixed(2)}
                           </span>
@@ -126,11 +175,10 @@ export function TopJournalsTable({ }: TopJournalsTableProps) {
                   {/* Citations + percent bar */}
                   <td className="px-6 py-4 align-top">
                     <div className="flex flex-col gap-1">
-                      <span className="text-sm font-semibold text-gray-900">
-                        {journal.totalCitations.toLocaleString()}
-                      </span>
                       <div className="text-xs text-gray-500">
-                        {t('insights.journals.topJournalsTable.citationVolume', { count: journal.totalCitations })}
+                        <span className="text-sm font-semibold text-gray-900">
+                          {t('insights.journals.topJournalsTable.citationVolume', { count: journal.totalCitations })}
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -140,7 +188,6 @@ export function TopJournalsTable({ }: TopJournalsTableProps) {
                       {journal.impactFactor ? journal.impactFactor.toFixed(2) : 'N/A'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 align-top">{/* Empty col for future icons/extras */}</td>
                 </tr>
               );
             })

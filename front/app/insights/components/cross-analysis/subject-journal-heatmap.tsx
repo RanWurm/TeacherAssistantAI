@@ -7,19 +7,23 @@ interface SubjectJournalHeatmapProps {
   timeRange: TimeRange;
 }
 
-const intensityLevels = [
-  { i18nKey: 'high', color: 'bg-blue-700' },
-  { i18nKey: 'medium', color: 'bg-blue-500' },
-  { i18nKey: 'low', color: 'bg-blue-300' },
-  { i18nKey: 'veryLow', color: 'bg-blue-100' },
-];
-
+// Use the logic from TopJournalsTable for direction-aware alignment class.
 export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === 'rtl';
+  const textAlignClass = isRtl ? 'text-right' : 'text-left';
+
   const heatmap = MOCK_SUBJECT_JOURNAL_HEATMAP;
   const maxCount = Math.max(...heatmap.map(h => h.articleCount));
   const subjects = Array.from(new Set(heatmap.map(h => h.subjectName)));
   const journals = Array.from(new Set(heatmap.map(h => h.journalName)));
+
+  const intensityLevels = [
+    { i18nKey: 'high', color: 'bg-blue-700' },
+    { i18nKey: 'medium', color: 'bg-blue-500' },
+    { i18nKey: 'low', color: 'bg-blue-300' },
+    { i18nKey: 'veryLow', color: 'bg-blue-100' },
+  ];
 
   const heatmapMap = new Map<string, number>();
   heatmap.forEach(item => {
@@ -68,13 +72,13 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
         <table className="w-full text-xs min-w-max border-collapse">
           <thead className="bg-gray-50">
             <tr>
-              <th className="sticky left-0 bg-gray-50 z-10 text-left px-3 py-2 font-semibold text-gray-700 border-r border-gray-200">
+              <th className={`sticky left-0 bg-gray-50 z-10 px-3 py-2 font-semibold text-gray-700 border-r border-gray-200 whitespace-nowrap ${textAlignClass}`}>
                 {t('insights.cross.subjectJournalHeatmap.subjectLabel')}
               </th>
               {journals.map(journal => (
                 <th
                   key={journal}
-                  className="px-3 py-2 text-center font-medium text-gray-700 whitespace-nowrap"
+                  className={`px-3 py-2 font-medium text-gray-700 whitespace-nowrap text-center`}
                 >
                   {journal}
                 </th>
@@ -85,7 +89,7 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
           <tbody>
             {subjects.map(subject => (
               <tr key={subject} className="border-t border-gray-100">
-                <td className="sticky left-0 bg-white z-10 px-3 py-2 font-medium text-gray-800 border-r border-gray-200 whitespace-nowrap">
+                <td className={`sticky left-0 bg-white z-10 px-3 py-2 font-medium text-gray-800 border-r border-gray-200 whitespace-nowrap ${textAlignClass}`}>
                   {subject}
                 </td>
 

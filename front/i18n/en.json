@@ -1,4 +1,7 @@
 {
+    "lang": {
+        "dir": "ltr"
+    },
     "nav": {
         "languageToggle": {
             "ariaLabel": "Toggle language",
@@ -24,7 +27,7 @@
             "footer": "Research Assistant AI uses OpenAlex dataset metadata to generate research ideas"
         },
         "messageItem": {
-            "aiResponseLabel": "AI Response",
+            "aiResponseLabel": "Agent Response",
             "sqlQueryExecutedLabel": "SQL Query Executed",
             "resultsCountLabel": "{{count}} results"
         },
@@ -135,7 +138,9 @@
                 "citationVolume": "{{count}} citations",
                 "articleCount": "{{count}} articles",
                 "authorCount": "{{count}} authors",
-                "subjectCount": "{{count}} subjects"
+                "subjectCount": "{{count}} subjects",
+                "citationRate": "{{count}} citations per article",
+                "impactTooltip": "Impact factor = citations / articles. Indicates average citations per article."
             },
             "citationVolatilityChart": {
                 "title": "Citation Volatility Map",
@@ -267,14 +272,22 @@
             "impact": "Highest Impact"
         },
         "filters": {
+            "title": "Filters",
             "topics": "Topics",
             "authors": "Authors",
             "journal": "Journal",
             "type": "Type",
             "yearRange": "Year Range",
+            "yearFrom": "From",
+            "yearTo": "To",
             "minCitations": "Min Citations",
             "minImpact": "Min Impact Factor",
-            "language": "Language"
+            "minShort": "min",
+            "language": "Language",
+            "allJournals": "All Journals",
+            "allTypes": "All Types",
+            "showAll": "Show all ({{count}})",
+            "showLess": "Show less"
         },
         "searchHeader": {
             "title": "Academic Search",

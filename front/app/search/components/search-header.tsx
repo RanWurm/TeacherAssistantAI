@@ -7,7 +7,8 @@ interface SearchHeaderProps {
 }
 
 export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dir: "ltr" | "rtl" = i18n.language === "he" ? "rtl" : "ltr";
 
   return (
     <header className="border-b border-(--border-color) bg-linear-to-b from-(--surface) to-transparent shadow-sm">
@@ -46,12 +47,11 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
         </div>
 
         {/* Search Bar */}
-        <div className="relative flex justify-center mb-2">
+        <div className="relative flex justify-center mb-2" dir={dir}>
           <div className="relative w-full sm:w-[525px] max-w-2xl mx-auto">
             <form
-              onSubmit={e => {
+              onSubmit={(e) => {
                 e.preventDefault();
-                // Optionally, you could trigger a prop function here if needed
               }}
               role="search"
             >
@@ -60,24 +60,33 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t("search.searchHeader.inputPlaceholder")}
-                className="
-                  w-full
-                  pl-14 pr-16 py-4
-                  rounded-2xl border border-(--border-color)
-                  focus:border-(--primary-600)
-                  focus:ring-4 focus:ring-(--primary-400)/20
-                  outline-none
-                  transition-all duration-200
-                  text-base
-                  bg-(--surface-alt)
-                  shadow-md hover:shadow-lg
-                  text-(--text-primary)
-                  placeholder:text-(--text-secondary)/80
-                  "
                 aria-label={t("search.searchHeader.inputAriaLabel")}
+                dir={dir}
+                className={`
+          w-full
+          ${dir === "rtl" ? "pr-14 pl-16 text-right" : "pl-14 pr-16 text-left"}
+          py-4
+          rounded-2xl border border-(--border-color)
+          focus:border-(--primary-600)
+          focus:ring-4 focus:ring-(--primary-400)/20
+          outline-none
+          transition-all duration-200
+          text-base
+          bg-(--surface-alt)
+          shadow-md hover:shadow-lg
+          text-(--text-primary)
+          placeholder:text-(--text-secondary)/80
+        `}
               />
-              {/* SVG icon inside the input bar */}
-              <span className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 flex items-center">
+
+              {/* Search icon */}
+              <span
+                className={`
+          pointer-events-none absolute top-1/2 -translate-y-1/2
+          ${dir === "rtl" ? "right-5" : "left-5"}
+          flex items-center
+        `}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width={24}
@@ -88,19 +97,28 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
                   strokeWidth={2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="lucide lucide-search w-5 h-5 text-(--primary-500)"
+                  className="w-5 h-5 text-(--primary-500)"
                   aria-hidden="true"
                 >
-                  <path d="m21 21-4.34-4.34"></path>
-                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.34-4.34" />
+                  <circle cx="11" cy="11" r="8" />
                 </svg>
               </span>
-              {/* Enter button */}
+
+              {/* Submit button */}
               <button
                 type="submit"
-                className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-(--primary-700) hover:text-(--primary-900) px-3 py-1 rounded-lg bg-transparent transition-colors focus:outline-none cursor-pointer"
                 aria-label={t("search.searchHeader.submitAriaLabel")}
-                tabIndex={0}
+                className={`
+          absolute top-1/2 -translate-y-1/2
+          ${dir === "rtl" ? "left-4" : "right-4"}
+          flex items-center justify-center
+          text-(--primary-700)
+          hover:text-(--primary-900)
+          px-3 py-1 rounded-lg
+          bg-transparent transition-colors
+          focus:outline-none cursor-pointer
+        `}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +130,8 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
                   strokeWidth={2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="w-5 h-5"
+                  className={`w-5 h-5 transition-transform ${dir === "rtl" ? "rotate-180" : ""
+                    }`}
                 >
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
