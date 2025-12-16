@@ -7,8 +7,7 @@ interface TopJournalsTableProps {
   timeRange: TimeRange;
 }
 
-// Mix of "journals-table" row/column structure with line bars + highlight/impact details for each row.
-export function TopJournalsTable({ }: TopJournalsTableProps) {
+export function TopJournalsTable({}: TopJournalsTableProps) {
   const { t, i18n } = useTranslation();
   const isRtl = i18n.dir() === 'rtl';
   const journals = MOCK_TOP_JOURNALS;
@@ -20,178 +19,129 @@ export function TopJournalsTable({ }: TopJournalsTableProps) {
       <table className="w-full">
         <thead className="bg-(--table-header-bg)">
           <tr>
-            <th
-              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
-            >
-              {t('insights.journals.topJournalsTable.rank')}
-            </th>
-            <th
-              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
-            >
-              {t('insights.journals.topJournalsTable.journal')}
-            </th>
-            <th
-              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
-            >
-              {t('insights.journals.topJournalsTable.publisher')}
-            </th>
-            <th
-              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
-            >
-              {t('insights.journals.topJournalsTable.articles')}
-            </th>
-            <th
-              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
-            >
-              {t('insights.journals.topJournalsTable.authors')}
-            </th>
-            <th
-              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
-            >
-              {t('insights.journals.topJournalsTable.subjects')}
-            </th>
-            <th
-              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
-            >
-              {t('insights.journals.topJournalsTable.citations')}
-            </th>
-            <th
-              className={`px-6 py-4 text-xs font-semibold uppercase tracking-wider text-(--table-header-text) ${textAlignClass}`}
-            >
-              <div className="relative inline-flex items-center gap-1 group">
-                <span>
-                  {t('insights.journals.topJournalsTable.impactFactor')}
-                </span>
-                {/* Info icon */}
-                <span className="cursor-help text-(--text-secondary)">ⓘ</span>
-
-                {/* Tooltip */}
-                <div
-                  className={`
-                    absolute z-50
-                    top-full mt-2
-                    ${isRtl ? 'right-1/2 translate-x-[90%]' : 'right-1/2 -translate-x-[10%]'}
-
-                    max-w-[180px] w-max
-                    rounded-lg border border-(--border-color)
-                    bg-white p-3 text-[11px] leading-relaxed
-                    text-(--text-primary) shadow-lg
-
-                    opacity-0 scale-95
-                    transition-all duration-150
-                    group-hover:opacity-100 group-hover:scale-100
-
-                    ${isRtl ? 'text-right' : 'text-left'}
-                  `}
-                >
-                  <strong className="block mb-1">
-                    {t('insights.journals.topJournalsTable.impactFactor')}
-                  </strong>
-                  <p className="mb-1">
-                    {t('insights.journals.topJournalsTable.impactTooltip')}
-                  </p>
-                </div>
-              </div>
-            </th>
+            {[
+              'rank',
+              'journal',
+              'publisher',
+              'articles',
+              'authors',
+              'subjects',
+              'citations',
+              'impactFactor',
+            ].map(key => (
+              <th
+                key={key}
+                className={`
+                  px-2 py-2 text-[10px]
+                  md:px-6 md:py-4 md:text-xs
+                  font-semibold uppercase tracking-wider
+                  text-(--table-header-text)
+                  ${textAlignClass}
+                `}
+              >
+                {t(`insights.journals.topJournalsTable.${key}`)}
+              </th>
+            ))}
           </tr>
         </thead>
+
         <tbody className="divide-y divide-(--border-color-light)">
-          {journals.length === 0 ? (
-            <tr>
-              <td colSpan={9}>
-                <div className="py-12 text-center text-gray-400 text-sm">
-                  {t('insights.journals.topJournalsTable.noData')}
-                </div>
-              </td>
-            </tr>
-          ) : (
-            journals.map((journal, idx) => {
-              const isHighImpact = journal.impactFactor && journal.impactFactor > 30;
-              return (
-                <tr key={journal.journalId} className="hover:bg-(--table-row-hover) transition-colors group">
-                  {/* Rank with highlight for top 3 */}
-                  <td className="px-6 py-4 align-top">
-                    <span className={`text-sm font-medium ${idx < 3 ? 'text-yellow-700 font-bold' : 'text-(--list-rank-muted)'
-                      }`}>
-                      {idx < 3 ? '★' : `#${idx + 1}`}
+          {journals.map((journal, idx) => {
+            const isHighImpact = journal.impactFactor && journal.impactFactor > 30;
+
+            return (
+              <tr
+                key={journal.journalId}
+                className="hover:bg-(--table-row-hover) transition-colors"
+              >
+                {/* Rank */}
+                <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm">
+                  <span className={idx < 3 ? 'text-yellow-700 font-bold' : 'text-gray-500'}>
+                    {idx < 3 ? '★' : `#${idx + 1}`}
+                  </span>
+                </td>
+
+                {/* Journal */}
+                <td className="px-2 py-2 md:px-6 md:py-4">
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <span className="font-semibold truncate text-xs md:text-lg">
+                      {journal.name}
                     </span>
-                  </td>
-                  {/* Journal name + impact factor badge */}
-                  <td className="px-6 py-4 align-top">
-                    <div className="flex flex-col gap-1.5 min-w-0">
-                      <span className="font-semibold text-(--text-main) whitespace-nowrap truncate">{journal.name}</span>
+
+                    {journal.impactFactor && (
                       <div className="flex items-center gap-1">
-                        {journal.impactFactor && (
-                          <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded ${isHighImpact ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'
-                            }`}>
-                            <Star className="w-3 h-3" />
-                            {journal.impactFactor.toFixed(2)}
-                          </span>
-                        )}
+                        <span
+                          className={`
+                            inline-flex items-center gap-1
+                            px-1.5 py-0.5 rounded
+                            text-[10px] md:text-sm
+                            ${
+                              isHighImpact
+                                ? 'bg-orange-100 text-orange-700'
+                                : 'bg-green-100 text-green-700'
+                            }
+                          `}
+                        >
+                          <Star className="w-3 h-3" />
+                          {journal.impactFactor.toFixed(2)}
+                        </span>
+
                         {isHighImpact && (
-                          <span className="ml-2 inline-block text-[10px] font-semibold text-orange-700 bg-orange-50 rounded px-1.5 py-0.5">
+                          <span className="text-[9px] md:text-xs text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded">
                             {t('insights.journals.topJournalsTable.highImpact')}
                           </span>
                         )}
                       </div>
-                    </div>
-                  </td>
-                  {/* Publisher */}
-                  <td className="px-6 py-4 align-top">
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Building2 className="w-3 h-3" />
-                      <span>{journal.publisher || 'N/A'}</span>
-                    </div>
-                  </td>
-                  {/* Article Count */}
-                  <td className="px-6 py-4 align-top text-sm text-gray-700">
-                    <div className="flex items-center gap-1">
-                      <FileText className="w-4 h-4 text-gray-400" />
-                      <span>
-                        {t('insights.journals.topJournalsTable.articleCount', { count: journal.articleCount })}
-                      </span>
-                    </div>
-                  </td>
-                  {/* Authors */}
-                  <td className="px-6 py-4 align-top text-sm text-gray-700">
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4 text-gray-400" />
-                      <span>
-                        {journal.uniqueAuthors != null
-                          ? t('insights.journals.topJournalsTable.authorCount', { count: journal.uniqueAuthors })
-                          : '—'}
-                      </span>
-                    </div>
-                  </td>
-                  {/* Subjects */}
-                  <td className="px-6 py-4 align-top text-sm text-gray-700">
-                    <div className="flex items-center gap-1">
-                      <Layers className="w-4 h-4 text-gray-400" />
-                      <span>
-                        {t('insights.journals.topJournalsTable.subjectCount', { count: journal.uniqueSubjects })}
-                      </span>
-                    </div>
-                  </td>
-                  {/* Citations + percent bar */}
-                  <td className="px-6 py-4 align-top">
-                    <div className="flex flex-col gap-1">
-                      <div className="text-xs text-gray-500">
-                        <span className="text-sm font-semibold text-gray-900">
-                          {t('insights.journals.topJournalsTable.citationVolume', { count: journal.totalCitations })}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  {/* Impact Factor for table view, repeated for clarity */}
-                  <td className="px-6 py-4 align-top">
-                    <span className="inline-flex items-center px-3 py-1 rounded-lg bg-(--badge-green-bg) text-(--badge-green-text) text-sm font-semibold">
-                      {journal.impactFactor ? journal.impactFactor.toFixed(2) : 'N/A'}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })
-          )}
+                    )}
+                  </div>
+                </td>
+
+                {/* Publisher */}
+                <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <Building2 className="w-3 h-3" />
+                    {journal.publisher || 'N/A'}
+                  </div>
+                </td>
+
+                {/* Articles */}
+                <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm">
+                  <div className="flex items-center gap-1">
+                    <FileText className="w-4 h-4 text-gray-400" />
+                    {journal.articleCount}
+                  </div>
+                </td>
+
+                {/* Authors */}
+                <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm">
+                  <div className="flex items-center gap-1">
+                    <Users className="w-4 h-4 text-gray-400" />
+                    {journal.uniqueAuthors ?? '—'}
+                  </div>
+                </td>
+
+                {/* Subjects */}
+                <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm">
+                  <div className="flex items-center gap-1">
+                    <Layers className="w-4 h-4 text-gray-400" />
+                    {journal.uniqueSubjects}
+                  </div>
+                </td>
+
+                {/* Citations */}
+                <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm font-semibold">
+                  {journal.totalCitations}
+                </td>
+
+                {/* Impact */}
+                <td className="px-2 py-2 md:px-6 md:py-4">
+                  <span className="text-xs md:text-base font-semibold bg-(--badge-green-bg) text-(--badge-green-text) px-3 py-1 rounded-lg">
+                    {journal.impactFactor?.toFixed(2) ?? 'N/A'}
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

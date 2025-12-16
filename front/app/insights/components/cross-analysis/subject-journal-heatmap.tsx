@@ -88,11 +88,22 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
 
           <tbody>
             {subjects.map(subject => (
-              <tr key={subject} className="border-t border-gray-100">
-                <td className={`sticky left-0 bg-white z-10 px-3 py-2 font-medium text-gray-800 border-r border-gray-200 whitespace-nowrap ${textAlignClass}`}>
+              <tr key={subject} className="border border-gray-100">
+                <td
+                  className={`
+                    sticky left-0 z-20
+                    bg-white
+                    px-3 py-2
+                    font-medium text-gray-800
+                    whitespace-nowrap
+                    ${textAlignClass}
+                  `}
+                  style={{
+                    boxShadow: '2px 0 0 0 rgb(229 231 235)', // gray-200
+                  }}
+                >
                   {subject}
                 </td>
-
                 {journals.map(journal => {
                   const count = heatmapMap.get(`${subject}-${journal}`) ?? 0;
                   return (

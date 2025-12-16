@@ -31,6 +31,9 @@ interface FiltersSidebarProps {
   setSelectedLanguage: (v: string) => void;
 }
 
+// --- Responsive adjustment classes ---
+// We'll use 'sm:' for default, and everything else will be smaller
+
 export function FiltersSidebar({
   selectedTopics, setSelectedTopics,
   selectedAuthors, setSelectedAuthors,
@@ -46,7 +49,6 @@ export function FiltersSidebar({
   const authors = Array.from(new Set(MOCK_PAPERS.flatMap(p => p.authors)));
   const journals = Array.from(new Set(MOCK_PAPERS.map(p => p.journal).filter(Boolean)));
 
-  // CollapsibleList is a local helper for showing "show more/less" behavior
   function CollapsibleList<T>({
     items,
     renderItem,
@@ -72,7 +74,7 @@ export function FiltersSidebar({
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="ml-2 mt-1 text-xs text-(--primary-600) hover:underline focus:underline focus:outline-none transition"
+          className="ml-2 mt-1 text-xs sm:text-xs text-[11px] text-(--primary-600) hover:underline focus:underline focus:outline-none transition"
           aria-expanded={open}
           aria-label={open ? t('search.filters.showLess', { defaultValue: 'Show less items' }) : t('search.filters.showAll', { defaultValue: `Show all items` })}
         >
@@ -87,17 +89,16 @@ export function FiltersSidebar({
 
   return (
     <aside
-      className="w-full space-y-6"
+      className="w-full space-y-6 sm:space-y-6"
       style={{
         minHeight: 'min(100dvh, 100%)',
-        // Remove vertical overflow restriction, allow full height
         overflowY: 'visible',
         overflowX: 'hidden',
       }}
     >
-      <header className="flex items-center gap-2 mb-2 px-2">
-        <Filter className="w-5 h-5 text-(--primary-700)" />
-        <span className="font-bold text-lg text-(--text-primary)">
+      <header className="flex items-center gap-2 mb-2 sm:mb-2 px-2">
+        <Filter className="w-5 h-5 sm:w-5 sm:h-5 text-(--primary-700)" />
+        <span className="font-bold text-lg sm:text-lg text-(--text-primary)">
           {t('search.filters.title', { defaultValue: 'Filters' })}
         </span>
       </header>
@@ -128,7 +129,7 @@ export function FiltersSidebar({
         <select
           value={selectedJournal}
           onChange={e => setSelectedJournal(e.target.value)}
-          className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
+          className="w-full border rounded-lg py-1.5 px-2 sm:py-1.5 sm:px-2 text-sm sm:text-sm bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
           style={{ overflowX: 'hidden' }}
         >
           <option value="all">{t('search.filters.allJournals', { defaultValue: 'All Journals' })}</option>
@@ -140,7 +141,7 @@ export function FiltersSidebar({
         <select
           value={selectedType}
           onChange={e => setSelectedType(e.target.value)}
-          className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
+          className="w-full border rounded-lg py-1.5 px-2 sm:py-1.5 sm:px-2 text-sm sm:text-sm bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
           style={{ overflowX: 'hidden' }}
         >
           <option value="all">{t('search.filters.allTypes', { defaultValue: 'All Types' })}</option>
@@ -163,7 +164,7 @@ export function FiltersSidebar({
               step={0.1}
               value={minImpact}
               onChange={e => setMinImpact(+e.target.value)}
-              className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt)
+              className="w-full border rounded-lg py-1.5 px-2 sm:py-1.5 sm:px-2 text-sm sm:text-sm bg-(--surface-alt)
                      focus:ring focus:ring-(--primary-500)/20"
               placeholder={
                 i18n.language === 'he'
@@ -172,7 +173,7 @@ export function FiltersSidebar({
               }
             />
             <span
-              className={`absolute text-xs text-(--text-secondary)
+              className={`absolute text-xs sm:text-xs text-[11px] text-(--text-secondary)
             ${i18n.language === 'he' ? 'left-2' : 'right-2'}`}
             >
               {i18n.language === 'he'
@@ -191,12 +192,12 @@ export function FiltersSidebar({
               min={0}
               value={minCitations}
               onChange={e => setMinCitations(+e.target.value)}
-              className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt)
+              className="w-full border rounded-lg py-1.5 px-2 sm:py-1.5 sm:px-2 text-sm sm:text-sm bg-(--surface-alt)
                      focus:ring focus:ring-(--primary-500)/20"
               placeholder={t('search.filters.minCitations', { defaultValue: 'Min Citations' })}
             />
             <span
-              className={`absolute text-xs text-(--text-secondary)
+              className={`absolute text-xs sm:text-xs text-[11px] text-(--text-secondary)
             ${i18n.language === 'he' ? 'left-2' : 'right-2'}`}
             >
               {i18n.language === 'he'
@@ -208,24 +209,24 @@ export function FiltersSidebar({
       </Section>
 
       <Section title={t('search.filters.yearRange', { defaultValue: 'Year Range' })}>
-        <div className="flex gap-2">
+        <div className="flex gap-2 sm:gap-2">
           <input
             type="number"
             value={yearRange.min}
             min={1900}
             max={yearRange.max}
             onChange={e => setYearRange({ ...yearRange, min: +e.target.value })}
-            className="w-1/2 border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
+            className="w-1/2 border rounded-lg py-1.5 px-2 sm:py-1.5 sm:px-2 text-sm sm:text-sm bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
             placeholder={t('search.filters.yearFrom', { defaultValue: 'From' })}
           />
-          <span className="px-2 text-(--text-secondary) text-sm font-medium flex items-center">–</span>
+          <span className="px-2 sm:px-2 text-(--text-secondary) text-sm sm:text-sm font-medium flex items-center">–</span>
           <input
             type="number"
             value={yearRange.max}
             min={yearRange.min}
             max={2100}
             onChange={e => setYearRange({ ...yearRange, max: +e.target.value })}
-            className="w-1/2 border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
+            className="w-1/2 border rounded-lg py-1.5 px-2 sm:py-1.5 sm:px-2 text-sm sm:text-sm bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
             placeholder={t('search.filters.yearTo', { defaultValue: 'To' })}
           />
         </div>
@@ -235,7 +236,7 @@ export function FiltersSidebar({
         <select
           value={selectedLanguage}
           onChange={e => setSelectedLanguage(e.target.value)}
-          className="w-full border rounded-lg py-1.5 px-2 bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
+          className="w-full border rounded-lg py-1.5 px-2 sm:py-1.5 sm:px-2 text-sm sm:text-sm bg-(--surface-alt) focus:ring focus:ring-(--primary-500)/20"
           style={{ overflowX: 'hidden' }}
         >
           {LANGUAGES.map(l => <option key={l}>{l}</option>)}
@@ -245,10 +246,14 @@ export function FiltersSidebar({
   );
 }
 
-// Improved checkbox: nicer spacing and modern toggle style
+// Responsive/small: make checkbox font, gap and padding smaller
 function checkbox(value: string, list: string[], set: (v: string[]) => void) {
   return (
-    <label key={value} className="flex items-center gap-2 text-(--text-primary) text-sm py-0.5 cursor-pointer" style={{ overflowX: 'hidden' }}>
+    <label
+      key={value}
+      className="flex items-center gap-2 sm:gap-2 text-(--text-primary) text-sm sm:text-sm py-0.5 sm:py-0.5 cursor-pointer"
+      style={{ overflowX: 'hidden' }}
+    >
       <input
         type="checkbox"
         checked={list.includes(value)}
@@ -258,17 +263,18 @@ function checkbox(value: string, list: string[], set: (v: string[]) => void) {
             : [...list, value])
         }
         className="accent-(--primary-500) rounded border-gray-300 focus:ring-(--primary-400)"
+        style={{ width: '1em', height: '1em', minWidth: 0, minHeight: 0, maxWidth: '1.25em', maxHeight: '1.25em' }}
       />
       <span className="truncate">{value}</span>
     </label>
   );
 }
 
-// Title now expects a translated string
+// Title: use smaller text-xs on small screens, text-sm for normal (sm:) and some mb/padding tweaks
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="mb-2 last:mb-0" style={{ overflowX: 'hidden' }}>
-      <h3 className="font-semibold text-(--text-secondary) text-xs uppercase tracking-wider mb-1 px-1">{title}</h3>
+    <section className="mb-2 last:mb-0 sm:mb-2" style={{ overflowX: 'hidden' }}>
+      <h3 className="font-semibold text-(--text-secondary) text-xs sm:text-xs text-[11px] uppercase tracking-wider mb-1 px-1">{title}</h3>
       <div>{children}</div>
     </section>
   );

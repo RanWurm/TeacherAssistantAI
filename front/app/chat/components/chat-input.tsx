@@ -70,7 +70,7 @@ export function ChatInput({ input, setInput, isLoading, onSubmit }: ChatInputPro
               onChange={(e) => setInput(e.target.value)}
               placeholder={t('chat.input.placeholder')}
               disabled={isLoading}
-              className={`w-full px-5 py-4 pl-14 rounded-2xl text-sm shadow-sm outline-none ${dir === "rtl" ? "text-right" : "text-left"}`}
+              className={`w-full px-3 py-4 rounded-2xl text-xs shadow-sm outline-none ${dir === "rtl" ? "text-right" : "text-left"}`}
               style={{
                 border: "2px solid var(--border-color)",
                 background: isLoading ? "var(--gray-100)" : "var(--input-bg)",

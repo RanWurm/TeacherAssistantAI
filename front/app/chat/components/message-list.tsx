@@ -50,11 +50,8 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
 
   const dir = i18n.dir();
   // Align the scroll down button based on direction
-  const scrollButtonClass =
-    dir === 'rtl'
-      ? "fixed z-40 right-1/2 transform translate-x-1/2 bottom-1/6 bg-white/90 border border-gray-200 shadow-lg rounded-full p-2 transition-opacity hover:bg-gray-50"
-      : "fixed z-40 left-1/2 transform -translate-x-1/2 bottom-1/6 bg-white/90 border border-gray-200 shadow-lg rounded-full p-2 transition-opacity hover:bg-gray-50";
-
+  const scrollButtonClass =  "fixed z-40 right-1/2 transform translate-x-1/2 bottom-1/6 bg-white/90 border border-gray-200 shadow-lg rounded-full p-2 transition-opacity hover:bg-gray-50";
+  
   return (
     <div
       ref={messagesContainerRef}

@@ -15,12 +15,12 @@ export function MessageItem({ message }: MessageItemProps) {
   const alignClass =
     isUser
       ? dir === 'ltr'
-        ? 'mr-auto'
-        : 'ml-auto'
+      ? 'ml-auto'
+      : 'mr-auto'
       : dir === 'ltr'
-        ? 'ml-auto'
-        : 'mr-auto';
-
+      ? 'mr-auto'
+      : 'ml-auto';
+      
   // Timestamp is opposite of content direction
   const timeAlignClass = dir === 'rtl' ? 'text-left' : 'text-right';
 
@@ -34,12 +34,16 @@ export function MessageItem({ message }: MessageItemProps) {
             ? {
                 background: 'linear-gradient(90deg, var(--primary-600), var(--primary-500))',
                 color: 'var(--on-primary)',
-                borderRadius: '1rem 0.375rem 1rem 1rem',
+                borderRadius: dir === 'rtl'
+                  ? '0.375rem 1rem 1rem 1rem' // user's bubble: sharp left in rtl
+                  : '1rem 0.375rem 1rem 1rem', // user's bubble: sharp right in ltr
               }
             : {
                 background: 'var(--surface)',
                 color: 'var(--text-primary)',
-                borderRadius: '0.375rem 1rem 1rem 1rem',
+                borderRadius: dir === 'rtl'
+                  ? '1rem 0.375rem 1rem 1rem' // assistant's bubble: sharp right in rtl
+                  : '0.375rem 1rem 1rem 1rem', // assistant's bubble: sharp left in ltr
                 border: '1px solid var(--border-color)',
                 boxShadow: 'var(--shadow-sm)',
               }
