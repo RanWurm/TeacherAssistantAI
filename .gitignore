@@ -1,2 +1,7 @@
 node_modules
 .env
+
+# data dumps (do not commit)
+core/data/core_raw.json
+core/data/openalex_raw/
+core/data/openalex_state/

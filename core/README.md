@@ -49,10 +49,13 @@ core-research-assistant/
 │   │   │   └── SubjectSearchFilters.ts
 │   │   └── schemas.ts              ← TypeScript DB object schemas
 │   ├── data/
-│   │   ├── core_raw.json           ← CORE articles after fetch
-│   │   └── etl/
-│   │       ├── fetch_core.js       ← Extract from CORE
-│   │       └── load_to_mysql.js    ← Transform + Load into MySQL
+│   │   ├── openalex_raw/              # Raw JSONL files fetched from OpenAlex
+│   │   └── openalex_state/            # State files (cursors) for incremental fetching
+│   │
+│   ├── etl/
+│   │   ├── fetch_openalex.cjs         # Fetches data from OpenAlex API
+│   │   └── load_openalex_to_mysql.cjs # Loads and normalizes data into MySQL
+│   │
 │   ├── schema.sql                  ← Database schema
 │   ├── test_api.http               ← Postman/VSCode API tests
 │   ├── .env
@@ -99,7 +102,7 @@ USE coredb;
 Then execute the full schema from:
 
 ```
-backend/schema.sql
+core/schema.sql
 ```
 
 This creates all necessary tables, including:
@@ -110,22 +113,22 @@ This creates all necessary tables, including:
 
 ## 🔄 ETL Workflow
 
-### 4. Fetch Articles from CORE
+### 4. Fetch Articles from OpenAlex
 
-Pull and save raw articles:
+Pull and save raw articles from OpenAlex:
 
 ```bash
-node etl/fetch_core.js
+node backend/etl/fetch_openalex.cjs
 ```
 
-*Output:* `data/core_raw.json`
+Output: backend/data/openalex_raw/*.jsonl
 
 ### 5. Load Data into MySQL
 
 Normalize and load raw data:
 
 ```bash
-node etl/load_to_mysql.js
+node core/etl/load_openalex_to_mysql.cjs
 ```
 
 ### 6. Verify Data Load
@@ -398,3 +401,28 @@ Ensures structural consistency across:
 - ✔️ Clean, scalable folder structure
 
 This backend is production-grade, ready for extension, and fully compatible with any frontend research platform.
+
+
+
+
+## 🧰 Database Setup
+
+The project uses **MySQL 8+** as the reference database.
+
+### Local MySQL (Windows / Linux)
+
+CREATE DATABASE coredb;
+
+mysql -u root -p coredb < core/schema.sql
+
+### MySQL via Docker (Linux)
+
+docker run -d --name taai-mysql \
+  -e MYSQL_ROOT_PASSWORD=rootpass \
+  -e MYSQL_DATABASE=coredb \
+  -e MYSQL_USER=app \
+  -e MYSQL_PASSWORD=app_pass \
+  -p 3307:3306 \
+  mysql:8
+
+docker exec -i taai-mysql mysql -u root -prootpass coredb < core/schema.sql
