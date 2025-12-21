@@ -287,7 +287,8 @@
             "allJournals": "All Journals",
             "allTypes": "All Types",
             "showAll": "Show all ({{count}})",
-            "showLess": "Show less"
+            "showLess": "Show less",
+            "applyButton": "Apply Filters"
         },
         "searchHeader": {
             "title": "Academic Search",

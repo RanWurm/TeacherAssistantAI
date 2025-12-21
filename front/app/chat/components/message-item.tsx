@@ -1,6 +1,7 @@
 import { Sparkles, Database } from 'lucide-react';
 import { Message } from '../data/mock';
 import { useTranslation } from 'react-i18next';
+import { MessageTime } from './MessageTime';
 
 interface MessageItemProps {
   message: Message;
@@ -8,20 +9,18 @@ interface MessageItemProps {
 
 export function MessageItem({ message }: MessageItemProps) {
   const { t, i18n } = useTranslation();
-  const dir = i18n.dir(); // 'ltr' | 'rtl'
+  const dir = i18n.dir();
   const isUser = message.role === 'user';
 
-  // Bubble alignment (page-level)
   const alignClass =
     isUser
       ? dir === 'ltr'
-      ? 'ml-auto'
-      : 'mr-auto'
+        ? 'ml-auto'
+        : 'mr-auto'
       : dir === 'ltr'
-      ? 'mr-auto'
-      : 'ml-auto';
-      
-  // Timestamp is opposite of content direction
+        ? 'mr-auto'
+        : 'ml-auto';
+
   const timeAlignClass = dir === 'rtl' ? 'text-left' : 'text-right';
 
   return (
@@ -34,16 +33,18 @@ export function MessageItem({ message }: MessageItemProps) {
             ? {
                 background: 'linear-gradient(90deg, var(--primary-600), var(--primary-500))',
                 color: 'var(--on-primary)',
-                borderRadius: dir === 'rtl'
-                  ? '0.375rem 1rem 1rem 1rem' // user's bubble: sharp left in rtl
-                  : '1rem 0.375rem 1rem 1rem', // user's bubble: sharp right in ltr
+                borderRadius:
+                  dir === 'rtl'
+                    ? '0.375rem 1rem 1rem 1rem'
+                    : '1rem 0.375rem 1rem 1rem',
               }
             : {
                 background: 'var(--surface)',
                 color: 'var(--text-primary)',
-                borderRadius: dir === 'rtl'
-                  ? '1rem 0.375rem 1rem 1rem' // assistant's bubble: sharp right in rtl
-                  : '0.375rem 1rem 1rem 1rem', // assistant's bubble: sharp left in ltr
+                borderRadius:
+                  dir === 'rtl'
+                    ? '1rem 0.375rem 1rem 1rem'
+                    : '0.375rem 1rem 1rem 1rem',
                 border: '1px solid var(--border-color)',
                 boxShadow: 'var(--shadow-sm)',
               }
@@ -58,7 +59,8 @@ export function MessageItem({ message }: MessageItemProps) {
               <div
                 className="w-6 h-6 rounded-lg flex items-center justify-center"
                 style={{
-                  background: 'linear-gradient(135deg, var(--primary-500), var(--primary-400))',
+                  background:
+                    'linear-gradient(135deg, var(--primary-500), var(--primary-400))',
                 }}
               >
                 <Sparkles className="w-3.5 h-3.5" style={{ color: 'var(--on-primary)' }} />
@@ -69,7 +71,6 @@ export function MessageItem({ message }: MessageItemProps) {
             </div>
           )}
 
-          {/* Message content */}
           <p className="text-sm leading-relaxed text-start">
             {message.content}
           </p>
@@ -83,7 +84,6 @@ export function MessageItem({ message }: MessageItemProps) {
                     {t('chat.messageItem.sqlQueryExecutedLabel')}
                   </span>
                 </div>
-
                 <code className="text-xs font-mono text-start">
                   {message.sqlQuery}
                 </code>
@@ -93,24 +93,8 @@ export function MessageItem({ message }: MessageItemProps) {
         </div>
 
         {/* Timestamp */}
-        <div
-          className={`px-5 py-2 text-xs ${timeAlignClass}`}
-          style={
-            isUser
-              ? {
-                  color: 'var(--primary-100)',
-                  borderTop: '1px solid rgba(var(--primary-500-rgb), 0.18)',
-                }
-              : {
-                  color: 'var(--text-subtle)',
-                  borderTop: '1px solid var(--border-color-light)',
-                }
-          }
-        >
-          {message.timestamp.toLocaleTimeString(
-            dir === 'rtl' ? 'he-IL' : 'en-US',
-            { hour: '2-digit', minute: '2-digit' }
-          )}
+        <div className={`px-5 py-2 text-xs ${timeAlignClass}`}>
+          <MessageTime ts={message.timestamp} />
         </div>
       </div>
     </div>

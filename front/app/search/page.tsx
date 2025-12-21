@@ -1,16 +1,37 @@
 'use client';
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useEffect  } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../../styles/variables.css';
 import { SearchHeader } from './components/search-header';
 import { FiltersSidebar } from './components/filters-sidebar';
 import { ResultsHeader } from './components/results-header';
 import { ResultsList } from './components/results-list';
-import { MOCK_PAPERS } from './data/mock';
+import { Paper } from './data/mock';
+import { useArticlesSearch } from '@/hooks/useArticlesSearch';
 
 const INITIAL_YEAR_RANGE = { min: 2015, max: 2024 };
 type SortOption = 'citations' | 'year' | 'impact';
+
+
+function mapArticleToPaper(article: any): Paper {
+  return {
+    id: String(article.article_id),          // ✅ key יציב
+    title: article.title,
+    authors: article.authors ?? [],          // זמני
+    affiliations: [],
+    year: article.year ?? 0,
+    citations: article.citation_count ?? 0,
+    doi: article.doi ?? '',
+    topics: article.subjects ?? [],
+    keywords: article.keywords ?? [],
+    journal: article.journal_name ?? undefined,
+    publisher: article.publisher ?? undefined,
+    impactFactor: article.impact_factor ?? undefined,
+    language: article.language ?? 'English',
+    type: article.type ?? 'Journal Article',
+  };
+}
 
 export default function SearchPage() {
   const { t } = useTranslation();
@@ -25,6 +46,63 @@ export default function SearchPage() {
   const [selectedLanguage, setSelectedLanguage] = useState('all');
   const [sortBy, setSortBy] = useState<SortOption>('citations');
 
+  /* ======================
+     API
+  ====================== */
+  const { data, loading, search } = useArticlesSearch();
+  const [appliedFilters, setAppliedFilters] = useState<any>(null);
+
+  /* ======================
+     Build API filters
+  ====================== */
+  const apiFilters = useMemo(() => ({
+    subject: selectedTopics[0],
+    author: selectedAuthors[0],
+    type: selectedType !== 'all' ? selectedType : undefined,
+    language: selectedLanguage !== 'all' ? selectedLanguage : undefined,
+    fromYear: yearRange.min,
+    toYear: yearRange.max,
+    minCitations,
+    minImpact,
+  }), [
+    selectedTopics,
+    selectedAuthors,
+    selectedType,
+    selectedLanguage,
+    yearRange,
+    minCitations,
+    minImpact,
+  ]);
+
+  /* ======================
+     Apply Filters
+  ====================== */
+  const onApplyFilters = () => {
+    setAppliedFilters(apiFilters);
+  };
+
+  // Initial load – run once on mount
+  useEffect(() => {
+    search(apiFilters);
+    setAppliedFilters(apiFilters); // שומר סנכרון עם Apply
+  }, []);
+
+  /* ======================
+     Trigger API search
+  ====================== */
+  useEffect(() => {
+    if (!appliedFilters) return;
+    search(appliedFilters);
+  }, [appliedFilters]);
+
+  /* ======================
+     Map API → UI
+  ====================== */
+  const papers = useMemo(
+    () => data.map(mapArticleToPaper),
+    [data]
+  );
+  
   const filterProps = {
     selectedTopics,
     setSelectedTopics,
@@ -43,85 +121,6 @@ export default function SearchPage() {
     selectedLanguage,
     setSelectedLanguage,
   };
-
-  const filterBySearch = useCallback(
-    (p: any) => {
-      const q = searchQuery.trim().toLowerCase();
-      if (!q) return true;
-      return (
-        p.title.toLowerCase().includes(q) ||
-        p.authors.some((a: string) => a.toLowerCase().includes(q)) ||
-        p.keywords.some((k: string) => k.toLowerCase().includes(q))
-      );
-    },
-    [searchQuery]
-  );
-  const filterByTopics = useCallback(
-    (p: any) => selectedTopics.length === 0 || selectedTopics.every((t) => p.topics.includes(t)),
-    [selectedTopics]
-  );
-  const filterByAuthors = useCallback(
-    (p: any) => selectedAuthors.length === 0 || selectedAuthors.some((a) => p.authors.includes(a)),
-    [selectedAuthors]
-  );
-  const filterByJournal = useCallback(
-    (p: any) => selectedJournal === 'all' || p.journal === selectedJournal,
-    [selectedJournal]
-  );
-  const filterByType = useCallback(
-    (p: any) => selectedType === 'all' || p.type === selectedType,
-    [selectedType]
-  );
-  const filterByYear = useCallback(
-    (p: any) => p.year >= yearRange.min && p.year <= yearRange.max,
-    [yearRange]
-  );
-  const filterByCitations = useCallback(
-    (p: any) => p.citations >= minCitations,
-    [minCitations]
-  );
-  const filterByImpact = useCallback(
-    (p: any) => (p.impactFactor ?? 0) >= minImpact,
-    [minImpact]
-  );
-  const filterByLanguage = useCallback(
-    (p: any) => selectedLanguage === 'all' || p.language === selectedLanguage,
-    [selectedLanguage]
-  );
-  const sortPapers = useCallback(
-    (a: any, b: any) => {
-      if (sortBy === 'citations') return b.citations - a.citations;
-      if (sortBy === 'year') return b.year - a.year;
-      if (sortBy === 'impact') return (b.impactFactor ?? 0) - (a.impactFactor ?? 0);
-      return 0;
-    },
-    [sortBy]
-  );
-
-  const papers = useMemo(() => {
-    return MOCK_PAPERS
-      .filter(filterBySearch)
-      .filter(filterByTopics)
-      .filter(filterByAuthors)
-      .filter(filterByJournal)
-      .filter(filterByType)
-      .filter(filterByYear)
-      .filter(filterByCitations)
-      .filter(filterByImpact)
-      .filter(filterByLanguage)
-      .sort(sortPapers);
-  }, [
-    filterBySearch,
-    filterByTopics,
-    filterByAuthors,
-    filterByJournal,
-    filterByType,
-    filterByYear,
-    filterByCitations,
-    filterByImpact,
-    filterByLanguage,
-    sortPapers,
-  ]);
 
   // Fix to screen: force the entire app to fill the screen vertically and allow main layout to scroll as needed.
   return (
@@ -148,7 +147,10 @@ export default function SearchPage() {
           "
           tabIndex={-1}
         >
-          <FiltersSidebar {...filterProps} />
+        <FiltersSidebar
+          {...filterProps}
+          onApplyFilters={onApplyFilters}
+        />
         </aside>
 
         {/* Main content fills remaining height and scrolls as needed */}
@@ -185,3 +187,4 @@ export default function SearchPage() {
     </div>
   );
 }
+

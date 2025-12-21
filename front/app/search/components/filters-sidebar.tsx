@@ -29,6 +29,9 @@ interface FiltersSidebarProps {
 
   selectedLanguage: string;
   setSelectedLanguage: (v: string) => void;
+
+  // Optional: Accept a callback for when Apply Filters is clicked
+  onApplyFilters?: () => void;
 }
 
 // --- Responsive adjustment classes ---
@@ -43,6 +46,7 @@ export function FiltersSidebar({
   minCitations, setMinCitations,
   minImpact, setMinImpact,
   selectedLanguage, setSelectedLanguage,
+  onApplyFilters,
 }: FiltersSidebarProps) {
   const { t, i18n } = useTranslation();
   const topics = Array.from(new Set(MOCK_PAPERS.flatMap(p => p.topics)));
@@ -242,6 +246,18 @@ export function FiltersSidebar({
           {LANGUAGES.map(l => <option key={l}>{l}</option>)}
         </select>
       </Section>
+
+      {/* Apply Filters Button */}
+      <div className="pt-3 pb-2 flex">
+        <button
+          type="button"
+          className="w-full bg-(--primary-600) hover:bg-(--primary-700) text-white rounded-lg py-2 px-4 font-semibold text-sm sm:text-sm shadow transition"
+          onClick={onApplyFilters}
+          aria-label={t('search.filters.applyButton', { defaultValue: 'Apply Filters' })}
+        >
+          {t('search.filters.applyButton', { defaultValue: 'Apply Filters' })}
+        </button>
+      </div>
     </aside>
   );
 }

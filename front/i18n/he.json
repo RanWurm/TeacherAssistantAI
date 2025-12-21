@@ -287,7 +287,8 @@
             "allJournals": "כל כתבי העת",
             "allTypes": "כל הסוגים",
             "showAll": "הצג הכל ({{count}})",
-            "showLess": "הצג פחות"
+            "showLess": "הצג פחות",
+            "applyButton": "החל סינונים"
         },
         "searchHeader": {
             "title": "חיפוש אקדמי",
