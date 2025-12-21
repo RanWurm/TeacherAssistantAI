@@ -1,8 +1,7 @@
 // backend/src/app.ts
 import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
-
+import agentRoutes from "./routes/agent";
 import { router as articlesRouter } from "./routes/articles";
 import { router as authorsRouter } from "./routes/authors";
 import { router as journalsRouter } from "./routes/journals";
@@ -52,6 +51,7 @@ app.use("/api/authors", authorsRouter);
 app.use("/api/journals", journalsRouter);
 app.use("/api/keywords", keywordsRouter);
 app.use("/api/subjects", subjectsRouter);
+app.use("/agent", agentRoutes);
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 app.listen(PORT, () => {

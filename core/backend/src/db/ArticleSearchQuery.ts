@@ -104,7 +104,7 @@ export function buildArticlesSearchQuery(filters: ArticleSearchFilters) {
         ],
         joins,
         filters: where,
-        orderBy: "a.year DESC, a.citation_count DESC",
+        orderBy: "a.citation_count DESC, a.year DESC ",
         limit,
         offset,
     });

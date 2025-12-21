@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config(); // Loads .env from project root
 
-const pool: Pool = mysql.createPool({
+export const pool: Pool = mysql.createPool({
   host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASS || "",
