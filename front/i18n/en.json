@@ -264,7 +264,11 @@
     "search": {
         "empty": {
             "title": "No papers found",
-            "subtitle": "Try relaxing your filters or searching for another topic."
+            "subtitle": "Try adjusting your search or removing filters to see more results."
+        },
+        "loading": {
+            "title": "Loading data...",
+            "subtitle": "Please wait while we fetch your search results."
         },
         "sort": {
             "citations": "Most Cited",
@@ -273,21 +277,14 @@
         },
         "filters": {
             "title": "Filters",
-            "topics": "Topics",
-            "authors": "Authors",
-            "journal": "Journal",
+            "subject": "Subject",
+            "author": "Author",
+            "keyword": "Keyword",
             "type": "Type",
             "yearRange": "Year Range",
             "yearFrom": "From",
             "yearTo": "To",
-            "minCitations": "Min Citations",
-            "minImpact": "Min Impact Factor",
-            "minShort": "min",
             "language": "Language",
-            "allJournals": "All Journals",
-            "allTypes": "All Types",
-            "showAll": "Show all ({{count}})",
-            "showLess": "Show less",
             "applyButton": "Apply Filters"
         },
         "searchHeader": {
@@ -299,7 +296,22 @@
         },
         "resultsHeader": {
             "resultsCount": "{{count}} papers found",
-            "sortLabel": "Sort:"
+            "sortLabel": "Sort by:",
+            "openDoi": "Open article on external site"
+        },
+        "result": {
+            "citations": "Citations",
+            "noAuthors": "Unknown Author",
+            "showMore": "Show more",
+            "showLess": "Show less",
+            "yearFrom": "Publication Year",
+            "author": "Author(s)",
+            "subject": "Subject",
+            "subjects": "Subjects",
+            "keyword": "Keyword",
+            "language": "Language",
+            "type": "Type",
+            "openDoi": "Open article on external site"
         }
     }
 }

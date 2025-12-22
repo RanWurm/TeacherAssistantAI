@@ -1,190 +1,191 @@
 'use client';
 
-import { useMemo, useState, useEffect  } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../../styles/variables.css';
+
 import { SearchHeader } from './components/search-header';
 import { FiltersSidebar } from './components/filters-sidebar';
 import { ResultsHeader } from './components/results-header';
 import { ResultsList } from './components/results-list';
-import { Paper } from './data/mock';
 import { useArticlesSearch } from '@/hooks/useArticlesSearch';
+
+export interface Paper {
+  article_id: number;
+  openalex_id: string;
+  title: string;
+  year: number;
+  language: string;
+  type: string;
+  citation_count: number;
+  article_url?: string | null;
+  journal?: string | null;
+  publisher?: string | null;
+  impact_factor?: number | null;
+  authors?: string | null;
+  subjects?: string | null;
+  keywords?: string | null;
+}
 
 const INITIAL_YEAR_RANGE = { min: 2015, max: 2024 };
 type SortOption = 'citations' | 'year' | 'impact';
 
-
-function mapArticleToPaper(article: any): Paper {
-  return {
-    id: String(article.article_id),          // ✅ key יציב
-    title: article.title,
-    authors: article.authors ?? [],          // זמני
-    affiliations: [],
-    year: article.year ?? 0,
-    citations: article.citation_count ?? 0,
-    doi: article.doi ?? '',
-    topics: article.subjects ?? [],
-    keywords: article.keywords ?? [],
-    journal: article.journal_name ?? undefined,
-    publisher: article.publisher ?? undefined,
-    impactFactor: article.impact_factor ?? undefined,
-    language: article.language ?? 'English',
-    type: article.type ?? 'Journal Article',
-  };
-}
-
 export default function SearchPage() {
   const { t } = useTranslation();
-  const [searchQuery, setSearchQuery] = useState('');
+
+  const [searchQuery, setSearchQuery] = useState<string[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
-  const [selectedJournal, setSelectedJournal] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
   const [yearRange, setYearRange] = useState(INITIAL_YEAR_RANGE);
-  const [minCitations, setMinCitations] = useState(0);
-  const [minImpact, setMinImpact] = useState(0);
-  const [selectedLanguage, setSelectedLanguage] = useState('all');
   const [sortBy, setSortBy] = useState<SortOption>('citations');
 
-  /* ======================
-     API
-  ====================== */
   const { data, loading, search } = useArticlesSearch();
   const [appliedFilters, setAppliedFilters] = useState<any>(null);
+  const [guidedQuery, setGuidedQuery] = useState('');
 
-  /* ======================
-     Build API filters
-  ====================== */
-  const apiFilters = useMemo(() => ({
-    subject: selectedTopics[0],
-    author: selectedAuthors[0],
-    type: selectedType !== 'all' ? selectedType : undefined,
-    language: selectedLanguage !== 'all' ? selectedLanguage : undefined,
-    fromYear: yearRange.min,
-    toYear: yearRange.max,
-    minCitations,
-    minImpact,
-  }), [
-    selectedTopics,
-    selectedAuthors,
-    selectedType,
-    selectedLanguage,
-    yearRange,
-    minCitations,
-    minImpact,
-  ]);
+  const apiFilters = useMemo(
+    () => ({
+      subjects: selectedTopics.length ? selectedTopics : undefined,
+      authors: selectedAuthors.length ? selectedAuthors : undefined,
+      keywords: searchQuery.length ? searchQuery : undefined,
+      type: selectedType !== 'all' ? selectedType : undefined,
+      language: selectedLanguage !== 'all' ? selectedLanguage : undefined,
+      fromYear: yearRange.min,
+      toYear: yearRange.max,
+      sortBy: sortBy === 'citations' || sortBy === 'year' ? sortBy : 'year',
+    }),
+    [
+      selectedTopics,
+      selectedAuthors,
+      searchQuery,
+      selectedType,
+      selectedLanguage,
+      yearRange,
+      sortBy,
+    ]
+  );
 
-  /* ======================
-     Apply Filters
-  ====================== */
   const onApplyFilters = () => {
     setAppliedFilters(apiFilters);
   };
 
-  // Initial load – run once on mount
   useEffect(() => {
     search(apiFilters);
-    setAppliedFilters(apiFilters); // שומר סנכרון עם Apply
+    setAppliedFilters(apiFilters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ======================
-     Trigger API search
-  ====================== */
   useEffect(() => {
     if (!appliedFilters) return;
     search(appliedFilters);
   }, [appliedFilters]);
 
-  /* ======================
-     Map API → UI
-  ====================== */
-  const papers = useMemo(
-    () => data.map(mapArticleToPaper),
+  useEffect(() => {
+    if (!appliedFilters) return;
+
+    setAppliedFilters({
+      ...appliedFilters,
+      sortBy: sortBy === 'citations' || sortBy === 'year' ? sortBy : 'year',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortBy]);
+
+  const papers: Paper[] = useMemo(
+    () => data as unknown as Paper[],
     [data]
   );
-  
-  const filterProps = {
-    selectedTopics,
-    setSelectedTopics,
-    selectedAuthors,
-    setSelectedAuthors,
-    selectedJournal,
-    setSelectedJournal,
-    selectedType,
-    setSelectedType,
-    yearRange,
-    setYearRange,
-    minCitations,
-    setMinCitations,
-    minImpact,
-    setMinImpact,
-    selectedLanguage,
-    setSelectedLanguage,
-  };
 
-  // Fix to screen: force the entire app to fill the screen vertically and allow main layout to scroll as needed.
+  const shouldShowEmptyState = !loading && papers.length === 0;
+
   return (
-    <div className="flex flex-col ">
-      {/* Header */}
-      <SearchHeader
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-      />
+    <div className="flex flex-col">
+      <SearchHeader />
 
-      {/* Layout container; flex to allow sidebar+main scroll */}
       <div className="flex-1 flex flex-col md:flex-row md:gap-10 gap-6 max-w-7xl w-full mx-auto px-4 md:px-6 py-6 overflow-hidden min-h-0">
-        {/* Filters Sidebar */}
         <aside
-          className="
+          className={`
             md:w-72 w-full
             md:sticky md:top-8
             bg-(--surface)
             border border-(--border-color)
             rounded-2xl p-4
-            shadow-md md:self-start self-auto
-            mb-4 md:mb-0
-            h-full
-          "
-          tabIndex={-1}
+            shadow-md
+            h-fit
+            relative
+            ${loading ? 'pointer-events-none opacity-60' : ''}
+          `}
         >
-        <FiltersSidebar
-          {...filterProps}
-          onApplyFilters={onApplyFilters}
-        />
+          <FiltersSidebar
+            loading={loading}
+            guidedQuery={guidedQuery}
+            subject={selectedTopics}
+            setSubject={setSelectedTopics}
+            author={selectedAuthors}
+            setAuthor={setSelectedAuthors}
+            keyword={searchQuery}
+            setKeyword={setSearchQuery}
+            type={selectedType}
+            setType={setSelectedType}
+            language={selectedLanguage}
+            setLanguage={setSelectedLanguage}
+            yearRange={{
+              from: yearRange.min,
+              to: yearRange.max,
+            }}
+            setYearRange={v =>
+              setYearRange({
+                min: typeof v.from === 'number' ? v.from : yearRange.min,
+                max: typeof v.to === 'number' ? v.to : yearRange.max,
+              })
+            }
+            onApplyFilters={onApplyFilters}
+          />
         </aside>
 
-        {/* Main content fills remaining height and scrolls as needed */}
         <main
           className="
             flex-1
             bg-(--surface)
             border border-(--border-color)
             rounded-2xl p-4 shadow-lg
-            overflow-hidden
             flex flex-col
-            relative
             min-h-[60vh]
-            max-h-full
+            overflow-hidden
           "
-          style={{ minHeight: 0, display: 'flex', flexDirection: 'column' }}
         >
-          {/* Header & sort sticky on desktop for recall */}
-          <div className="flex flex-col gap-4 sticky top-0 z-10 bg-(--surface) pb-2 md:-mx-4 md:px-4">
+          <div className="sticky top-0 z-10 bg-(--surface) pb-2">
             <ResultsHeader
               count={papers.length}
               sortBy={sortBy}
               setSortBy={(v: string) => {
-                if (v === 'citations' || v === 'year' || v === 'impact') setSortBy(v);
+                if (v === 'citations' || v === 'year' || v === 'impact') {
+                  setSortBy(v);
+                }
               }}
             />
           </div>
 
-          <div className="flex-1 min-h-0 overflow-auto">
-            <ResultsList papers={papers} />
+          <div className="flex-1 overflow-auto">
+            {shouldShowEmptyState ? (
+              <div className="flex flex-1 flex-col items-center justify-center text-center py-16 text-(--text-secondary)">
+                <h2 className="text-2xl font-semibold mb-2">
+                  {t('search.empty.title', 'No papers found')}
+                </h2>
+                <p className="text-base">
+                  {t(
+                    'search.empty.subtitle',
+                    'Try relaxing your filters or searching for another topic.'
+                  )}
+                </p>
+              </div>
+            ) : (
+              <ResultsList papers={papers} loading={loading} />
+            )}
           </div>
         </main>
       </div>
     </div>
   );
 }
-

@@ -7,6 +7,9 @@ import { router as authorsRouter } from "./routes/authors";
 import { router as journalsRouter } from "./routes/journals";
 import { router as keywordsRouter } from "./routes/keywords";
 import { router as subjectsRouter } from "./routes/subjects";
+import { router as filtersRouter } from "./routes/filters";
+
+import cors, { type CorsOptions } from "cors";
 
 dotenv.config();
 
@@ -20,21 +23,21 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .map(o => o.trim())
   .filter(Boolean);
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow server-to-server / curl / postman requests with no origin
-      if (!origin) return callback(null, true);
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    // Allow server-to-server / curl / postman
+    if (!origin) return callback(null, true);
 
-      if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-      return callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-  })
-);
+    return callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -51,6 +54,7 @@ app.use("/api/authors", authorsRouter);
 app.use("/api/journals", journalsRouter);
 app.use("/api/keywords", keywordsRouter);
 app.use("/api/subjects", subjectsRouter);
+app.use("/api/filters", filtersRouter);
 app.use("/agent", agentRoutes);
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;

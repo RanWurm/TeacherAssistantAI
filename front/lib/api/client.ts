@@ -13,6 +13,7 @@ export async function apiRequest<T>(
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
     body: body ? JSON.stringify(body) : undefined,
   });
 

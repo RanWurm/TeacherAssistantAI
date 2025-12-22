@@ -1,12 +1,15 @@
-// src/types/ArticleSearchFilters.ts
 export interface ArticleSearchFilters {
-  subject?: string;
-  author?: string;
-  keyword?: string;
+  authors?: string[];
+  subjects?: string[];
+  keywords?: string[];
+
   language?: string;
   type?: string;
   fromYear?: number;
   toYear?: number;
+
   limit?: number;
   offset?: number;
+
+  sortBy?: 'citations' | 'year';
 }

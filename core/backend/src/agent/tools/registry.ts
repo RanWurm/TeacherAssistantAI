@@ -1,6 +1,3 @@
-// מחק את זה:
-// import { FunctionDeclarationSchemaType } from "@google/generative-ai";
-
 import { buildArticlesSearchQuery } from "../../db/ArticleSearchQuery";
 import { pool } from "../../db";
 type ToolDef = {
@@ -28,7 +25,7 @@ const tools: Record<string, ToolDef> = {
             },
         },
     },
-    
+
     handler: async (args: any) => {
         const normInt = (v: any) => {
             if (v === null || v === undefined) return undefined;
@@ -36,9 +33,21 @@ const tools: Record<string, ToolDef> = {
             return Number.isFinite(n) ? n : undefined;
         };
 
-        const subject = typeof args?.subject === "string" ? args.subject : undefined;
-        const author = typeof args?.author === "string" ? args.author : undefined;
-        const keyword = typeof args?.keyword === "string" ? args.keyword : undefined;
+        // Map incoming fields to ArticleSearchFilters shape
+        // ArticleSearchFilters expects: authors?: string[], subjects?: string[], keywords?: string[], language, type, fromYear, toYear, limit, offset
+
+        const subjects = typeof args?.subject === "string" && args.subject.length > 0
+          ? [args.subject]
+          : undefined;
+
+        const authors = typeof args?.author === "string" && args.author.length > 0
+          ? [args.author]
+          : undefined;
+
+        const keywords = typeof args?.keyword === "string" && args.keyword.length > 0
+          ? [args.keyword]
+          : undefined;
+
         const language = typeof args?.language === "string" ? args.language : undefined;
         const type = typeof args?.type === "string" ? args.type : undefined;
 
@@ -49,9 +58,9 @@ const tools: Record<string, ToolDef> = {
         const offset = Math.max(0, normInt(args?.offset) ?? 0);
 
         const built: any = buildArticlesSearchQuery({
-            subject,
-            author,
-            keyword,
+            subjects,
+            authors,
+            keywords,
             language,
             type,
             fromYear,
@@ -66,8 +75,7 @@ const tools: Record<string, ToolDef> = {
         console.log("SQL:", sql, "PARAMS:", params);
         const [rows] = await pool.execute(sql, params);
         return { rows };
-        },
-
+    },
   },
 };
 export function getToolDeclarations() {

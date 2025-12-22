@@ -27,7 +27,6 @@ export function ResultsHeader({ count, sortBy, setSortBy }: ResultsHeaderProps) 
         >
           <option value="citations">{t('search.sort.citations', { defaultValue: 'Most Cited' })}</option>
           <option value="year">{t('search.sort.year', { defaultValue: 'Most Recent' })}</option>
-          <option value="impact">{t('search.sort.impact', { defaultValue: 'Highest Impact' })}</option>
         </select>
       </label>
     </div>

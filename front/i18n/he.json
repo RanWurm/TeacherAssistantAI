@@ -264,42 +264,54 @@
     "search": {
         "empty": {
             "title": "לא נמצאו מאמרים",
-            "subtitle": "נסה להרחיב את הסינון או לחפש נושא אחר."
+            "subtitle": "נסה לשנות את החיפוש או להסיר סינונים כדי לראות עוד תוצאות."
+        },
+        "loading": {
+            "title": "טוען נתונים...",
+            "subtitle": "אנא המתן בזמן שאנו מביאים את תוצאות החיפוש שלך."
         },
         "sort": {
             "citations": "המצוטטים ביותר",
-            "year": "החדשים ביותר",
-            "impact": "משפיעים ביותר"
+            "year": "העדכניים ביותר",
+            "impact": "בעלי השפעה הגבוהה ביותר"
         },
         "filters": {
-            "title": "סינון",
-            "topics": "נושאים",
-            "authors": "מחברים",
-            "journal": "כתב עת",
+            "title": "סינונים",
+            "subject": "נושא",
+            "author": "מחבר",
+            "keyword": "מילת מפתח",
             "type": "סוג",
             "yearRange": "טווח שנים",
             "yearFrom": "מ",
             "yearTo": "עד",
-            "minCitations": "מס' ציטוטים מינימלי",
-            "minImpact": "פקטור השפעה מינימלי",
-            "minShort": "מינ'",
             "language": "שפה",
-            "allJournals": "כל כתבי העת",
-            "allTypes": "כל הסוגים",
-            "showAll": "הצג הכל ({{count}})",
-            "showLess": "הצג פחות",
             "applyButton": "החל סינונים"
         },
         "searchHeader": {
             "title": "חיפוש אקדמי",
-            "subtitle": "גלה ונתח מיליוני מאמרים מדעיים",
+            "subtitle": "גלה ונתח מיליוני מאמרים אקדמיים",
             "inputPlaceholder": "חפש לפי כותרת, מחבר, מילות מפתח או נושא...",
             "inputAriaLabel": "חפש מאמרים אקדמיים",
             "submitAriaLabel": "שלח חיפוש"
         },
         "resultsHeader": {
             "resultsCount": "{{count}} מאמרים נמצאו",
-            "sortLabel": "מיון:"
+            "sortLabel": "מיון לפי:",
+            "openDoi": "פתח מאמר באתר חיצוני"
+        },
+        "result": {
+            "citations": "ציטוטים",
+            "noAuthors": "מחבר לא ידוע",
+            "showMore": "הצג עוד",
+            "showLess": "הצג פחות",
+            "yearFrom": "שנת פרסום",
+            "author": "מחבר/ים",
+            "subject": "נושא",
+            "subjects": "נושאים",
+            "keyword": "מילת מפתח",
+            "language": "שפה",
+            "type": "סוג",
+            "openDoi": "פתח מאמר באתר חיצוני"
         }
     }
 }
