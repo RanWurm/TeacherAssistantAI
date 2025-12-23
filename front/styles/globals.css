@@ -19,6 +19,52 @@ body {
   background: var(--background-light-blue, #f4f7fe);
 }
 
+/* =========================================
+   Global RTL / LTR support (language-based)
+   ========================================= */
+
+/* Ensure logical text alignment everywhere */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: start;
+}
+
+[dir="ltr"] {
+  direction: ltr;
+  text-align: start;
+}
+
+.text-start {
+  text-align: start;
+}
+
+.text-end {
+  text-align: end;
+}
+
+/* Flip horizontal flex layouts automatically in RTL */
+[dir="rtl"] .rtl-flex {
+  flex-direction: row-reverse;
+}
+
+.ms-auto {
+  margin-inline-start: auto;
+}
+
+.me-auto {
+  margin-inline-end: auto;
+}
+
+.ps-4 {
+  padding-inline-start: 1rem;
+}
+
+.pe-4 {
+  padding-inline-end: 1rem;
+}
+
+
+
 /* Scrollbar styles */
 ::-webkit-scrollbar {
   width: 8px;
@@ -410,3 +456,4 @@ body {
     display: none !important;
   }
 }
+

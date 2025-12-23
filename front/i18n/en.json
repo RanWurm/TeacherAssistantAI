@@ -1,4 +1,7 @@
 {
+    "lang": {
+        "dir": "ltr"
+    },
     "nav": {
         "languageToggle": {
             "ariaLabel": "Toggle language",
@@ -24,7 +27,7 @@
             "footer": "Research Assistant AI uses OpenAlex dataset metadata to generate research ideas"
         },
         "messageItem": {
-            "aiResponseLabel": "AI Response",
+            "aiResponseLabel": "Agent Response",
             "sqlQueryExecutedLabel": "SQL Query Executed",
             "resultsCountLabel": "{{count}} results"
         },
@@ -135,7 +138,9 @@
                 "citationVolume": "{{count}} citations",
                 "articleCount": "{{count}} articles",
                 "authorCount": "{{count}} authors",
-                "subjectCount": "{{count}} subjects"
+                "subjectCount": "{{count}} subjects",
+                "citationRate": "{{count}} citations per article",
+                "impactTooltip": "Impact factor = citations / articles. Indicates average citations per article."
             },
             "citationVolatilityChart": {
                 "title": "Citation Volatility Map",
@@ -259,7 +264,11 @@
     "search": {
         "empty": {
             "title": "No papers found",
-            "subtitle": "Try relaxing your filters or searching for another topic."
+            "subtitle": "Try adjusting your search or removing filters to see more results."
+        },
+        "loading": {
+            "title": "Loading data...",
+            "subtitle": "Please wait while we fetch your search results."
         },
         "sort": {
             "citations": "Most Cited",
@@ -267,14 +276,16 @@
             "impact": "Highest Impact"
         },
         "filters": {
-            "topics": "Topics",
-            "authors": "Authors",
-            "journal": "Journal",
+            "title": "Filters",
+            "subject": "Subject",
+            "author": "Author",
+            "keyword": "Keyword",
             "type": "Type",
             "yearRange": "Year Range",
-            "minCitations": "Min Citations",
-            "minImpact": "Min Impact Factor",
-            "language": "Language"
+            "yearFrom": "From",
+            "yearTo": "To",
+            "language": "Language",
+            "applyButton": "Apply Filters"
         },
         "searchHeader": {
             "title": "Academic Search",
@@ -285,7 +296,22 @@
         },
         "resultsHeader": {
             "resultsCount": "{{count}} papers found",
-            "sortLabel": "Sort:"
+            "sortLabel": "Sort by:",
+            "openDoi": "Open article on external site"
+        },
+        "result": {
+            "citations": "Citations",
+            "noAuthors": "Unknown Author",
+            "showMore": "Show more",
+            "showLess": "Show less",
+            "yearFrom": "Publication Year",
+            "author": "Author(s)",
+            "subject": "Subject",
+            "subjects": "Subjects",
+            "keyword": "Keyword",
+            "language": "Language",
+            "type": "Type",
+            "openDoi": "Open article on external site"
         }
     }
 }
