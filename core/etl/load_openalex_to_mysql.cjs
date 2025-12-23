@@ -44,7 +44,10 @@ function normalizeWork(work) {
     .filter(Boolean);
 
   // OpenAlex doesn't always provide explicit keywords; keep empty for minimal version.
-  const keywords = [];
+  const keywords = (work?.keywords || [])
+  .slice(0, 12)
+  .map((k) => k?.display_name)
+  .filter(Boolean);
 
   return {
     openalex_id: openalexId,
