@@ -29,7 +29,9 @@ export function ResearcherProfileCard({
   maxCitations,
   timeRange,
 }: ResearcherProfileCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const isRtl = i18n.dir() === 'rtl';
 
   const initials = researcher.name
     .split(' ')
@@ -69,27 +71,41 @@ export function ResearcherProfileCard({
   const journalsLabel = t('insights.researchers.topResearchers.researcher.journals', { count: researcher.uniqueJournals });
   const subjectsLabel = t('insights.researchers.topResearchers.researcher.subjects', { count: researcher.uniqueSubjects });
 
+  // Responsive sizing: use smaller paddings, fonts, and gaps on small screens
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition relative">
+    <div className="
+      bg-white border border-gray-200 rounded-xl
+      p-3 sm:p-4
+      shadow-sm hover:shadow-md transition relative
+      text-sm sm:text-base
+      "
+    >
       {/* Rank badge */}
-      <div className="absolute top-4 right-4 text-base font-bold text-gray-800 bg-gray-100 px-4 py-2 rounded-lg shadow-sm">
+      <div
+        className={`absolute top-2 sm:top-4 ${isRtl ? 'left-2 sm:left-4' : 'right-2 sm:right-4'} 
+        text-xs sm:text-base font-bold text-gray-800 bg-gray-100 
+        px-2 py-1 sm:px-4 sm:py-2 rounded-lg shadow-sm`}
+      >
         {rankLabel}
       </div>
 
       {/* Header */}
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
         {/* Impact ring */}
-        <div className="relative w-14 h-14 rounded-full flex items-center justify-center">
-          <div className="w-11 h-11 rounded-full bg-linear-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-base">
+        <div className="relative w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center">
+          <div className="
+            w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-linear-to-br from-blue-500 to-blue-700
+            flex items-center justify-center text-white font-bold text-xs sm:text-base
+          ">
             {initials}
           </div>
         </div>
 
         <div>
-          <div className="font-semibold text-gray-900 leading-tight">
+          <div className="font-semibold text-gray-900 leading-tight text-base sm:text-lg">
             {researcher.name}
           </div>
-          <div className="flex items-center gap-1 text-xs text-gray-500">
+          <div className="flex items-center gap-1 text-[11px] sm:text-xs text-gray-500">
             <Building2 className="w-3 h-3" />
             {affiliation}
           </div>
@@ -97,7 +113,7 @@ export function ResearcherProfileCard({
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-2 gap-2 text-xs text-gray-700 mb-3">
+      <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-gray-700 mb-2 sm:mb-3">
         <div className="flex items-center gap-1">
           <FileText className="w-3 h-3" />
           {articleCountLabel}
@@ -117,7 +133,7 @@ export function ResearcherProfileCard({
       </div>
 
       {/* Insight */}
-      <div className="text-xs font-medium text-blue-700 bg-blue-50 inline-block px-2 py-1 rounded">
+      <div className="text-[11px] sm:text-xs font-medium text-blue-700 bg-blue-50 inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">
         {t(insightKey)}
       </div>
     </div>

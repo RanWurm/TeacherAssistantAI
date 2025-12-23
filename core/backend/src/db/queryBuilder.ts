@@ -1,4 +1,9 @@
 // backend/src/db/queryBuilder.ts
+
+function inPlaceholders(n: number) {
+  return Array.from({ length: n }, () => "?").join(", ");
+}
+
 export function buildSelectQuery(options: {
   table: string,
   as?: string,
@@ -13,6 +18,7 @@ export function buildSelectQuery(options: {
     clause: string,
     value?: any | any[],
   }>,
+  groupBy?: string,
   orderBy?: string,
   limit?: number,
   offset?: number,
@@ -37,17 +43,16 @@ export function buildSelectQuery(options: {
     }
   });
 
-  // ---- בניית השאילתה ----
-  let sql = `
+  const sql = `
     SELECT DISTINCT ${columns.join(", ")}
     FROM ${options.table} ${as}
     ${joins.join("\n")}
     ${whereClauses.length ? "WHERE " + whereClauses.join(" AND ") : ""}
+    ${options.groupBy ? "GROUP BY " + options.groupBy : ""}
     ${options.orderBy ? "ORDER BY " + options.orderBy : ""}
     ${typeof options.limit === "number" ? "LIMIT " + options.limit : ""}
     ${typeof options.offset === "number" ? "OFFSET " + options.offset : ""}
   `.trim();
 
-  // ---- חשוב: לא דוחפים LIMIT/OFFSET ל-params ----
   return { sql, params };
 }

@@ -23,8 +23,20 @@ POST http://localhost:3001/api/articles/search
 Content-Type: application/json
 
 {
-  "subject": "machine"
+  "subjects": ["Machine Learning"]
 }
+
+### ARTICLES – Subject filter + sort by citations
+POST http://localhost:3001/api/articles/search
+Content-Type: application/json
+
+{
+  "subjects": ["Machine Learning"],
+  "fromYear": 2018,
+  "toYear": 2024,
+  "sortBy": "citations"
+}
+
 
 
 ### ARTICLES – Author filter
@@ -34,6 +46,7 @@ Content-Type: application/json
 {
   "author": "John"
 }
+
 
 
 ### ARTICLES – Year range
@@ -73,6 +86,15 @@ Content-Type: application/json
 
 
 
+
+### SUBJECTS
+GET http://localhost:3001/api/filters/subjects?q=bio&limit=20
+
+### AUTHORS
+GET http://localhost:3001/api/filters/authors?q=smith&limit=20
+
+### KEYWORDS
+GET http://localhost:3001/api/filters/keywords?q=deep&limit=20
 
 
 ############################################################

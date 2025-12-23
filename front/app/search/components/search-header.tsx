@@ -1,13 +1,9 @@
-import { SlidersHorizontal } from "lucide-react";
-import { useTranslation } from "react-i18next";
+'use client';
 
-interface SearchHeaderProps {
-  searchQuery: string;
-  setSearchQuery: (v: string) => void;
-}
+import { useTranslation } from 'react-i18next';
 
-export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps) {
-  const { t } = useTranslation();
+export function SearchHeader() {
+  const { t, i18n } = useTranslation();
 
   return (
     <header className="border-b border-(--border-color) bg-linear-to-b from-(--surface) to-transparent shadow-sm">
@@ -16,7 +12,6 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
         <div className="flex flex-col items-center gap-2">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-(--primary-700) to-(--primary-400) flex items-center justify-center shadow-xl border-2 border-(--primary-200) animate-pulse-slow">
-              {/* Keep a logo here if needed */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width={24}
@@ -27,97 +22,25 @@ export function SearchHeader({ searchQuery, setSearchQuery }: SearchHeaderProps)
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-search w-6 h-6"
-                style={{ color: "var(--on-primary)" }}
+                className="w-6 h-6"
+                style={{ color: 'var(--on-primary)' }}
               >
-                <path d="m21 21-4.34-4.34"></path>
-                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.34-4.34" />
+                <circle cx="11" cy="11" r="8" />
               </svg>
             </div>
+
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight bg-linear-to-r from-(--primary-600) to-(--primary-400) bg-clip-text text-transparent">
-                {t("search.searchHeader.title")}
+                {t('search.searchHeader.title')}
               </h1>
               <p className="text-xs sm:text-sm text-(--text-secondary) text-center mt-0.5">
-                {t("search.searchHeader.subtitle")}
+                {t(
+                  'search.searchHeader.subtitle',
+                  'Start typing to add filters by subject, author or keyword'
+                )}
               </p>
             </div>
-          </div>
-        </div>
-
-        {/* Search Bar */}
-        <div className="relative flex justify-center mb-2">
-          <div className="relative w-full sm:w-[525px] max-w-2xl mx-auto">
-            <form
-              onSubmit={e => {
-                e.preventDefault();
-                // Optionally, you could trigger a prop function here if needed
-              }}
-              role="search"
-            >
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t("search.searchHeader.inputPlaceholder")}
-                className="
-                  w-full
-                  pl-14 pr-16 py-4
-                  rounded-2xl border border-(--border-color)
-                  focus:border-(--primary-600)
-                  focus:ring-4 focus:ring-(--primary-400)/20
-                  outline-none
-                  transition-all duration-200
-                  text-base
-                  bg-(--surface-alt)
-                  shadow-md hover:shadow-lg
-                  text-(--text-primary)
-                  placeholder:text-(--text-secondary)/80
-                  "
-                aria-label={t("search.searchHeader.inputAriaLabel")}
-              />
-              {/* SVG icon inside the input bar */}
-              <span className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={24}
-                  height={24}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-search w-5 h-5 text-(--primary-500)"
-                  aria-hidden="true"
-                >
-                  <path d="m21 21-4.34-4.34"></path>
-                  <circle cx="11" cy="11" r="8"></circle>
-                </svg>
-              </span>
-              {/* Enter button */}
-              <button
-                type="submit"
-                className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-(--primary-700) hover:text-(--primary-900) px-3 py-1 rounded-lg bg-transparent transition-colors focus:outline-none cursor-pointer"
-                aria-label={t("search.searchHeader.submitAriaLabel")}
-                tabIndex={0}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={22}
-                  height={22}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-5 h-5"
-                >
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            </form>
           </div>
         </div>
       </div>

@@ -89,7 +89,12 @@ async function main() {
     const st = loadState(subject);
 
     if (!st.conceptId) {
-      st.conceptId = await resolveConceptId(subject);
+      try {
+        st.conceptId = await resolveConceptId(subject);
+      } catch (e) {
+        console.warn(`Skipping subject "${subject}"`);
+        continue;
+      }      
       saveState(subject, st);
     }
 

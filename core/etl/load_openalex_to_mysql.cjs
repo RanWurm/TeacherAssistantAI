@@ -3,7 +3,9 @@ const fs = require("fs");
 const path = require("path");
 const mysql = require("mysql2/promise");
 
-;            // backend/data
+const dotenv = require("dotenv");
+dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
+
 const RAW_DIR = path.join(__dirname, "..", "data", "openalex_raw"); // backend/data/openalex_raw
 const BATCH_SIZE = 400;
 
