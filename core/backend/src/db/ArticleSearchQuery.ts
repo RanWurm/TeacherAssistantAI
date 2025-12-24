@@ -45,14 +45,17 @@ export function buildArticlesSearchQuery(filters: ArticleSearchFilters) {
     });
   }
 
-  if (filters.subjects?.length) {
+  if (filters.subjects?.length && filters.keywords?.length) {
+      where.push({
+        clause: `(s.subject_name IN (${inPlaceholders(filters.subjects.length)}) OR k.keyword IN (${inPlaceholders(filters.keywords.length)}))`,
+        value: [...filters.subjects, ...filters.keywords],
+      });
+  } else if (filters.subjects?.length) {
     where.push({
       clause: `s.subject_name IN (${inPlaceholders(filters.subjects.length)})`,
       value: filters.subjects,
     });
-  }
-
-  if (filters.keywords?.length) {
+  } else if (filters.keywords?.length) {
     where.push({
       clause: `k.keyword IN (${inPlaceholders(filters.keywords.length)})`,
       value: filters.keywords,
