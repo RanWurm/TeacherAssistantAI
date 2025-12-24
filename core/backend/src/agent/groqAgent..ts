@@ -67,7 +67,7 @@ export async function askGroqAgent(userMessage: string) {
       }
 
       const result = await runTool(name, args);
-
+      
       messages.push({
         role: "tool",
         tool_call_id: tc.id,
