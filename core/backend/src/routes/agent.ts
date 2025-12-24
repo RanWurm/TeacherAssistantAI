@@ -9,9 +9,9 @@ router.post("/ask", async (req, res) => {
     if (!message) return res.status(400).json({ error: "message is required" });
 
     const out = await askGroqAgent(message);
-    res.json(out);
+    return res.json({ answer: out });
   } catch (e: any) {
-    res.status(500).json({ error: e?.message || "server error" });
+    return res.status(500).json({ error: e?.message || "server error" });
   }
 });
 

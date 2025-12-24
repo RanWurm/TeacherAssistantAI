@@ -5,6 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { MessageList } from './components/message-list';
 import { ChatInput } from './components/chat-input';
 import { Message, INITIAL_MESSAGES } from './data/mock';
+import { askAgent } from '../../lib/api/agent';
+
+
 
 export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
@@ -12,40 +15,52 @@ export default function ChatScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  const userText = input.trim();
+  if (!userText || isLoading) return;
 
-    const now = Date.now();
+  const now = Date.now();
+
+  setMessages(prev => [
+    ...prev,
+    {
+      id: now.toString(),
+      role: 'user',
+      content: userText,
+      timestamp: now,
+    },
+  ]);
+
+  setInput('');
+  setIsLoading(true);
+
+  try {
+    const { answer } = await askAgent({ message: userText });
 
     setMessages(prev => [
       ...prev,
       {
-        id: now.toString(),
-        role: 'user',
-        content: input,
-        timestamp: now,
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: answer,
+        timestamp: Date.now(),
       },
     ]);
-
-    setInput('');
-    setIsLoading(true);
-
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: (Date.now()).toString(),
-          role: 'assistant',
-          content: `${t('chat.messageItem.aiResponseLabel')}: "${input}"`,
-          timestamp: Date.now(),
-          sqlQuery: 'SELECT ...',
-          resultsCount: 123,
-        },
-      ]);
-      setIsLoading(false);
-    }, 2000);
-  };
+  } catch (err: any) {
+    setMessages(prev => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: err?.message || 'Server error',
+        timestamp: Date.now(),
+      },
+    ]);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="h-full flex flex-col min-h-0">
