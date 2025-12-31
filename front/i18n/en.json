@@ -199,11 +199,10 @@
         "trends": {
             "trendingTopicsTable": {
                 "title": "Trending Research Topics",
-                "subtitle": "See the leaders and top risers in research, ranked by volume and growth rate. Hover over a topic for more info.",
-                "firstPlace": "First Place",
-                "secondPlace": "Second Place",
-                "thirdPlace": "Third Place",
+                "subtitle": "Leaders in research topics, ranked by article count. Click or hover a topic for details.",
+                "noData": "No trending topics found for this period.",
                 "period": "Period",
+                "unknownPeriod": "Unknown",
                 "articles": "Articles",
                 "growth": "Growth",
                 "timeRange": "Time range",
@@ -215,7 +214,7 @@
             },
             "keywordGrowthTable": {
                 "title": "Keyword Growth by Year",
-                "subtitle": "This table visualizes the year-over-year growth in article counts for key research keywords. Green bars and numbers show positive growth, while red shows declines.",
+                "subtitle": "Year-over-year changes in article volume for key research keywords. Green = growth, red = decline.",
                 "previous": "Prev: {{count}}",
                 "growth": "Growth"
             },

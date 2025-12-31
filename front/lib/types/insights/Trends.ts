@@ -3,9 +3,11 @@
 ========================= */
 
 export interface TrendingTopic {
-    keyword: string;
-    articleCount: number;
-  }
+  keyword: string;
+  articleCount: number;
+  firstAppearanceYear: number | null;
+  latestYear: number | null;
+}
   
   export interface KeywordGrowth {
     keyword: string;

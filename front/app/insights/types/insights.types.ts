@@ -39,9 +39,8 @@ export interface MultidisciplinarySummary {
 export interface TrendingTopic {
   keyword: string;
   articleCount: number;
-  growthRate: number; // percentage change
-  firstAppearanceYear: number;
-  latestYear: number;
+  firstAppearanceYear: number | null;
+  latestYear: number | null;
 }
 
 // Keyword Growth
