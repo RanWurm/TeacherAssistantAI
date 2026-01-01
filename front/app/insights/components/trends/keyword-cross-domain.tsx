@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Network } from 'lucide-react';
-// Removed MOCK_KEYWORD_CROSS_DOMAIN import
 import type { TimeRange } from '../../types/insights.types';
-import { useInsightsTrends } from '../../../../hooks/insights/useInsightsTrends'; // Assumed path
+import { useInsightsTrends } from '../../../../hooks/insights/useInsightsTrends';
 
 interface KeywordCrossDomainProps {
   timeRange: TimeRange;
@@ -167,15 +166,14 @@ function TitleChip({
   );
 }
 
-
-
 export function KeywordCrossDomain({ timeRange }: KeywordCrossDomainProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data, loading } = useInsightsTrends(timeRange);
   const crossDomain = data?.keywordCrossDomain ?? [];
   const [expanded, setExpanded] = useState<{ [keyword: string]: boolean }>({});
+  const isRtl = i18n.dir() === 'rtl';
 
-  // Keep your current behavior. (If you want, we can later replace with pure Tailwind logic.)
+  // Responsive checks
   const isSmallScreen =
     typeof window !== 'undefined' ? window.innerWidth < 640 : false;
 
@@ -188,10 +186,40 @@ export function KeywordCrossDomain({ timeRange }: KeywordCrossDomainProps) {
   };
 
   if (loading) {
-    // You could expand this with a loading spinner etc if desired for UI polish
+    // Use the same skeleton row loading UI as PublicationsTimeline
+    // We'll show 5 loading items
     return (
-      <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-3 sm:p-6 flex items-center justify-center min-h-[120px]">
-        <span className="text-gray-400 text-sm">{t('common.loading')}</span>
+      <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-3 sm:p-6">
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+          <Network className="w-4 h-4 text-gray-500" />
+          <h3 className="text-sm font-semibold text-gray-900 truncate">
+            {t('insights.trends.keywordCrossDomain.title')}
+          </h3>
+        </div>
+        <div className="space-y-2.5 sm:space-y-4">
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <div
+              key={idx}
+              className="p-2.5 sm:p-3 border border-gray-100 rounded-lg bg-gray-50 animate-pulse"
+            >
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="h-5 w-24 sm:w-40 bg-gray-200 rounded" />
+                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-100 border border-purple-100 text-xs font-semibold text-transparent">
+                    &nbsp;
+                  </div>
+                </div>
+                <div className="h-4 w-16 bg-gray-100 rounded" />
+              </div>
+              <div className="flex flex-wrap gap-2 mb-1">
+                <div className="h-6 w-16 bg-gray-100 rounded-full" />
+                <div className="h-6 w-14 bg-gray-100 rounded-full" />
+                <div className="h-6 w-14 bg-gray-100 rounded-full" />
+                <div className="h-6 w-14 bg-gray-100 rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -204,7 +232,6 @@ export function KeywordCrossDomain({ timeRange }: KeywordCrossDomainProps) {
           {t('insights.trends.keywordCrossDomain.title')}
         </h3>
       </div>
-
       <div className="space-y-2.5 sm:space-y-4">
         {crossDomain.map((item, idx) => {
           const isExpanded = expanded[item.keyword];
@@ -232,14 +259,12 @@ export function KeywordCrossDomain({ timeRange }: KeywordCrossDomainProps) {
                     subject={item.keyword}
                     subjectMaxLen={keywordMaxLen}
                   />
-
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 border border-purple-100 text-xs font-semibold text-purple-700 whitespace-nowrap">
                     {t('insights.trends.keywordCrossDomain.domains', {
                       count: item.subjectCount,
                     })}
                   </span>
                 </div>
-
                 <span
                   className="text-xs text-gray-500 font-normal truncate max-w-22 sm:max-w-34"
                   title={String(item.articleCount)}
@@ -249,13 +274,11 @@ export function KeywordCrossDomain({ timeRange }: KeywordCrossDomainProps) {
                   })}
                 </span>
               </div>
-
               {/* Clustered subject chips */}
               <div className="flex flex-wrap gap-2 mb-1">
                 {displaySubjects.map((subject, sIdx) => (
                   <SubjectChip key={sIdx} subject={subject} subjectMaxLen={subjectMaxLen} />
                 ))}
-
                 {hasMore && (
                   <button
                     type="button"
@@ -271,7 +294,6 @@ export function KeywordCrossDomain({ timeRange }: KeywordCrossDomainProps) {
                   </button>
                 )}
               </div>
-
               {hasMore && (
                 <div className="mt-0.5 text-xs text-gray-400 italic truncate">
                   {t('insights.trends.keywordCrossDomain.revealHint')}

@@ -81,8 +81,6 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
       .slice(0, LIMIT) as [string, GrowthRow[]][];
   }, [data, displayFromYear]);
   
-  
-
   const maxCount = useMemo(() => {
     return Math.max(
       1,
@@ -91,10 +89,41 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
   }, [data]);
 
   if (loading) {
+    // Show header and loading skeleton
     return (
-      <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6">
-        <div className="animate-pulse text-sm text-gray-400">
-          {t('insights.loading')}
+      <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6 min-h-[240px] flex flex-col gap-3 animate-pulse">
+        <div className="flex items-center gap-2 mb-1.5">
+          <BarChart3 className="w-4 h-4 text-gray-500" />
+          <h3 className="text-sm font-semibold text-gray-900">
+            {t('insights.trends.keywordGrowthTable.title')}
+          </h3>
+        </div>
+        <p className="text-xs text-gray-600 mb-3">
+          {t('insights.trends.keywordGrowthTable.subtitle')}
+        </p>
+        <div className="space-y-3 flex-1">
+          {[...Array(3)].map((_, idx) => (
+            <div key={idx} className="space-y-2">
+              <div className="h-3 w-16 bg-gray-200 rounded" />
+              {[...Array(2)].map((__, i) => (
+                <div key={i} className="flex items-center gap-3 -mx-1 px-1 py-1.5 rounded">
+                  <div className="w-12 h-3 bg-gray-100 rounded" />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-2 rounded bg-gray-200" />
+                        <div className="w-8 h-3 rounded bg-gray-300" />
+                      </div>
+                      <div className="w-9 h-4 rounded bg-gray-100" />
+                    </div>
+                    <div className="relative h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="absolute left-0 top-0 h-1.5 bg-gray-200 rounded-full" style={{ width: `${Math.random() * 60 + 20}%` }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
         </div>
       </div>
     );
