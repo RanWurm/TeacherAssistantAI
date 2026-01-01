@@ -185,17 +185,17 @@ export function KeywordCrossDomain({ timeRange }: KeywordCrossDomainProps) {
     setExpanded(prev => ({ ...prev, [keyword]: true }));
   };
 
-  if (loading) {
-    // Use the same skeleton row loading UI as PublicationsTimeline
-    // We'll show 5 loading items
-    return (
-      <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-3 sm:p-6">
-        <div className="flex items-center gap-2 mb-3 sm:mb-4">
-          <Network className="w-4 h-4 text-gray-500" />
-          <h3 className="text-sm font-semibold text-gray-900 truncate">
-            {t('insights.trends.keywordCrossDomain.title')}
-          </h3>
-        </div>
+  // Always show header, whether loading or not
+  return (
+    <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-3 sm:p-6">
+      <div className="flex items-center gap-2 mb-3 sm:mb-4">
+        <Network className="w-4 h-4 text-gray-500" />
+        <h3 className="text-sm font-semibold text-gray-900 truncate">
+          {t('insights.trends.keywordCrossDomain.title')}
+        </h3>
+      </div>
+      {loading ? (
+        // Skeleton rows - similar style to PublicationsTimeline header loading rows
         <div className="space-y-2.5 sm:space-y-4">
           {Array.from({ length: 5 }).map((_, idx) => (
             <div
@@ -220,89 +220,79 @@ export function KeywordCrossDomain({ timeRange }: KeywordCrossDomainProps) {
             </div>
           ))}
         </div>
-      </div>
-    );
-  }
+      ) : (
+        <div className="space-y-2.5 sm:space-y-4">
+          {crossDomain.map((item, idx) => {
+            const isExpanded = expanded[item.keyword];
+            const maxSubjects =
+              item.subjects.length <= maxSubjectsDefault
+                ? item.subjects.length
+                : maxSubjectsDefault;
 
-  return (
-    <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-3 sm:p-6">
-      <div className="flex items-center gap-2 mb-3 sm:mb-4">
-        <Network className="w-4 h-4 text-gray-500" />
-        <h3 className="text-sm font-semibold text-gray-900 truncate">
-          {t('insights.trends.keywordCrossDomain.title')}
-        </h3>
-      </div>
-      <div className="space-y-2.5 sm:space-y-4">
-        {crossDomain.map((item, idx) => {
-          const isExpanded = expanded[item.keyword];
-          const maxSubjects =
-            item.subjects.length <= maxSubjectsDefault
-              ? item.subjects.length
-              : maxSubjectsDefault;
+            const displaySubjects = isExpanded
+              ? item.subjects
+              : item.subjects.slice(0, maxSubjects);
 
-          const displaySubjects = isExpanded
-            ? item.subjects
-            : item.subjects.slice(0, maxSubjects);
+            const hasMore = item.subjects.length > maxSubjects && !isExpanded;
+            const remainingCount = item.subjects.length - maxSubjects;
 
-          const hasMore = item.subjects.length > maxSubjects && !isExpanded;
-          const remainingCount = item.subjects.length - maxSubjects;
-
-          return (
-            <div
-              key={idx}
-              className="p-2.5 sm:p-3 border border-gray-100 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
-            >
-              {/* Keyword and meta */}
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2 min-w-0">
-                  <TitleChip
-                    subject={item.keyword}
-                    subjectMaxLen={keywordMaxLen}
-                  />
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 border border-purple-100 text-xs font-semibold text-purple-700 whitespace-nowrap">
-                    {t('insights.trends.keywordCrossDomain.domains', {
-                      count: item.subjectCount,
+            return (
+              <div
+                key={idx}
+                className="p-2.5 sm:p-3 border border-gray-100 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+              >
+                {/* Keyword and meta */}
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <TitleChip
+                      subject={item.keyword}
+                      subjectMaxLen={keywordMaxLen}
+                    />
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 border border-purple-100 text-xs font-semibold text-purple-700 whitespace-nowrap">
+                      {t('insights.trends.keywordCrossDomain.domains', {
+                        count: item.subjectCount,
+                      })}
+                    </span>
+                  </div>
+                  <span
+                    className="text-xs text-gray-500 font-normal truncate max-w-22 sm:max-w-34"
+                    title={String(item.articleCount)}
+                  >
+                    {t('insights.trends.keywordCrossDomain.articles', {
+                      count: item.articleCount,
                     })}
                   </span>
                 </div>
-                <span
-                  className="text-xs text-gray-500 font-normal truncate max-w-22 sm:max-w-34"
-                  title={String(item.articleCount)}
-                >
-                  {t('insights.trends.keywordCrossDomain.articles', {
-                    count: item.articleCount,
-                  })}
-                </span>
-              </div>
-              {/* Clustered subject chips */}
-              <div className="flex flex-wrap gap-2 mb-1">
-                {displaySubjects.map((subject, sIdx) => (
-                  <SubjectChip key={sIdx} subject={subject} subjectMaxLen={subjectMaxLen} />
-                ))}
+                {/* Clustered subject chips */}
+                <div className="flex flex-wrap gap-2 mb-1">
+                  {displaySubjects.map((subject, sIdx) => (
+                    <SubjectChip key={sIdx} subject={subject} subjectMaxLen={subjectMaxLen} />
+                  ))}
+                  {hasMore && (
+                    <button
+                      type="button"
+                      className="px-2 py-0.5 text-xs text-gray-500 border border-dashed border-gray-300 bg-white rounded-full hover:bg-gray-100 focus:outline-none transition whitespace-nowrap"
+                      aria-label={t('insights.trends.keywordCrossDomain.showMore', {
+                        count: remainingCount,
+                      })}
+                      onClick={() => handleExpand(item.keyword)}
+                    >
+                      {t('insights.trends.keywordCrossDomain.showMore', {
+                        count: remainingCount,
+                      })}
+                    </button>
+                  )}
+                </div>
                 {hasMore && (
-                  <button
-                    type="button"
-                    className="px-2 py-0.5 text-xs text-gray-500 border border-dashed border-gray-300 bg-white rounded-full hover:bg-gray-100 focus:outline-none transition whitespace-nowrap"
-                    aria-label={t('insights.trends.keywordCrossDomain.showMore', {
-                      count: remainingCount,
-                    })}
-                    onClick={() => handleExpand(item.keyword)}
-                  >
-                    {t('insights.trends.keywordCrossDomain.showMore', {
-                      count: remainingCount,
-                    })}
-                  </button>
+                  <div className="mt-0.5 text-xs text-gray-400 italic truncate">
+                    {t('insights.trends.keywordCrossDomain.revealHint')}
+                  </div>
                 )}
               </div>
-              {hasMore && (
-                <div className="mt-0.5 text-xs text-gray-400 italic truncate">
-                  {t('insights.trends.keywordCrossDomain.revealHint')}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

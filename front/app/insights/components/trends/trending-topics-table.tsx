@@ -200,9 +200,20 @@ export function TrendingTopicsTable({ timeRange }: TrendingTopicsTableProps) {
 
   // ---- START NEW LOADING PLACEHOLDER ----
   if (loading) {
-    // Use same style as metrics-cards.tsx loading
+    // Show header and subtitle even when loading
     return (
       <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6">
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-sky-100">
+            <TrendingUp className="w-5 h-5 text-sky-500" aria-hidden="true" />
+          </span>
+          <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+            {t("insights.trends.trendingTopicsTable.title")}
+          </h3>
+        </div>
+        <p className="text-sm text-gray-500 mb-7">
+          {t("insights.trends.trendingTopicsTable.subtitle")}
+        </p>
         {/* Podium loading */}
         <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-8">
           {Array.from({ length: 3 }).map((_, idx) => (

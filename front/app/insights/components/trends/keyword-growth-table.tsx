@@ -51,7 +51,7 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
       });
     });
   
-    // חישוב prev / growth + מיון שנים (חדש → ישן)
+    // Compute previousYearCount and growth, sort years (newest → oldest)
     byKeyword.forEach(rows => {
       rows.sort((a, b) => b.year - a.year);
   
@@ -62,7 +62,7 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
       });
     });
   
-    // 🔑 סדר לפי TrendingTopics — בלי sort נוסף
+    // Order by trendingTopics order
     return trending
       .map(topic => {
         const rows = byKeyword.get(topic.keyword);
@@ -88,20 +88,20 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
     );
   }, [data]);
 
-  if (loading) {
-    // Show header and loading skeleton
-    return (
-      <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6 min-h-[240px] flex flex-col gap-3 animate-pulse">
-        <div className="flex items-center gap-2 mb-1.5">
-          <BarChart3 className="w-4 h-4 text-gray-500" />
-          <h3 className="text-sm font-semibold text-gray-900">
-            {t('insights.trends.keywordGrowthTable.title')}
-          </h3>
-        </div>
-        <p className="text-xs text-gray-600 mb-3">
-          {t('insights.trends.keywordGrowthTable.subtitle')}
-        </p>
-        <div className="space-y-3 flex-1">
+  return (
+    <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6">
+      <div className="flex items-center gap-2 mb-1.5">
+        <BarChart3 className="w-4 h-4 text-gray-500" />
+        <h3 className="text-sm font-semibold text-gray-900">
+          {t('insights.trends.keywordGrowthTable.title')}
+        </h3>
+      </div>
+      <p className="text-xs text-gray-600 mb-3">
+        {t('insights.trends.keywordGrowthTable.subtitle')}
+      </p>
+
+      {loading ? (
+        <div className="space-y-3 flex-1 animate-pulse">
           {[...Array(3)].map((_, idx) => (
             <div key={idx} className="space-y-2">
               <div className="h-3 w-16 bg-gray-200 rounded" />
@@ -125,90 +125,71 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
             </div>
           ))}
         </div>
-      </div>
-    );
-  }
+      ) : !processed.length ? (
+        <div className="text-sm text-gray-400">
+          {t('insights.trends.keywordGrowthTable.noData')}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {processed.map(([keyword, rows]) => (
+            <div key={keyword} className="space-y-2">
+              <div className="text-xs font-semibold text-gray-700 mb-2">
+                {keyword}
+              </div>
 
-  if (!processed.length) {
-    return (
-      <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6 text-sm text-gray-400">
-        {t('insights.trends.keywordGrowthTable.noData')}
-      </div>
-    );
-  }
+              {rows.map((item) => {
+                const percent = (item.articleCount / maxCount) * 100;
+                const isPositive = item.growth >= 0;
 
-  return (
-    <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6">
-      <div className="flex items-center gap-2 mb-1.5">
-        <BarChart3 className="w-4 h-4 text-gray-500" />
-        <h3 className="text-sm font-semibold text-gray-900">
-          {t('insights.trends.keywordGrowthTable.title')}
-        </h3>
-      </div>
+                return (
+                  <div
+                    key={item.year}
+                    className="flex items-center gap-3 hover:bg-gray-50 -mx-1 px-1 py-1.5 rounded"
+                  >
+                    <div className="w-12 text-xs text-gray-600">{item.year}</div>
 
-      <p className="text-xs text-gray-600 mb-3">
-        {t('insights.trends.keywordGrowthTable.subtitle')}
-      </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">
+                            {t('insights.trends.keywordGrowthTable.previous', {
+                              count: item.previousYearCount,
+                            })}
+                          </span>
+                          <span className="text-sm font-semibold text-gray-900">
+                            {item.articleCount.toLocaleString()}
+                          </span>
+                        </div>
 
-      <div className="space-y-4">
-        {processed.map(([keyword, rows]) => (
-          <div key={keyword} className="space-y-2">
-            <div className="text-xs font-semibold text-gray-700 mb-2">
-              {keyword}
-            </div>
-
-            {rows.map((item) => {
-              const percent = (item.articleCount / maxCount) * 100;
-              const isPositive = item.growth >= 0;
-
-              return (
-                <div
-                  key={item.year}
-                  className="flex items-center gap-3 hover:bg-gray-50 -mx-1 px-1 py-1.5 rounded"
-                >
-                  <div className="w-12 text-xs text-gray-600">{item.year}</div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500">
-                          {t('insights.trends.keywordGrowthTable.previous', {
-                            count: item.previousYearCount,
-                          })}
-                        </span>
-                        <span className="text-sm font-semibold text-gray-900">
-                          {item.articleCount.toLocaleString()}
+                        <span
+                          dir="ltr"
+                          className={`text-xs font-medium px-1.5 py-0.5 rounded ${
+                            isPositive
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-red-100 text-red-700'
+                          }`}
+                        >
+                          {isPositive ? '+' : ''}
+                          {item.growth}
                         </span>
                       </div>
 
-                      <span
-                        dir="ltr"
-                        className={`text-xs font-medium px-1.5 py-0.5 rounded ${
-                          isPositive
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700'
-                        }`}
-                      >
-                        {isPositive ? '+' : ''}
-                        {item.growth}
-                      </span>
-                    </div>
-
-                    <div className="relative h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className={`absolute inset-y-0 left-0 rounded-full transition-all duration-700 ${
-                          isPositive ? 'bg-green-500' : 'bg-red-500'
-                        }`}
-                        style={{ width: `${percent}%` }}
-                      />
+                      <div className="relative h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className={`absolute inset-y-0 left-0 rounded-full transition-all duration-700 ${
+                            isPositive ? 'bg-green-500' : 'bg-red-500'
+                          }`}
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
