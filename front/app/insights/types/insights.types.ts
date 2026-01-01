@@ -56,8 +56,8 @@ export interface KeywordGrowth {
 export interface KeywordCrossDomain {
   keyword: string;
   subjectCount: number;
-  subjects: string[];
   articleCount: number;
+  subjects: string[];
 }
 
 // Researcher Statistics

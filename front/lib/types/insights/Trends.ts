@@ -18,6 +18,8 @@ export interface TrendingTopic {
   export interface KeywordCrossDomain {
     keyword: string;
     subjectCount: number;
+    articleCount: number;
+    subjects: string[];
   }
   
   export interface TrendsInsights {

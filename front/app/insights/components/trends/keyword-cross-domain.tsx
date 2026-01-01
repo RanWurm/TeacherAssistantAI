@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Network } from 'lucide-react';
-import { MOCK_KEYWORD_CROSS_DOMAIN } from '../../data/mock';
+// Removed MOCK_KEYWORD_CROSS_DOMAIN import
 import type { TimeRange } from '../../types/insights.types';
+import { useInsightsTrends } from '../../../../hooks/insights/useInsightsTrends'; // Assumed path
 
 interface KeywordCrossDomainProps {
   timeRange: TimeRange;
@@ -168,9 +169,10 @@ function TitleChip({
 
 
 
-export function KeywordCrossDomain({ }: KeywordCrossDomainProps) {
+export function KeywordCrossDomain({ timeRange }: KeywordCrossDomainProps) {
   const { t } = useTranslation();
-  const crossDomain = MOCK_KEYWORD_CROSS_DOMAIN;
+  const { data, loading } = useInsightsTrends(timeRange);
+  const crossDomain = data?.keywordCrossDomain ?? [];
   const [expanded, setExpanded] = useState<{ [keyword: string]: boolean }>({});
 
   // Keep your current behavior. (If you want, we can later replace with pure Tailwind logic.)
@@ -184,6 +186,15 @@ export function KeywordCrossDomain({ }: KeywordCrossDomainProps) {
   const handleExpand = (keyword: string) => {
     setExpanded(prev => ({ ...prev, [keyword]: true }));
   };
+
+  if (loading) {
+    // You could expand this with a loading spinner etc if desired for UI polish
+    return (
+      <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-3 sm:p-6 flex items-center justify-center min-h-[120px]">
+        <span className="text-gray-400 text-sm">{t('common.loading')}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-3 sm:p-6">
