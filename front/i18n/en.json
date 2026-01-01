@@ -164,34 +164,34 @@
         },
         "researchers": {
             "topResearchers": {
-                "title": "Researchers",
-                "subtitle": "Profiles and research diversity insights",
-                "topResearcherTitle": "Top Researcher",
-                "topResearcherDescription": "Explore top researchers ranked by total citations. Each card highlights their publication and impact metrics, research breadth (journals and subjects), and key distinguishing features.",
+                "title": "Top Researchers",
+                "subtitle": "Discover the foremost researchers ranked by total citations. Each profile card details publication and citation metrics, research scope (journal and subject coverage), and distinguishing traits such as multidisciplinary activity, sustained impact, or research focus.",
                 "researcher": {
                     "affiliationFallback": "N/A",
-                    "articles": "{{count}} papers",
-                    "avgCitations": "{{count}} avg",
+                    "articles": "{{count}} articles",
+                    "avgCitations": "{{count}} avg citations",
                     "journals": "{{count}} journals",
                     "subjects": "{{count}} subjects",
+                    "mostCitedArticle": "Most cited article: {{count}} citations",
+                    "yearsRange": "{{from}}–{{to}}",
                     "rankGold": "🥇",
                     "rankSilver": "🥈",
                     "rankBronze": "🥉",
                     "rankOther": "#{{rank}}",
                     "insight": {
                         "multidisciplinary": "Highly multidisciplinary",
-                        "recentHighImpact": "Recent high impact",
-                        "consistentlyHighImpact": "Consistently high impact",
-                        "focusedProfile": "Focused research profile"
+                        "recentHighImpact": "Recent high-impact work",
+                        "consistentlyHighImpact": "Consistently high-impact",
+                        "focusedProfile": "Narrow research focus"
                     }
                 }
             },
             "multidisciplinaryResearchers": {
-                "title": "Multidisciplinary Researchers",
-                "description": "Researchers with the broadest disciplinary spread across domains.",
+                "title": "Most Multidisciplinary Researchers",
+                "description": "Researchers with the widest disciplinary reach across domains.",
                 "domains": "{{count}} domains",
                 "affiliationFallback": "N/A",
-                "subjectsShowMore": "+{{count}} more",
+                "subjectsShowMore": "+{{count}} more subjects",
                 "articles": "{{count}} articles",
                 "avgCitations": "{{count}} avg citations"
             }

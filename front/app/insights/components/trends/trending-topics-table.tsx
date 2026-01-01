@@ -181,6 +181,73 @@ function TopicTooltipContent({
   );
 }
 
+function TrendingTopicsLoadingSkeleton() {
+  // Less pronounced, subtler gentle colors for backgrounds and pulses
+  return (
+    <div className="bg-gradient-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-sky-50 animate-pulse">
+          <TrendingUp className="w-5 h-5 text-sky-200" aria-hidden="true" />
+        </span>
+        <div className="h-5 w-32 rounded bg-blue-100/40 animate-pulse" />
+      </div>
+      <div className="h-4 w-52 mb-7 rounded bg-blue-50/40 animate-pulse" />
+      {/* Podium loading */}
+      <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-8">
+        {[
+          // Use soft gentle backgrounds, less saturation
+          ["bg-yellow-50/60", "bg-yellow-100/50"],
+          ["bg-slate-50/60", "bg-blue-50/50"],
+          ["bg-amber-50/60", "bg-amber-100/50"],
+        ].map(([bgOuter, bgInner], idx) => (
+          <div
+            key={idx}
+            className={`
+              relative flex flex-col items-center justify-center
+              rounded-2xl border border-blue-100 shadow-md
+              px-4 py-4 sm:py-6
+              ${bgOuter} animate-pulse
+              opacity-95
+            `}
+          >
+            <div className="relative mb-2">
+              <div className={`w-6 h-6 rounded-full ${bgInner}`} />
+              <span
+                className="
+                  absolute -top-1 -right-1
+                  w-4 h-4
+                  rounded-full
+                  bg-blue-100/70
+                "
+              ></span>
+            </div>
+            <div className="h-3 bg-blue-50/50 rounded w-2/3 mb-1" />
+            <div className="h-4 bg-violet-50/40 rounded w-1/3" />
+          </div>
+        ))}
+      </div>
+      {/* Rest loading */}
+      <div className="flex flex-col items-center gap-3">
+        {Array.from({ length: 5 }).map((_, idx) => (
+          <div
+            key={idx}
+            className="
+              flex items-center gap-2 px-3 sm:px-4 py-2
+              bg-blue-50/60 border border-blue-100 rounded-2xl shadow-md text-sm
+              w-full max-w-[98vw] sm:w-[340px] animate-pulse
+              opacity-90
+            "
+          >
+            <div className="mr-2 min-w-[22px] h-3 bg-blue-100/40 rounded" />
+            <div className="font-semibold truncate max-w-[90px] sm:max-w-[140px] h-3 bg-sky-50/60 rounded" />
+            <div className="ml-auto h-3 w-10 bg-violet-50/70 rounded" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function TrendingTopicsTable({ timeRange }: TrendingTopicsTableProps) {
   const { t } = useTranslation();
   const { data, loading } = useInsightsTrends(timeRange);
@@ -198,69 +265,9 @@ export function TrendingTopicsTable({ timeRange }: TrendingTopicsTableProps) {
   const podium = ranked.slice(0, 3);
   const rest = ranked.slice(3);
 
-  // ---- START NEW LOADING PLACEHOLDER ----
   if (loading) {
-    // Show header and subtitle even when loading
-    return (
-      <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-sky-100">
-            <TrendingUp className="w-5 h-5 text-sky-500" aria-hidden="true" />
-          </span>
-          <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-            {t("insights.trends.trendingTopicsTable.title")}
-          </h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-7">
-          {t("insights.trends.trendingTopicsTable.subtitle")}
-        </p>
-        {/* Podium loading */}
-        <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-8">
-          {Array.from({ length: 3 }).map((_, idx) => (
-            <div
-              key={idx}
-              className="
-                relative flex flex-col items-center justify-center
-                rounded-2xl border border-blue-100 shadow-md
-                bg-white/60
-                px-4 py-4 sm:py-6
-                animate-pulse
-                opacity-80
-              "
-            >
-              <div className="relative mb-2">
-                <div className="w-6 h-6 bg-slate-200 rounded-full" />
-                <span
-                  className="
-                    absolute -top-1 -right-1
-                    w-4 h-4
-                    rounded-full
-                    bg-slate-300
-                  "
-                ></span>
-              </div>
-              <div className="h-3 bg-slate-200 rounded w-2/3 mb-1" />
-              <div className="h-4 bg-slate-100 rounded w-1/3" />
-            </div>
-          ))}
-        </div>
-        {/* Rest loading */}
-        <div className="flex flex-col items-center gap-3">
-          {Array.from({ length: 5 }).map((_, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-white/80 border border-blue-100 rounded-2xl shadow-md text-sm w-full max-w-[98vw] sm:w-[340px] animate-pulse opacity-80"
-            >
-              <div className="mr-2 min-w-[22px] h-3 bg-slate-200 rounded" />
-              <div className="font-semibold truncate max-w-[90px] sm:max-w-[140px] h-3 bg-slate-100 rounded" />
-              <div className="ml-auto h-3 w-10 bg-slate-200 rounded" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <TrendingTopicsLoadingSkeleton />;
   }
-  // ---- END NEW LOADING PLACEHOLDER ----
 
   if (!ranked.length) {
     return (

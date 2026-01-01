@@ -124,33 +124,33 @@
         "researchers": {
             "topResearchers": {
                 "title": "חוקרים מובילים",
-                "subtitle": "ניתוח חוקרים ודפוסי מחקר מגוונים",
-                "topResearcherTitle": "החוקר המוביל",
-                "topResearcherDescription": "גלו את החוקרים המובילים לפי סך הציטוטים. כל כרטיס מדגיש מדדי פרסום והשפעה, גיוון כתבי עת ותחומים, ומאפיינים בולטים נוספים.",
+                "subtitle": "גלה את החוקרים המובילים בדירוג לפי סך הציטוטים. כל כרטיס פרופיל כולל מדדי פרסומים וציטוטים, טווח מחקר (כתבי עת ותחומים), ותכונות בולטות כגון פעילות רב-תחומית, השפעה מתמשכת, או מיקוד מחקרי.",
                 "researcher": {
                     "affiliationFallback": "ללא",
                     "articles": "{{count}} מאמרים",
-                    "avgCitations": "{{count}} ממוצע",
+                    "avgCitations": "{{count}} ממוצע ציטוטים",
                     "journals": "{{count}} כתבי עת",
                     "subjects": "{{count}} תחומים",
+                    "mostCitedArticle": "המאמר המצוטט ביותר: {{count}} ציטוטים",
+                    "yearsRange": "{{from}}–{{to}}",
                     "rankGold": "🥇",
                     "rankSilver": "🥈",
                     "rankBronze": "🥉",
                     "rankOther": "#{{rank}}",
                     "insight": {
                         "multidisciplinary": "רב-תחומי במיוחד",
-                        "recentHighImpact": "השפעה גבוהה לאחרונה",
+                        "recentHighImpact": "עבודות בעלות השפעה גבוהה לאחרונה",
                         "consistentlyHighImpact": "השפעה גבוהה בעקביות",
-                        "focusedProfile": "מחקר ממוקד מאוד"
+                        "focusedProfile": "מיקוד מחקרי צר"
                     }
                 }
             },
             "multidisciplinaryResearchers": {
-                "title": "חוקרים רב-תחומיים",
+                "title": "החוקרים הרב-תחומיים ביותר",
                 "description": "חוקרים עם פיזור תחומי מחקר רחב במיוחד.",
                 "domains": "{{count}} תחומים",
                 "affiliationFallback": "ללא",
-                "subjectsShowMore": "+{{count}} נוספים",
+                "subjectsShowMore": "+{{count}} תחומים נוספים",
                 "articles": "{{count}} מאמרים",
                 "avgCitations": "{{count}} ממוצע ציטוטים"
             }

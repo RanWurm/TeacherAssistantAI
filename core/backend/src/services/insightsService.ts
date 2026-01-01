@@ -128,7 +128,10 @@ export async function getTrendsInsights(
       keyword: row.keyword,
       subjectCount: Number(row.subjectCount),
       articleCount: Number(row.articleCount),
-      subjects: row.subjects ? row.subjects.split('||') : [],
+      subjects:
+      typeof row.subjects === 'string' && row.subjects.length > 0
+        ? row.subjects.split('||')
+        : [],
     }));
 
   return {
@@ -151,10 +154,32 @@ export async function getResearchersInsights(
   const multiQ = buildMultidisciplinaryResearchersQuery(fromYear);
 
   const topResearchers = await query<any>(topQ.sql, topQ.params);
-  const multidisciplinaryResearchers = await query<any>(
+  const multidisciplinaryResearchersRaw = await query<any>(
     multiQ.sql,
     multiQ.params
   );
+
+  // Adapter to the ResearcherStats type
+  const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map(r => ({
+    author_id: r.author_id,
+    name: r.name,
+    affiliation: r.affiliation ?? null,
+    articleCount: r.articleCount,
+    subjectCount: r.subjectCount,
+    totalCitations: r.totalCitations,
+    avgCitationsPerArticle: r.avgCitationsPerArticle,
+    subjects:
+      typeof r.subjects === 'string' && r.subjects.length > 0
+        ? r.subjects.split('||')
+        : [],
+    // If these fields are missing in the SQL response, default to 0 or []
+    uniqueJournals: Array.isArray(r.uniqueJournals)
+      ? r.uniqueJournals
+      : [],
+    uniqueSubjects: Array.isArray(r.uniqueSubjects)
+      ? r.uniqueSubjects
+      : [],
+  }));
 
   return {
     topResearchers,

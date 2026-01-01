@@ -18,6 +18,18 @@ type GrowthRow = {
 
 const LIMIT = 3;
 
+// Gentle loading color gradients analogous to publications-timeline.tsx
+const skeletonYearClass =
+  'w-12 h-3 bg-gradient-to-r from-blue-50 via-blue-100 to-purple-50 rounded';
+const skeletonKeywordClass =
+  'h-3 w-16 bg-gradient-to-r from-purple-50 via-blue-100 to-blue-50 rounded';
+const skeletonMainBarClass =
+  'h-2 w-10 rounded bg-gradient-to-r from-blue-100 via-blue-200 to-purple-100';
+const skeletonSubBarClass =
+  'h-3 w-8 rounded bg-gradient-to-r from-purple-100 via-blue-100 to-blue-100';
+const skeletonPercentBarBg =
+  'relative h-1.5 bg-gradient-to-r from-blue-100 via-blue-50 to-purple-100 rounded-full overflow-hidden';
+
 export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
   const { t } = useTranslation();
   const { data, loading } = useInsightsTrends(timeRange);
@@ -34,12 +46,12 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
   const processed = useMemo(() => {
     const allRows = data?.keywordGrowth ?? [];
     const trending = data?.trendingTopics ?? [];
-  
+
     if (!trending.length || !allRows.length) return [];
-  
+
     // Map: keyword -> GrowthRow[]
     const byKeyword = new Map<string, GrowthRow[]>();
-  
+
     allRows.forEach(({ keyword, year, articleCount }) => {
       if (!byKeyword.has(keyword)) byKeyword.set(keyword, []);
       byKeyword.get(keyword)!.push({
@@ -50,29 +62,29 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
         growth: 0,
       });
     });
-  
+
     // Compute previousYearCount and growth, sort years (newest → oldest)
     byKeyword.forEach(rows => {
       rows.sort((a, b) => b.year - a.year);
-  
+
       rows.forEach((row, i) => {
         const prev = rows[i + 1];
         row.previousYearCount = prev ? prev.articleCount : 0;
         row.growth = row.articleCount - row.previousYearCount;
       });
     });
-  
+
     // Order by trendingTopics order
     return trending
       .map(topic => {
         const rows = byKeyword.get(topic.keyword);
         if (!rows) return null;
-  
+
         const filtered =
           displayFromYear == null
             ? rows
             : rows.filter(r => r.year >= displayFromYear);
-  
+
         return filtered.length
           ? ([topic.keyword, filtered] as [string, GrowthRow[]])
           : null;
@@ -80,7 +92,7 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
       .filter(Boolean)
       .slice(0, LIMIT) as [string, GrowthRow[]][];
   }, [data, displayFromYear]);
-  
+
   const maxCount = useMemo(() => {
     return Math.max(
       1,
@@ -101,23 +113,30 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
       </p>
 
       {loading ? (
+        // Skeleton inspired by publications-timeline.tsx: gentle blues/purples, animating
         <div className="space-y-3 flex-1 animate-pulse">
-          {[...Array(3)].map((_, idx) => (
+          {Array.from({ length: 3 }).map((_, idx) => (
             <div key={idx} className="space-y-2">
-              <div className="h-3 w-16 bg-gray-200 rounded" />
+              <div className={skeletonKeywordClass} />
               {[...Array(2)].map((__, i) => (
-                <div key={i} className="flex items-center gap-3 -mx-1 px-1 py-1.5 rounded">
-                  <div className="w-12 h-3 bg-gray-100 rounded" />
+                <div
+                  key={i}
+                  className="flex items-center gap-3 -mx-1 px-1 py-1.5 rounded"
+                >
+                  <div className={skeletonYearClass} />
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
-                        <div className="w-10 h-2 rounded bg-gray-200" />
-                        <div className="w-8 h-3 rounded bg-gray-300" />
+                        <div className={skeletonMainBarClass} />
+                        <div className={skeletonSubBarClass} />
                       </div>
-                      <div className="w-9 h-4 rounded bg-gray-100" />
+                      <div className="w-9 h-4 rounded bg-gradient-to-r from-green-50 to-green-100" />
                     </div>
-                    <div className="relative h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="absolute left-0 top-0 h-1.5 bg-gray-200 rounded-full" style={{ width: `${Math.random() * 60 + 20}%` }} />
+                    <div className={skeletonPercentBarBg}>
+                      <div
+                        className="absolute left-0 top-0 h-1.5 bg-gradient-to-r from-blue-300 via-purple-100 to-blue-200 rounded-full"
+                        style={{ width: `${70 - idx * 10 - i * 15}%`, opacity: 0.85 }}
+                      />
                     </div>
                   </div>
                 </div>

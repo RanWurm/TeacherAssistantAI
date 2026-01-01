@@ -7,17 +7,11 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+// Import the type for type safety and consistency
+import type { ResearcherStats } from '@/lib/types/insights/Researchers';
+
 interface ResearcherProfileCardProps {
-  researcher: {
-    authorId: string;
-    name: string;
-    affiliation?: string;
-    articleCount: number;
-    totalCitations: number;
-    avgCitationsPerArticle: number;
-    uniqueJournals: number;
-    uniqueSubjects: number;
-  };
+  researcher: ResearcherStats;
   rank: number;
   maxCitations: number;
   timeRange: '1y' | '3y' | '5y' | 'all';
@@ -42,7 +36,10 @@ export function ResearcherProfileCard({
   let insightKey: string;
   if (researcher.uniqueSubjects >= 6) {
     insightKey = 'insights.researchers.topResearchers.researcher.insight.multidisciplinary';
-  } else if (researcher.avgCitationsPerArticle > 30) {
+  } else if (
+    researcher.avgCitationsPerArticle != null &&
+    researcher.avgCitationsPerArticle > 30
+  ) {
     if (timeRange === '1y') {
       insightKey = 'insights.researchers.topResearchers.researcher.insight.recentHighImpact';
     } else {
@@ -64,16 +61,48 @@ export function ResearcherProfileCard({
     rankLabel = t('insights.researchers.topResearchers.researcher.rankOther', { rank });
   }
 
-  // i18n metrics
-  const affiliation = researcher.affiliation || t('insights.researchers.topResearchers.researcher.affiliationFallback');
-  const articleCountLabel = t('insights.researchers.topResearchers.researcher.articles', { count: researcher.articleCount });
-  const avgCitationsLabel = t('insights.researchers.topResearchers.researcher.avgCitations', { count: researcher.avgCitationsPerArticle });
-  const journalsLabel = t('insights.researchers.topResearchers.researcher.journals', { count: researcher.uniqueJournals });
-  const subjectsLabel = t('insights.researchers.topResearchers.researcher.subjects', { count: researcher.uniqueSubjects });
+  // i18n metrics using en.json keys for metrics
+  const affiliation =
+    researcher.affiliation ||
+    t('insights.researchers.topResearchers.researcher.affiliationFallback');
+
+  // Prepare metrics as array and render with keys to ensure uniqueness
+  // Also ensure the key is unique by combining with the value (stringified for safety)
+  const metrics = [
+    {
+      key: `articles-${researcher.articleCount}`,
+      icon: FileText,
+      label: t('insights.researchers.topResearchers.researcher.articles', {
+        count: researcher.articleCount,
+      }),
+    },
+    {
+      key: `avgCitations-${researcher.avgCitationsPerArticle ?? 0}`,
+      icon: TrendingUp,
+      label: t('insights.researchers.topResearchers.researcher.avgCitations', {
+        count: researcher.avgCitationsPerArticle ?? 0,
+      }),
+    },
+    {
+      key: `journals-${researcher.uniqueJournals}`,
+      icon: BookOpen,
+      label: t('insights.researchers.topResearchers.researcher.journals', {
+        count: researcher.uniqueJournals,
+      }),
+    },
+    {
+      key: `subjects-${researcher.uniqueSubjects}`,
+      icon: Layers,
+      label: t('insights.researchers.topResearchers.researcher.subjects', {
+        count: researcher.uniqueSubjects,
+      }),
+    },
+  ];
 
   // Responsive sizing: use smaller paddings, fonts, and gaps on small screens
   return (
-    <div className="
+    <div
+      className="
       bg-white border border-gray-200 rounded-xl
       p-3 sm:p-4
       shadow-sm hover:shadow-md transition relative
@@ -82,7 +111,8 @@ export function ResearcherProfileCard({
     >
       {/* Rank badge */}
       <div
-        className={`absolute top-2 sm:top-4 ${isRtl ? 'left-2 sm:left-4' : 'right-2 sm:right-4'} 
+        className={`absolute top-2 sm:top-4 ${isRtl ? 'left-2 sm:left-4' : 'right-2 sm:right-4'
+          } 
         text-xs sm:text-base font-bold text-gray-800 bg-gray-100 
         px-2 py-1 sm:px-4 sm:py-2 rounded-lg shadow-sm`}
       >
@@ -93,10 +123,12 @@ export function ResearcherProfileCard({
       <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
         {/* Impact ring */}
         <div className="relative w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center">
-          <div className="
-            w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-linear-to-br from-blue-500 to-blue-700
+          <div
+            className="
+            w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-blue-500 to-blue-700
             flex items-center justify-center text-white font-bold text-xs sm:text-base
-          ">
+          "
+          >
             {initials}
           </div>
         </div>
@@ -114,22 +146,12 @@ export function ResearcherProfileCard({
 
       {/* Metrics */}
       <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-gray-700 mb-2 sm:mb-3">
-        <div className="flex items-center gap-1">
-          <FileText className="w-3 h-3" />
-          {articleCountLabel}
-        </div>
-        <div className="flex items-center gap-1">
-          <TrendingUp className="w-3 h-3" />
-          {avgCitationsLabel}
-        </div>
-        <div className="flex items-center gap-1">
-          <BookOpen className="w-3 h-3" />
-          {journalsLabel}
-        </div>
-        <div className="flex items-center gap-1">
-          <Layers className="w-3 h-3" />
-          {subjectsLabel}
-        </div>
+        {metrics.map(({ key, icon: Icon, label }) => (
+          <div className="flex items-center gap-1" key={key}>
+            <Icon className="w-3 h-3" />
+            {label}
+          </div>
+        ))}
       </div>
 
       {/* Insight */}
