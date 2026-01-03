@@ -17,11 +17,11 @@ function TopJournalsTableRowSkeleton({ idx }: { idx?: number }) {
         <div className="w-7 h-3 bg-emerald-50 rounded mx-auto" />
       </td>
       {/* Journal */}
-      <td className="px-2 py-2 md:px-6 md:py-4 min-w-[8rem]">
+      <td className="px-2 py-2 md:px-6 md:py-4 min-w-32">
         <div className="h-4 bg-gray-100 rounded w-32 mb-1" />
       </td>
       {/* Publisher */}
-      <td className="px-2 py-2 md:px-6 md:py-4 min-w-[8rem] text-xs text-gray-500">
+      <td className="px-2 py-2 md:px-6 md:py-4 min-w-32 text-xs text-gray-500">
         <div className="h-3 bg-gray-100 rounded w-20" />
       </td>
       {/* Articles */}
