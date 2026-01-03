@@ -83,21 +83,29 @@ export interface OverviewMetrics {
   export interface JournalStats {
     journal_id: number;
     name: string;
+    publisher: string | null;
+  
     articleCount: number;
+    authorCount: number;
+    subjectCount: number;
+  
     totalCitations: number;
-    avgCitations: number;
+    impactFactor: number | null;
   }
   
-  export interface CitationVolatilityPoint {
+  export interface SubjectImpactPoint {
     journal_id: number;
-    year: number;
-    avgCitations: number;
+    journalName: string;
+    subjectCount: number;
+    impactFactor: number | null;
+    articleCount: number;
   }
   
   export interface JournalsInsights {
     topJournals: JournalStats[];
-    citationVolatility: CitationVolatilityPoint[];
+    subjectImpact: SubjectImpactPoint[];
   }
+  
   
   /* ---------- Cross ---------- */
   
@@ -114,13 +122,17 @@ export interface OverviewMetrics {
   }
   
   export interface MultidisciplinaryVsSingle {
-    single: number;
-    multi: number;
+    type: 'single' | 'multi';
+    articles: number;
+    avgCitations: number | null;
+    totalCitations: number;
+    authors: number;
+    journals: number;
   }
   
   export interface CrossInsights {
     subjectJournalHeatmap: SubjectJournalHeatmapCell[];
     languageImpact: LanguageImpact[];
-    multidisciplinaryVsSingle: MultidisciplinaryVsSingle | null;
+    multidisciplinaryVsSingle: MultidisciplinaryVsSingle[]; 
   }
-  
+    

@@ -116,6 +116,7 @@ export function MultidisciplinaryResearchersGrid({
           <>
             {researchers.map((r: any) => (
               <MultidisciplinaryResearcherCard
+                key={r.authorId}
                 researcher={r}
               />
             ))}

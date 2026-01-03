@@ -5,6 +5,7 @@ import {
   ResearchersInsights,
   JournalsInsights,
   CrossInsights,
+  MultidisciplinaryVsSingle,
 } from "../types/insights.types";
 
 // ---- Overview queries ----
@@ -12,7 +13,6 @@ import {
   buildOverviewMetricsQuery,
   buildPublicationsTimelineQuery,
   buildMultidisciplinarySummaryQuery,
-  buildMostCommonSubjectCombinationQuery
 } from "../db/insights/overviewQueries";
 
 // ---- Trends queries ----
@@ -31,7 +31,7 @@ import {
 // ---- Journals queries ----
 import {
   buildTopJournalsQuery,
-  buildCitationVolatilityQuery,
+  buildSubjectImpactQuery,
 } from "../db/insights/journalsQueries";
 
 // ---- Cross queries ----
@@ -79,21 +79,10 @@ export async function getOverviewInsights(
   const timeline = await query<any>(timelineQ.sql, timelineQ.params);
   const [multidisciplinary] = await query<any>(multiQ.sql, multiQ.params);
 
-  const commonQ = buildMostCommonSubjectCombinationQuery(fromYear);
-  const [common] = await query<any>(commonQ.sql, commonQ.params);
-  
   return {
     metrics: metrics || null,
     timeline,
-    multidisciplinary: {
-      ...multidisciplinary,
-      mostCommonSubjectCombination: common
-        ? {
-            subjects: common.subjects.split(","),
-            articleCount: common.articleCount,
-          }
-        : null,
-    },
+    multidisciplinary
   };
 }
 
@@ -118,21 +107,21 @@ export async function getTrendsInsights(
     ? await query<any>(growthQ.sql, growthQ.params)
     : [];
 
-    const crossQ = buildKeywordCrossDomainQuery(topKeywords, fromYear);
+  const crossQ = buildKeywordCrossDomainQuery(topKeywords, fromYear);
 
-    const keywordCrossDomainRaw = crossQ.sql
-      ? await query<any>(crossQ.sql, crossQ.params)
-      : [];
+  const keywordCrossDomainRaw = crossQ.sql
+    ? await query<any>(crossQ.sql, crossQ.params)
+    : [];
 
-    const keywordCrossDomain = keywordCrossDomainRaw.map(row => ({
-      keyword: row.keyword,
-      subjectCount: Number(row.subjectCount),
-      articleCount: Number(row.articleCount),
-      subjects:
+  const keywordCrossDomain = keywordCrossDomainRaw.map(row => ({
+    keyword: row.keyword,
+    subjectCount: Number(row.subjectCount),
+    articleCount: Number(row.articleCount),
+    subjects:
       typeof row.subjects === 'string' && row.subjects.length > 0
         ? row.subjects.split('||')
         : [],
-    }));
+  }));
 
   return {
     trendingTopics,
@@ -197,14 +186,14 @@ export async function getJournalsInsights(
   const fromYear = timeRangeToFromYear(timeRange);
 
   const topQ = buildTopJournalsQuery(fromYear);
-  const volQ = buildCitationVolatilityQuery(fromYear);
+  const volQ = buildSubjectImpactQuery(fromYear);
 
   const topJournals = await query<any>(topQ.sql, topQ.params);
-  const citationVolatility = await query<any>(volQ.sql, volQ.params);
+  const subjectImpact = await query<any>(volQ.sql, volQ.params);
 
   return {
     topJournals,
-    citationVolatility,
+    subjectImpact,
   };
 }
 
@@ -225,15 +214,30 @@ export async function getCrossInsights(
     heatmapQ.sql,
     heatmapQ.params
   );
-  const languageImpact = await query<any>(languageQ.sql, languageQ.params);
-  const [multidisciplinaryVsSingle] = await query<any>(
+
+  const languageImpact = await query<any>(
+    languageQ.sql,
+    languageQ.params
+  );
+
+  const multidisciplinaryVsSingleRaw = await query<any>(
     multiQ.sql,
     multiQ.params
   );
 
+  const multidisciplinaryVsSingle: MultidisciplinaryVsSingle[] =
+    multidisciplinaryVsSingleRaw.map((row) => ({
+      type: row.type,
+      articles: Number(row.articles),
+      avgCitations: Number(row.avgCitations),
+      totalCitations: Number(row.totalCitations),
+      authors: Number(row.authors),
+      journals: Number(row.journals),
+    }));
+
   return {
     subjectJournalHeatmap,
     languageImpact,
-    multidisciplinaryVsSingle: multidisciplinaryVsSingle || null,
+    multidisciplinaryVsSingle,
   };
 }

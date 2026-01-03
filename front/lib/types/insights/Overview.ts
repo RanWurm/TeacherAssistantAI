@@ -17,17 +17,11 @@ export interface OverviewMetrics {
     authorCount: number;
     journalCount: number;
   }
-  
-  export interface MostCommonSubjectCombination {
-    subjects: string[];
-    articleCount: number;
-  }
-  
+    
   export interface MultidisciplinarySummary {
     singleSubjectArticles: number;
     multiSubjectArticles: number;
     avgSubjectsPerArticle: number | null;
-    mostCommonSubjectCombination?: MostCommonSubjectCombination | null;
   }
   
   

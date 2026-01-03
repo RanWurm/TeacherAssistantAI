@@ -1,5 +1,5 @@
 import { TopJournalsTable } from './top-journals-table';
-import { CitationVolatilityChart } from './citation-volatility-table';
+import { SubjectImpactChart } from './citation-volatility-table';
 import type { TimeRange } from '../../types/insights.types';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +23,17 @@ export function JournalsView({ timeRange }: JournalsViewProps) {
         </div>
       </div>
       <TopJournalsTable timeRange={timeRange} />
-      <CitationVolatilityChart />
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">
+            {t('insights.journals.subjectImpactChart.title')}
+          </h2>
+          <p className="text-sm text-gray-600 mb-2">
+            {t('insights.journals.subjectImpactChart.subtitle')}
+          </p>
+        </div>
+      </div>
+      <SubjectImpactChart timeRange={timeRange} />
     </div>
   );
 }

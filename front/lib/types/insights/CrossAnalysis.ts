@@ -15,8 +15,12 @@ export interface SubjectJournalHeatmapCell {
   }
   
   export interface MultidisciplinaryVsSingle {
-    single: number;
-    multi: number;
+    type: 'single' | 'multi';
+    articles: number;
+    avgCitations: number;
+    totalCitations: number;
+    authors: number;
+    journals: number;
   }
   
   export interface CrossInsights {

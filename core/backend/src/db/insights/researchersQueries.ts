@@ -48,11 +48,6 @@ export function buildTopResearchersQuery(
 /**
  * Multidisciplinary researchers
  */
-/**
- * Most Multidisciplinary Researchers
- * 
- * Researchers with the widest disciplinary reach across domains.
- */
 export function buildMultidisciplinaryResearchersQuery(
     fromYear?: number,
     minSubjects: number = 3,

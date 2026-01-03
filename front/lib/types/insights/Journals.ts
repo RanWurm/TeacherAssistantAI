@@ -3,21 +3,28 @@
 ========================= */
 
 export interface JournalStats {
-    journal_id: number;
-    name: string;
-    articleCount: number;
-    totalCitations: number;
-    avgCitations: number | null;
-  }
-  
-  export interface CitationVolatilityPoint {
-    journal_id: number;
-    year: number;
-    avgCitations: number | null;
-  }
-  
-  export interface JournalsInsights {
-    topJournals: JournalStats[];
-    citationVolatility: CitationVolatilityPoint[];
-  }
-  
+  journal_id: number;
+  name: string;
+  publisher: string | null;
+
+  articleCount: number;
+  authorCount: number;
+  subjectCount: number;
+
+  totalCitations: number;
+  impactFactor: number | null;
+}
+
+export interface SubjectImpactPoint {
+  journal_id: number;
+  journalName: string;
+  subjectCount: number;
+  impactFactor: number;
+  articleCount: number;
+}
+
+export interface JournalsInsights {
+  topJournals: JournalStats[];
+  subjectImpact: SubjectImpactPoint[];
+}
+

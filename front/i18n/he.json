@@ -75,38 +75,65 @@
                 }
             },
             "languageImpactBarChart": {
-                "title": "השפעת שפה",
-                "description": "5 השפות המובילות בדירוג לפי <1>{{metric}}</1>. {{description}}",
+                "title": "השוואת שפות",
+                "description": "5 השפות המובילות, מסודרות לפי <1>{{metric}}</1>. {{description}}",
                 "metric": {
-                    "avgCitations": "ממוצע ציטוטים למאמר",
-                    "articleCount": "מספר מאמרים",
-                    "totalCitations": "סך כל הציטוטים",
-                    "uniqueJournals": "מספר כתבי עת ייחודיים"
+                    "avgCitations": "ממוצע ציטוטים",
+                    "articleCount": "נפח מאמרים"
                 },
                 "metricDescription": {
-                    "avgCitations": "ממוצע ציטוטים לכל מאמר",
-                    "articleCount": "סך המאמרים",
-                    "totalCitations": "סך הציטוטים הכולל",
-                    "uniqueJournals": "מספר כתבי עת בהם פורסמו מאמרים"
+                    "avgCitations": "השפעה ממוצעת לכל מאמר",
+                    "articleCount": "מספר מאמרים שפורסמו"
                 },
                 "yAxisLabel": {
                     "avgCitations": "ממוצע ציטוטים",
-                    "articleCount": "מאמרים",
-                    "totalCitations": "סך הציטוטים",
-                    "uniqueJournals": "כתבי עת"
+                    "articleCount": "מאמרים"
                 },
                 "tooltip": {
                     "avgCitations": "ממוצע ציטוטים",
-                    "articleCount": "מאמרים",
-                    "totalCitations": "סך הציטוטים",
-                    "uniqueJournals": "כתבי עת"
+                    "articleCount": "מאמרים"
                 },
                 "showingTop": "מציג 5 שפות מובילות",
                 "timeRange": {
                     "1y": "שנה אחרונה",
-                    "3y": "שלוש השנים האחרונות",
-                    "5y": "חמש השנים האחרונות",
+                    "3y": "3 השנים האחרונות",
+                    "5y": "5 השנים האחרונות",
                     "all": "כל הזמנים"
+                },
+                "languageExplanations": {
+                    "en": "אנגלית",
+                    "fr": "צרפתית",
+                    "nl": "הולנדית",
+                    "de": "גרמנית",
+                    "hu": "הונגרית",
+                    "fi": "פינית",
+                    "es": "ספרדית",
+                    "id": "אינדונזית",
+                    "no": "נורווגית",
+                    "ms": "מאלזית",
+                    "ru": "רוסית",
+                    "pt": "פורטוגזית",
+                    "it": "איטלקית",
+                    "lv": "לטבית",
+                    "la": "לטינית",
+                    "pl": "פולנית",
+                    "ceb": "סבוּאנוֹ",
+                    "kn": "קנאדה",
+                    "ar": "ערבית",
+                    "he": "עברית",
+                    "zh": "סינית",
+                    "ca": "קטלאנית",
+                    "vi": "וייטנאמית",
+                    "zu": "זולו",
+                    "eo": "אספרנטו",
+                    "th": "תאית",
+                    "ml": "מלאיאלאם",
+                    "da": "דנית",
+                    "ja": "יפנית",
+                    "sv": "שוודית",
+                    "sl": "סלובנית",
+                    "cs": "צ'כית",
+                    "fa": "פרסית"
                 }
             },
             "multidisciplinaryVsSingle": {

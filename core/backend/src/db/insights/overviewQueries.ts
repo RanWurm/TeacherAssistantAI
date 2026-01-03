@@ -52,7 +52,7 @@ export function buildPublicationsTimelineQuery(fromYear?: number) {
 
 
 export function buildMultidisciplinarySummaryQuery(fromYear?: number) {
-    const where = fromYear ? "WHERE a.year >= ?" : "";
+  const where = yearFilter(fromYear);
 
     const sql = `
       SELECT
@@ -75,27 +75,4 @@ export function buildMultidisciplinarySummaryQuery(fromYear?: number) {
         sql,
         params: fromYear ? [fromYear] : [],
     };
-}
-
-export function buildMostCommonSubjectCombinationQuery(fromYear?: number) {
-  const where = fromYear ? "WHERE a.year >= ?" : "";
-
-  const sql = `
-    SELECT
-      GROUP_CONCAT(s.subject_name ORDER BY s.subject_name) AS subjects,
-      COUNT(*) AS articleCount
-    FROM Articles a
-    JOIN ArticlesSubjects asub ON a.article_id = asub.article_id
-    JOIN Subjects s ON asub.subject_id = s.subject_id
-    ${where}
-    GROUP BY a.article_id
-    HAVING COUNT(DISTINCT asub.subject_id) > 1
-    ORDER BY articleCount DESC
-    LIMIT 1
-  `.trim();
-
-  return {
-    sql,
-    params: fromYear ? [fromYear] : [],
-  };
 }

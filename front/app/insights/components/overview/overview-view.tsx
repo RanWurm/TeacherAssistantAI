@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { MetricsCards } from './metrics-cards';
 import { PublicationsTimeline } from './publications-timeline';
-import { MultidisciplinarySummary } from './multidisciplinary-summary';
 import type { TimeRange } from '../../types/insights.types';
 
 interface OverviewViewProps {
@@ -25,7 +24,6 @@ export function OverviewView({ timeRange }: OverviewViewProps) {
       </div>
       <MetricsCards timeRange={timeRange} />
       <PublicationsTimeline timeRange={timeRange} />
-      <MultidisciplinarySummary timeRange={timeRange} />
     </div>
   );
 }
