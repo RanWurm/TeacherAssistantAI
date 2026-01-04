@@ -125,7 +125,7 @@ export function ResearcherProfileCard({
         <div className="relative w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center">
           <div
             className="
-            w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-gradient-to-br from-blue-500 to-blue-700
+            w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-linear-to-br from-blue-500 to-blue-700
             flex items-center justify-center text-white font-bold text-xs sm:text-base
           "
           >

@@ -339,6 +339,12 @@
             "language": "שפה",
             "type": "סוג",
             "openDoi": "פתח מאמר במאגר חיצוני"
+        },
+        "searchByTitle": {
+            "inputPlaceholder": "הזן כותרת מאמר...",
+            "inputAriaLabel": "חפש לפי כותרת מאמר",
+            "button": "חיפוש",
+            "prompt": "הקלד כותרת ולחץ אנטר לחיפוש"
         }
     }
 }

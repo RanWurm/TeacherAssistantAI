@@ -130,11 +130,11 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
                         <div className={skeletonMainBarClass} />
                         <div className={skeletonSubBarClass} />
                       </div>
-                      <div className="w-9 h-4 rounded bg-gradient-to-r from-green-50 to-green-100" />
+                      <div className="w-9 h-4 rounded bg-linear-to-r from-green-50 to-green-100" />
                     </div>
                     <div className={skeletonPercentBarBg}>
                       <div
-                        className="absolute left-0 top-0 h-1.5 bg-gradient-to-r from-blue-300 via-purple-100 to-blue-200 rounded-full"
+                        className="absolute left-0 top-0 h-1.5 bg-linear-to-r from-blue-300 via-purple-100 to-blue-200 rounded-full"
                         style={{ width: `${70 - idx * 10 - i * 15}%`, opacity: 0.85 }}
                       />
                     </div>

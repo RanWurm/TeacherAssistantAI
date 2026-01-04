@@ -326,6 +326,12 @@
             "language": "Language",
             "type": "Type",
             "openDoi": "Open article on external site"
+        },
+        "searchByTitle": {
+            "inputPlaceholder": "Enter article title...",
+            "inputAriaLabel": "Search by article title",
+            "button": "Search",
+            "prompt": "Type a title and press Enter to search"
         }
     }
 }

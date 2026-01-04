@@ -80,7 +80,7 @@ export function MultidisciplinaryResearchersGrid({
               dir={isRtl ? 'rtl' : 'ltr'}
             >
               {/* Main profile avatar/initials */}
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <div className="w-10 h-10 sm:w-14 sm:h-14 bg-gray-100 rounded-full flex items-center justify-center" />
               </div>
               {/* Main info: lines and blocks */}

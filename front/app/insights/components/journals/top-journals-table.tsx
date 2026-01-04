@@ -161,7 +161,7 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                   </td>
 
                   {/* Journal */}
-                  <td className="px-2 py-2 md:px-6 md:py-4 min-w-[8rem]">
+                  <td className="px-2 py-2 md:px-6 md:py-4 min-w-32">
                     <span className="font-semibold text-xs md:text-lg flex items-center">
                       {journal.name.length > 40 ? (
                         <span className="truncate" title={journal.name}>
@@ -174,7 +174,7 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                   </td>
 
                   {/* Publisher */}
-                  <td className="px-2 py-2 md:px-6 md:py-4 min-w-[8rem] text-xs text-gray-500">
+                  <td className="px-2 py-2 md:px-6 md:py-4 min-w-32 text-xs text-gray-500">
                     <span className="flex items-center gap-1">
                       <svg
                         className="inline-block"

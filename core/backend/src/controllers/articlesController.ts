@@ -4,6 +4,7 @@ import { articleSearchSchema } from "../validation/articleSearchSchema";
 
 export async function searchArticlesHandler(req: Request, res: Response) {
   try {
+    console.log('[API] req.body:', req.body);
     const filters = articleSearchSchema.parse(req.body);  // VALIDATION
 
     const results = await searchArticles(filters);

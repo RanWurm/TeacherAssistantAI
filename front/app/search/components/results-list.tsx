@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ResultCard } from './result-card';
-import { Paper } from '../data/mock';
+import { Paper } from '../page';
 import { Pagination } from './pagination';
 import { useTranslation } from 'react-i18next';
 

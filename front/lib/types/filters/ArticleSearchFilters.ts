@@ -1,4 +1,5 @@
 export interface ArticleSearchFilters {
+  query?: string;
   authors?: string[];
   subjects?: string[];
   keywords?: string[];
