@@ -2,6 +2,9 @@ import { Sparkles, Database } from 'lucide-react';
 import { Message } from '../data/mock';
 import { useTranslation } from 'react-i18next';
 import { MessageTime } from './MessageTime';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 
 interface MessageItemProps {
   message: Message;
@@ -22,6 +25,10 @@ export function MessageItem({ message }: MessageItemProps) {
         : 'ml-auto';
 
   const timeAlignClass = dir === 'rtl' ? 'text-left' : 'text-right';
+  const normalized = message.content
+    .replace(/\r\n/g, "\n")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n");
 
   return (
     <div className="flex">
@@ -71,10 +78,15 @@ export function MessageItem({ message }: MessageItemProps) {
             </div>
           )}
 
-          <p className="text-sm leading-relaxed text-start">
-            {message.content}
-          </p>
-
+          <div className="text-sm leading-relaxed text-start break-words
+                [&_p]:m-0
+                [&_ol]:m-0 [&_ol]:pl-5
+                [&_li]:my-0
+                [&_strong]:font-semibold">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {normalized}
+            </ReactMarkdown>
+          </div>
           {message.sqlQuery && (
             <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--border-color-light)' }}>
               <div className="rounded-lg p-3" style={{ background: 'var(--surface-elevated)' }}>
