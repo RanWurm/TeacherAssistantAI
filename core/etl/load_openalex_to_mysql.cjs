@@ -17,14 +17,17 @@ function* readJsonl(filePath) {
 
 function pickArticleUrl(work) {
   return (
+    work?.best_oa_location?.pdf_url ||
+    work?.locations?.find((l) => l?.pdf_url)?.pdf_url ||
+    work?.best_oa_location?.landing_page_url ||
     work?.primary_location?.landing_page_url ||
-    work?.primary_location?.source?.homepage_url ||
+    work?.doi ||
     null
   );
 }
 
 function normalizeWork(work) {
-  const openalexId = work?.id; // e.g. "https://openalex.org/W..."
+  const openalexId = work?.id;
   if (!openalexId) return null;
 
   const title = work?.title || "";
@@ -35,11 +38,11 @@ function normalizeWork(work) {
 
   const authors = (work?.authorships || [])
     .map((a) => ({
+      openalex_author_id: a?.author?.id || null,
       name: a?.author?.display_name || null,
       affiliation: a?.institutions?.[0]?.display_name || null,
     }))
-    .filter((x) => x.name);
-
+    .filter((x) => x.openalex_author_id && x.name);
   const subjects = (work?.concepts || [])
     .slice(0, 12)
     .map((c) => c?.display_name)
@@ -114,19 +117,18 @@ async function upsertArticle(conn, r, journalId) {
 }
 
 async function ensureAuthor(conn, author) {
-  // Your Authors UNIQUE(name, affiliation)
   await conn.execute(
-    `INSERT IGNORE INTO Authors (name, affiliation) VALUES (?, ?)`,
-    [author.name, author.affiliation]
+    `INSERT INTO Authors (openalex_author_id, name, affiliation)
+     VALUES (?, ?, ?)
+     ON DUPLICATE KEY UPDATE
+       name=VALUES(name),
+       affiliation=VALUES(affiliation)`,
+    [author.openalex_author_id, author.name, author.affiliation]
   );
 
-  // Handle NULL affiliation matching cleanly
   const [rows] = await conn.execute(
-    `SELECT author_id
-       FROM Authors
-      WHERE name = ?
-        AND ((affiliation IS NULL AND ? IS NULL) OR affiliation = ?)`,
-    [author.name, author.affiliation, author.affiliation]
+    `SELECT author_id FROM Authors WHERE openalex_author_id = ?`,
+    [author.openalex_author_id]
   );
   return rows?.[0]?.author_id ?? null;
 }

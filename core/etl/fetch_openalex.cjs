@@ -104,11 +104,18 @@ async function main() {
       if (results.length === 0) break;
 
       for (const w of results) {
-        appendJsonl(subject, w);
-        st.pulled += 1;
-        totalPulled += 1;
-        if (st.pulled >= quotaPerSubject || totalPulled >= TARGET_TOTAL) break;
+        const oaUrl = w.best_oa_location?.pdf_url 
+           || w.primary_location?.pdf_url 
+           || w.open_access?.oa_url;
+        if (!oaUrl) {
+          continue
+        }else{
+          appendJsonl(subject, w);
+          st.pulled += 1;
+          totalPulled += 1;
+          if (st.pulled >= quotaPerSubject || totalPulled >= TARGET_TOTAL) break;
       }
+    }
 
       st.cursor = page?.meta?.next_cursor || null;
       saveState(subject, st);
