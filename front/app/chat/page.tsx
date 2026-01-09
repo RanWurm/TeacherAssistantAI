@@ -38,8 +38,11 @@ export default function ChatScreen() {
 
   setInput('');
   setIsLoading(true);
-
+  
   try {
+    console.log('Sending to agent:', userText);
+    const response = await askAgent({ message: userText });
+    console.log('Agent response:', response);
     const assistantId = (Date.now() + 1).toString();
     setMessages(prev => [
       ...prev,
@@ -52,12 +55,12 @@ export default function ChatScreen() {
     ]);
 
     // 2) קבל תשובה מלאה מהשרת
-    const { answer } = await askAgent({ message: userText });
+
     setIsLoading(false);
 
 
     // 3) Fake streaming: מילה/רווח בקצב קבוע
-    const parts = answer.split(/(\s+)/); // שומר רווחים כדי שלא "יידבק"
+    const parts = response.message.split(/(\s+)/);
     let i = 0;
 
     streamTimerRef.current = window.setInterval(() => {
