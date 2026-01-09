@@ -1,0 +1,263 @@
+import Groq from "groq-sdk";
+import {
+  ConversationMessage,
+  AgentResponse,
+  ToolResult,
+  ToolName,
+  Strategy,
+} from "./types.js";
+import { TOOL_DEFINITIONS, executeTool } from "./tools.js";
+import { DEFAULT_STRATEGIES, buildStrategyPrompt, inferStrategy } from "./strategies.js";
+import { estimateTokens } from "./pdf.js";
+
+// ─────────────────────────────────────────────────────────────
+// Configuration
+// ─────────────────────────────────────────────────────────────
+
+interface AgentConfig {
+  model: string;
+  maxTokensPerRequest: number;
+  maxToolCallsPerTurn: number;
+  strategies: Strategy[];
+  temperature: number;
+}
+
+const DEFAULT_CONFIG: AgentConfig = {
+  model: "llama-3.3-70b-versatile", // Best Groq model for function calling
+  maxTokensPerRequest: 6000,        // Groq free tier safe limit
+  maxToolCallsPerTurn: 3,           // Prevent runaway tool usage
+  strategies: DEFAULT_STRATEGIES,
+  temperature: 0.3,                 // Lower for more consistent tool calls
+};
+
+// ─────────────────────────────────────────────────────────────
+// System Prompt
+// ─────────────────────────────────────────────────────────────
+
+function buildSystemPrompt(strategies: Strategy[]): string {
+  return `You are TeacherAssistant AI, a research assistant that helps users find and understand academic papers.
+
+## Your Capabilities
+- Search a database of academic papers from OpenAlex
+- Find papers by keywords, subjects, authors, or year
+- Retrieve full paper details including authors and citations
+- Extract and summarize PDF content when needed
+- Execute custom database queries for complex analyses
+
+## Database Schema
+Tables available:
+- Articles (article_id, title, year, language, type, citation_count, article_url)
+- Journals (journal_id, name, impact_factor, publisher)
+- Authors (author_id, name, affiliation)
+- Subjects (subject_name)
+- Keywords (keyword)
+- Junction tables: ArticlesAuthors, ArticlesSubjects, ArticlesKeywords
+
+${buildStrategyPrompt(strategies)}
+
+## Guidelines
+1. **Be efficient**: Use the minimum tools needed. Start with search_papers for most queries.
+2. **Stay within limits**: Max ${DEFAULT_CONFIG.maxToolCallsPerTurn} tool calls per response.
+3. **Summarize results**: Don't dump raw data. Highlight key findings.
+4. **Suggest next steps**: Help users refine their search or explore further.
+5. **Admit limitations**: If the database doesn't have what they need, say so.
+
+## Response Format
+- Be concise and helpful
+- When listing papers, include: title, year, citations, and relevance
+- Offer to dig deeper if the user wants more details
+- For PDF content, summarize the key points, don't quote entire pages`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Agent Class
+// ─────────────────────────────────────────────────────────────
+
+export class TeacherAssistantAgent {
+  private client: Groq;
+  private config: AgentConfig;
+  private conversationHistory: ConversationMessage[];
+
+  constructor(config: Partial<AgentConfig> = {}) {
+    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.client = new Groq({
+      apiKey: process.env.GROQ_API_KEY,
+    });
+    this.conversationHistory = [];
+  }
+
+  /**
+   * Process a user message and return a response
+   */
+  async chat(userMessage: string): Promise<AgentResponse> {
+    const toolResults: ToolResult[] = [];
+    let tokensUsed = { input: 0, output: 0, tool_results: 0 };
+
+    // Add user message to history
+    this.conversationHistory.push({ role: "user", content: userMessage });
+
+    // Infer strategy for tool call budgeting
+    const strategy = inferStrategy(userMessage);
+    const maxToolCalls = Math.min(strategy.max_tool_calls, this.config.maxToolCallsPerTurn);
+
+    // Build messages for API call
+    const messages = this.buildMessages();
+    tokensUsed.input = this.estimateMessagesTokens(messages);
+
+    // Initial API call
+    let response = await this.callGroq(messages);
+    tokensUsed.output += estimateTokens(response.content || "");
+
+    // Tool call loop
+    let toolCallCount = 0;
+    while (response.tool_calls && toolCallCount < maxToolCalls) {
+      for (const toolCall of response.tool_calls) {
+        if (toolCallCount >= maxToolCalls) break;
+
+        const toolName = toolCall.function.name as ToolName;
+        const toolArgs = JSON.parse(toolCall.function.arguments);
+        // Coerce numeric fields (LLM sometimes returns strings)
+        const numericFields = ['limit', 'year_min', 'year_max', 'max_pages', 'article_id'];
+        for (const field of numericFields) {
+          if (toolArgs[field] !== undefined) {
+            toolArgs[field] = Number(toolArgs[field]);
+          }
+        }
+
+        // Execute tool
+        const result = await executeTool(toolName, toolArgs);
+        toolResults.push(result);
+        tokensUsed.tool_results += result.tokens_used;
+
+        // Add tool result to conversation
+        if (toolCallCount === 0 || !this.conversationHistory.some(m => m.tool_calls)) {
+          this.conversationHistory.push({
+            role: "assistant",
+            content: response.content || "",
+            tool_calls: response.tool_calls,
+          });
+        }
+
+        // Add tool result
+        this.conversationHistory.push({
+          role: "tool",
+          content: JSON.stringify(result.result || { error: result.error }),
+          tool_call_id: toolCall.id,
+        });
+
+        toolCallCount++;
+      }
+
+      // Check token budget before continuing
+      if (tokensUsed.tool_results > 3000) {
+        break; // Stop to avoid exceeding context
+      }
+
+      // Continue conversation with tool results
+      const updatedMessages = this.buildMessages();
+      response = await this.callGroq(updatedMessages);
+      tokensUsed.output += estimateTokens(response.content || "");
+    }
+
+    // Extract final response
+    const finalMessage = response.content || "I couldn't generate a response.";
+
+    // Add assistant response to history
+    this.conversationHistory.push({ role: "assistant", content: finalMessage });
+
+    // Trim history if too long
+    this.trimHistory();
+
+    return {
+      message: finalMessage,
+      tool_calls: toolResults,
+      tokens_used: tokensUsed,
+    };
+  }
+
+  /**
+   * Reset conversation history
+   */
+  clearHistory(): void {
+    this.conversationHistory = [];
+  }
+
+  /**
+   * Get current conversation history
+   */
+  getHistory(): ConversationMessage[] {
+    return [...this.conversationHistory];
+  }
+
+  /**
+   * Update strategies
+   */
+  setStrategies(strategies: Strategy[]): void {
+    this.config.strategies = strategies;
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // Private Methods
+  // ─────────────────────────────────────────────────────────────
+
+  private buildMessages(): any[] {
+    const systemPrompt = buildSystemPrompt(this.config.strategies);
+    
+    return [
+      { role: "system", content: systemPrompt },
+      ...this.conversationHistory.map((msg) => {
+        if (msg.role === "tool") {
+          return {
+            role: "tool",
+            tool_call_id: msg.tool_call_id,
+            content: msg.content,
+          };
+        }
+        if (msg.tool_calls) {
+          return {
+            role: "assistant",
+            content: msg.content || "",
+            tool_calls: msg.tool_calls,
+          };
+        }
+        return { role: msg.role, content: msg.content };
+      }),
+    ];
+  }
+
+  private async callGroq(messages: any[]): Promise<any> {
+    const completion = await this.client.chat.completions.create({
+      model: this.config.model,
+      messages,
+      tools: TOOL_DEFINITIONS,
+      tool_choice: "auto",
+      temperature: this.config.temperature,
+      max_tokens: 1500,
+    });
+
+    return completion.choices[0].message;
+  }
+
+  private estimateMessagesTokens(messages: any[]): number {
+    return messages.reduce((sum, msg) => {
+      return sum + estimateTokens(JSON.stringify(msg));
+    }, 0);
+  }
+
+  private trimHistory(): void {
+    // Keep last 10 exchanges to stay within context limits
+    const maxMessages = 20;
+    if (this.conversationHistory.length > maxMessages) {
+      // Keep system context awareness by trimming from the middle
+      this.conversationHistory = this.conversationHistory.slice(-maxMessages);
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Factory Function
+// ─────────────────────────────────────────────────────────────
+
+export function createAgent(config?: Partial<AgentConfig>): TeacherAssistantAgent {
+  return new TeacherAssistantAgent(config);
+}
