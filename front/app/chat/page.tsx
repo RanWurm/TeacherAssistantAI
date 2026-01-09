@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MessageList } from './components/message-list';
 import { ChatInput } from './components/chat-input';
@@ -8,14 +8,18 @@ import { Message, INITIAL_MESSAGES } from './data/mock';
 import { askAgent } from '../../lib/api/agent';
 
 
-
 export default function ChatScreen() {
+  const streamTimerRef = useRef<number | null>(null);
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
  const handleSubmit = async (e: React.FormEvent) => {
+  if (streamTimerRef.current) {
+    window.clearInterval(streamTimerRef.current);
+    streamTimerRef.current = null;
+  }
   e.preventDefault();
   const userText = input.trim();
   if (!userText || isLoading) return;
@@ -34,19 +38,51 @@ export default function ChatScreen() {
 
   setInput('');
   setIsLoading(true);
-
+  
   try {
-    const { answer } = await askAgent({ message: userText });
-
+    console.log('Sending to agent:', userText);
+    const response = await askAgent({ message: userText });
+    console.log('Agent response:', response);
+    const assistantId = (Date.now() + 1).toString();
     setMessages(prev => [
       ...prev,
       {
-        id: Date.now().toString(),
+        id: assistantId,
         role: 'assistant',
-        content: answer,
+        content: '',
         timestamp: Date.now(),
       },
     ]);
+
+    // 2) קבל תשובה מלאה מהשרת
+
+    setIsLoading(false);
+
+
+    // 3) Fake streaming: מילה/רווח בקצב קבוע
+    const parts = response.message.split(/(\s+)/);
+    let i = 0;
+
+    streamTimerRef.current = window.setInterval(() => {
+      const next = parts[i] ?? "";
+
+      setMessages(prev =>
+        prev.map(m =>
+          m.id === assistantId
+            ? { ...m, content: m.content + next }
+            : m
+        )
+      );
+
+      i++;
+      if (i >= parts.length) {
+        if (streamTimerRef.current) {
+          window.clearInterval(streamTimerRef.current);
+          streamTimerRef.current = null;
+        }
+        setIsLoading(false);
+      }
+    }, 20); // 15–35ms בדרך כלל נראה טוב
   } catch (err: any) {
     setMessages(prev => [
       ...prev,
@@ -57,7 +93,6 @@ export default function ChatScreen() {
         timestamp: Date.now(),
       },
     ]);
-  } finally {
     setIsLoading(false);
   }
 };

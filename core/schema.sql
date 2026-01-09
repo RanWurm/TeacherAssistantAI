@@ -42,9 +42,10 @@ CREATE TABLE Articles (
 -- --------------------------------------------------
 CREATE TABLE Authors (
     author_id INT AUTO_INCREMENT PRIMARY KEY,
+    openalex_author_id VARCHAR(64) NOT NULL,
     name VARCHAR(255) NOT NULL,
     affiliation VARCHAR(255),
-    UNIQUE(name, affiliation)
+    UNIQUE KEY uq_openalex_author_id (openalex_author_id)
 );
 
 -- --------------------------------------------------
