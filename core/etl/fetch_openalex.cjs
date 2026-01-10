@@ -19,6 +19,7 @@ const SUBJECTS = [
 const TARGET_TOTAL = 100000;
 const PER_PAGE = 200;
 const POLITE_DELAY_MS = 150;
+const CONCURRENCY = 5;
 const MAILTO = process.env.OPENALEX_MAILTO || "";
 
 function ensureDir(p) {
@@ -78,56 +79,60 @@ async function fetchWorksByConcept(conceptId, cursor) {
   return httpGetJson(`${BASE}/works?${qs.toString()}`);
 }
 
-async function main() {
-  ensureDir(RAW_DIR);
-  ensureDir(STATE_DIR);
+async function processSubject(subject, quota, staggerMs = 0) {
+  if (staggerMs > 0) await sleep(staggerMs);
+  const st = loadState(subject);
 
-  let totalPulled = 0;
-  const quotaPerSubject = Math.ceil(TARGET_TOTAL / SUBJECTS.length);
-
-  for (const subject of SUBJECTS) {
-    const st = loadState(subject);
-
-    if (!st.conceptId) {
-      try {
-        st.conceptId = await resolveConceptId(subject);
-      } catch (e) {
-        console.warn(`Skipping subject "${subject}"`);
-        continue;
-      }      
-      saveState(subject, st);
+  if (!st.conceptId) {
+    try {
+      st.conceptId = await resolveConceptId(subject);
+    } catch (e) {
+      console.warn(`Skipping subject "${subject}": ${e.message}`);
+      return 0;
     }
+    saveState(subject, st);
+  }
 
-    while (st.pulled < quotaPerSubject && totalPulled < TARGET_TOTAL) {
-      const page = await fetchWorksByConcept(st.conceptId, st.cursor);
-      const results = page?.results || [];
-      if (results.length === 0) break;
+  while (st.pulled < quota) {
+    const page = await fetchWorksByConcept(st.conceptId, st.cursor);
+    const results = page?.results || [];
+    if (results.length === 0) break;
 
-      for (const w of results) {
-        const oaUrl = w.best_oa_location?.pdf_url 
-           || w.primary_location?.pdf_url 
-           || w.open_access?.oa_url;
-        if (!oaUrl) {
-          continue
-        }else{
-          appendJsonl(subject, w);
-          st.pulled += 1;
-          totalPulled += 1;
-          if (st.pulled >= quotaPerSubject || totalPulled >= TARGET_TOTAL) break;
+    for (const w of results) {
+      const oaUrl = w.best_oa_location?.pdf_url 
+        || w.primary_location?.pdf_url 
+        || w.open_access?.oa_url;
+      if (oaUrl) {
+        appendJsonl(subject, w);
+        st.pulled += 1;
+        if (st.pulled >= quota) break;
       }
     }
 
-      st.cursor = page?.meta?.next_cursor || null;
-      saveState(subject, st);
+    st.cursor = page?.meta?.next_cursor || null;
+    saveState(subject, st);
 
-      if (!st.cursor) break;
-      await sleep(POLITE_DELAY_MS);
-    }
-
-    console.log(`Done subject="${subject}" pulled=${st.pulled}`);
-    if (totalPulled >= TARGET_TOTAL) break;
+    if (!st.cursor) break;
+    await sleep(POLITE_DELAY_MS);
   }
 
+  console.log(`Done subject="${subject}" pulled=${st.pulled}`);
+  return st.pulled;
+}
+
+async function main() {
+  ensureDir(RAW_DIR);
+  ensureDir(STATE_DIR);
+  const quotaPerSubject = Math.ceil(TARGET_TOTAL / SUBJECTS.length);
+
+  let totalPulled = 0;
+  for (let i = 0; i < SUBJECTS.length; i += CONCURRENCY) {
+    const chunk = SUBJECTS.slice(i, i + CONCURRENCY);
+    const results = await Promise.all(
+      chunk.map((subject, idx) => processSubject(subject, quotaPerSubject, idx * 50))
+    );
+    totalPulled += results.reduce((a, b) => a + b, 0);
+  }
   console.log(`TOTAL pulled: ${totalPulled}`);
 }
 
