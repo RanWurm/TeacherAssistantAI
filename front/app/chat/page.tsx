@@ -1,51 +1,101 @@
 'use client';
 
-import { useState } from 'react';
+import { useState,useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MessageList } from './components/message-list';
 import { ChatInput } from './components/chat-input';
 import { Message, INITIAL_MESSAGES } from './data/mock';
+import { askAgent } from '../../lib/api/agent';
+
 
 export default function ChatScreen() {
+  const streamTimerRef = useRef<number | null>(null);
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+ const handleSubmit = async (e: React.FormEvent) => {
+  if (streamTimerRef.current) {
+    window.clearInterval(streamTimerRef.current);
+    streamTimerRef.current = null;
+  }
+  e.preventDefault();
+  const userText = input.trim();
+  if (!userText || isLoading) return;
 
-    const now = Date.now();
+  const now = Date.now();
 
+  setMessages(prev => [
+    ...prev,
+    {
+      id: now.toString(),
+      role: 'user',
+      content: userText,
+      timestamp: now,
+    },
+  ]);
+
+  setInput('');
+  setIsLoading(true);
+  
+  try {
+    console.log('Sending to agent:', userText);
+    const response = await askAgent({ message: userText });
+    console.log('Agent response:', response);
+    const assistantId = (Date.now() + 1).toString();
     setMessages(prev => [
       ...prev,
       {
-        id: now.toString(),
-        role: 'user',
-        content: input,
-        timestamp: now,
+        id: assistantId,
+        role: 'assistant',
+        content: '',
+        timestamp: Date.now(),
       },
     ]);
 
-    setInput('');
-    setIsLoading(true);
+    // 2) קבל תשובה מלאה מהשרת
 
-    setTimeout(() => {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: (Date.now()).toString(),
-          role: 'assistant',
-          content: `${t('chat.messageItem.aiResponseLabel')}: "${input}"`,
-          timestamp: Date.now(),
-          sqlQuery: 'SELECT ...',
-          resultsCount: 123,
-        },
-      ]);
-      setIsLoading(false);
-    }, 2000);
-  };
+    setIsLoading(false);
+
+
+    // 3) Fake streaming: מילה/רווח בקצב קבוע
+    const parts = response.message.split(/(\s+)/);
+    let i = 0;
+
+    streamTimerRef.current = window.setInterval(() => {
+      const next = parts[i] ?? "";
+
+      setMessages(prev =>
+        prev.map(m =>
+          m.id === assistantId
+            ? { ...m, content: m.content + next }
+            : m
+        )
+      );
+
+      i++;
+      if (i >= parts.length) {
+        if (streamTimerRef.current) {
+          window.clearInterval(streamTimerRef.current);
+          streamTimerRef.current = null;
+        }
+        setIsLoading(false);
+      }
+    }, 20); // 15–35ms בדרך כלל נראה טוב
+  } catch (err: any) {
+    setMessages(prev => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: err?.message || 'Server error',
+        timestamp: Date.now(),
+      },
+    ]);
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="h-full flex flex-col min-h-0">
