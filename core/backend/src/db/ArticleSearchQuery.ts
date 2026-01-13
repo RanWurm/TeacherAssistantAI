@@ -13,6 +13,47 @@ export function buildArticlesSearchQuery(filters: ArticleSearchFilters) {
   const limit = filters.limit !== undefined ? Number(filters.limit) : undefined;
   const offset = filters.offset !== undefined ? Number(filters.offset) : undefined;
 
+  const ORDER_BY_MAP: Record<NonNullable<ArticleSearchFilters['sortBy']>, string> = {
+    citations: "a.citation_count DESC, a.year DESC",
+    year: "a.year DESC, a.citation_count DESC",
+  };
+
+  // 🔴 MODE: Search by title ONLY
+  if (filters.query?.trim()) {
+    return buildSelectQuery({
+      table: "Articles",
+      as: "a",
+      columns: [
+        "a.article_id",
+        "a.openalex_id",
+        "a.title",
+        "a.year",
+        "a.language",
+        "a.type",
+        "a.citation_count",
+        "a.article_url",
+        "j.name AS journal",
+        "j.publisher AS publisher",
+        "j.impact_factor AS impact_factor",
+        "GROUP_CONCAT(DISTINCT au.name) AS authors",
+      ],
+      joins: [
+        { type: "LEFT JOIN", table: "Journals", as: "j", on: "a.journal_id = j.journal_id" },
+        { type: "LEFT JOIN", table: "ArticlesAuthors", as: "aa", on: "a.article_id = aa.article_id" },
+        { type: "LEFT JOIN", table: "Authors", as: "au", on: "aa.author_id = au.author_id" },
+      ],
+      filters: [{
+        clause: "a.title LIKE ?",
+        value: `%${filters.query.trim()}%`,
+      }],
+      groupBy: "a.article_id",
+      orderBy: ORDER_BY_MAP.year,
+      limit,
+      offset,
+    });
+  }
+
+
   // ---- AUTHORS (always joined) ----
   joins.push(
     { type: "LEFT JOIN", table: "ArticlesAuthors", as: "aa", on: "a.article_id = aa.article_id" },
@@ -77,11 +118,8 @@ export function buildArticlesSearchQuery(filters: ArticleSearchFilters) {
   if (filters.toYear) {
     where.push({ clause: "a.year <= ?", value: filters.toYear });
   }
-
-  const ORDER_BY_MAP: Record<NonNullable<ArticleSearchFilters['sortBy']>, string> = {
-    citations: "a.citation_count DESC, a.year DESC",
-    year: "a.year DESC, a.citation_count DESC",
-  };
+    
+  
 
   const orderBy =
     filters.sortBy && ORDER_BY_MAP[filters.sortBy]

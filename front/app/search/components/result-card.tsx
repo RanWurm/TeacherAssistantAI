@@ -5,7 +5,7 @@ import {
   BookOpen,
   ExternalLink,
 } from 'lucide-react';
-import type { Paper } from '../data/mock';
+import type { Paper } from '../page';
 import { useTranslation } from 'react-i18next';
 import { splitCSV } from '../../../hooks/useArticlesSearch';
 import { useState } from 'react';

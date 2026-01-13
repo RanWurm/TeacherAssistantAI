@@ -17,7 +17,6 @@ interface MultidisciplinaryResearcherCardProps {
     avgCitationsPerArticle: number;
     subjects: string[];
   };
-  maxSubjects: number;
 }
 
 // Helper component to show more subjects in a popover/list
@@ -63,11 +62,8 @@ function ShowMoreSubjects({
 
 export function MultidisciplinaryResearcherCard({
   researcher,
-  maxSubjects,
 }: MultidisciplinaryResearcherCardProps) {
   const { t } = useTranslation();
-
-  const subjectRatio = researcher.subjectCount / maxSubjects;
 
   // i18n: fallback for affiliation
   const affiliation =
