@@ -224,7 +224,7 @@ async function main() {
     waitForConnections: true,
     connectionLimit: 10,
     charset: "utf8mb4",
-    port: Number(process.env.DB_PORT || 3306),
+    port: Number(process.env.DB_PORT || 3307),
   });
 
 
