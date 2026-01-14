@@ -81,7 +81,7 @@ export function MessageItem({ message }: MessageItemProps) {
             </div>
           )}
 
-          <div className="text-sm leading-relaxed text-start break-words
+          <div className="text-sm leading-relaxed text-start wrap-break-word
                 [&_p]:m-0
                 [&_ol]:m-0 [&_ol]:pl-5
                 [&_li]:my-0
