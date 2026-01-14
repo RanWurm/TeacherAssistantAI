@@ -93,7 +93,7 @@ export function buildSubjectImpactQuery(fromYear?: number) {
 
     HAVING
       impactFactor IS NOT NULL
-      AND articleCount >= 0
+      AND articleCount >= 10
 
     ORDER BY impactFactor DESC
     LIMIT 500

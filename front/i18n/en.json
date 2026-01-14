@@ -20,6 +20,7 @@
     },
     "chat": {
         "title": "Research Assistant",
+        "initialGreeting": "Hey I'm your personal AI research assistant. How may I assist you today?",
         "input": {
             "placeholder": "Describe your research area or ask a question...",
             "submitButtonLabel": "Send",
@@ -141,16 +142,20 @@
             },
             "multidisciplinaryVsSingle": {
                 "title": "Multidisciplinary vs Single-Subject",
-                "description": "Comparing broad multi-subject research with focused single-subject publications.",
-                "multiSubject": "Multi-Subject",
+                "description": "Compare the impact of multidisciplinary (spanning multiple subjects) vs. single-subject research.",
+                "multiSubject": "Multidisciplinary",
                 "singleSubject": "Single-Subject",
+                "multiSubject_short": "Multi",
+                "singleSubject_short": "Single",
+                "multiSubjectTitle": "Multidisciplinary",
+                "singleSubjectTitle": "Single-Subject",
+                "multiSubjectDescription": "Articles that span multiple subject areas.",
+                "singleSubjectDescription": "Articles that focus on a single subject area.",
                 "articlesLabel": "Articles",
-                "avgCitationsLabel": "Avg. Citations",
-                "citationsLabel": "Citations",
-                "authorsLabel": "{{count}} author",
-                "authorsLabel_plural": "{{count}} authors",
-                "journalsLabel": "{{count}} journal",
-                "journalsLabel_plural": "{{count}} journals"
+                "avgCitationsLabel": "Avg. citations",
+                "totalCitationsLabel": "Total citations",
+                "uniqueAuthorsLabel": "Unique authors",
+                "uniqueJournalsLabel": "Unique journals"
             }
         },
         "journals": {
@@ -158,6 +163,8 @@
                 "title": "Top Journals",
                 "subtitle": "The leading journals, ranked by recent impact factor and citations.",
                 "rank": "Rank",
+                "numberRank": "#{{number}}",
+                "starRank": "★",
                 "journal": "Journal",
                 "publisher": "Publisher",
                 "articles": "Articles",
@@ -170,12 +177,32 @@
                 "impactFactorFormula": "Formula: (Citations to articles from the past 2 years) ÷ (Number of articles from the past 2 years)",
                 "noData": "No journals available to display",
                 "highImpact": "High Impact",
+                "na": "N/A",
                 "citationVolume": "{{count}} citations",
                 "articleCount": "{{count}} articles",
                 "authorCount": "{{count}} authors",
                 "subjectCount": "{{count}} subjects",
                 "citationRate": "{{count}} citations per article",
-                "impactTooltip": "Impact factor = citations ÷ articles (past 2 years). Expresses average citations per recently published article."
+                "impactTooltip": "Impact factor = citations ÷ articles (past 2 years). Shows average citations per recently published article."
+            },
+            "citationVolatilityTable": {
+                "title": "Citation Volatility Across Journals",
+                "subtitle": "Journals mapped by subject breadth (X-axis) and impact factor (Y-axis). Each bubble’s size: number of articles.",
+                "yAxis": "Impact Factor",
+                "xAxis": "Number of subjects",
+                "zAxis": "Article count",
+                "tooltip": {
+                    "impact": "Impact Factor",
+                    "subjectCount": "Number of subjects",
+                    "articleCount": "Article count",
+                    "na": "N/A"
+                },
+                "howToReadTitle": "How to read",
+                "howToRead": [
+                    "<b>Left</b> = more focused journals · <b>Right</b> = more interdisciplinary",
+                    "<b>Higher</b> = stronger impact (avg. citations per article)"
+                ],
+                "noData": "No journals available to display"
             },
             "subjectImpactChart": {
                 "title": "Impact Factor by Journal Scope",
@@ -276,6 +303,8 @@
         }
     },
     "search": {
+        "byFilters": "Search by Filters",
+        "byTitle": "Search by Title",
         "empty": {
             "title": "No papers found",
             "subtitle": "Try adjusting your search or removing filters to see more results."
@@ -291,15 +320,29 @@
         },
         "filters": {
             "title": "Filters",
+            "suggested": "Suggested from search",
             "subject": "Subject",
             "author": "Author",
             "keyword": "Keyword",
             "type": "Type",
+            "type.article": "Article",
+            "type.review": "Review",
+            "type.conferencePaper": "Conference Paper",
+            "all": "All",
             "yearRange": "Year Range",
             "yearFrom": "From",
             "yearTo": "To",
             "language": "Language",
-            "applyButton": "Apply Filters"
+            "language.en": "English",
+            "language.he": "Hebrew",
+            "language.fr": "French",
+            "language.de": "German",
+            "apply": "Apply Filters",
+            "inputPlaceholder": "Search {{label}}...",
+            "noResults": "No results",
+            "loading": "Loading…",
+            "showMore": "Show more",
+            "selected": "{{count}} selected"
         },
         "searchHeader": {
             "title": "Academic Search",
@@ -331,7 +374,10 @@
             "inputPlaceholder": "Enter article title...",
             "inputAriaLabel": "Search by article title",
             "button": "Search",
-            "prompt": "Type a title and press Enter to search"
+            "prompt": "Type a title and press Enter to search",
+            "noResults": "No articles found matching that title.",
+            "loading": "Searching...",
+            "resultsCount": "{{count}} articles found"
         }
     }
 }

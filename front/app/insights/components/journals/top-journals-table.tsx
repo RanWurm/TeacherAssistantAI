@@ -55,21 +55,24 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
 
   const textAlignClass = isRtl ? 'text-right' : 'text-left';
 
+  // Table column definitions using i18n keys as specified in en.json (157-193)
+  const columns = [
+    { key: 'rank', label: t('insights.journals.topJournalsTable.rank') },
+    { key: 'journal', label: t('insights.journals.topJournalsTable.journal') },
+    { key: 'publisher', label: t('insights.journals.topJournalsTable.publisher') },
+    { key: 'articles', label: t('insights.journals.topJournalsTable.articles') },
+    { key: 'authors', label: t('insights.journals.topJournalsTable.authors') },
+    { key: 'subjects', label: t('insights.journals.topJournalsTable.subjects') },
+    { key: 'citations', label: t('insights.journals.topJournalsTable.citations') },
+    { key: 'impactFactor', label: t('insights.journals.topJournalsTable.impactFactor') },
+  ];
+
   return (
     <div className="overflow-x-auto bg-white border border-gray-200 rounded-lg">
       <table className="w-full">
         <thead className="bg-(--table-header-bg)">
           <tr>
-            {[
-              'rank',
-              'journal',
-              'publisher',
-              'articles',
-              'authors',
-              'subjects',
-              'citations',
-              'impactFactor',
-            ].map((key) => (
+            {columns.map(({ key, label }) => (
               <th
                 key={key}
                 className={`
@@ -82,12 +85,12 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
               >
                 {key === 'impactFactor' ? (
                   <span className="flex items-center gap-1">
-                    {t('insights.journals.topJournalsTable.impactFactor')}
+                    {label}
                     <span className="relative group">
                       <button
                         tabIndex={0}
                         type="button"
-                        aria-label={t('insights.journals.topJournalsTable.impactFactorInfoLabel') || 'Info'}
+                        aria-label={t('insights.journals.topJournalsTable.impactFactorInfoLabel')}
                         className="outline-none focus:ring-2 focus:ring-indigo-300"
                         style={{ lineHeight: 0, padding: 0, marginLeft: '0.2rem' }}
                       >
@@ -136,7 +139,7 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                     </span>
                   </span>
                 ) : (
-                  t(`insights.journals.topJournalsTable.${key}`)
+                  label
                 )}
               </th>
             ))}
@@ -156,7 +159,9 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                   {/* Rank */}
                   <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm">
                     <span className={idx < 3 ? 'text-yellow-700 font-bold' : 'text-gray-500'}>
-                      {idx < 3 ? '★' : `#${idx + 1}`}
+                      {idx < 3
+                        ? t('insights.journals.topJournalsTable.starRank')
+                        : t('insights.journals.topJournalsTable.numberRank', { number: idx + 1 })}
                     </span>
                   </td>
 
@@ -191,7 +196,11 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                         <path d="M16 3v4" />
                         <path d="M8 3v4" />
                       </svg>
-                      {journal.publisher || <span className="italic text-gray-300">N/A</span>}
+                      {journal.publisher || (
+                        <span className="italic text-gray-300">
+                          {t('insights.journals.topJournalsTable.na')}
+                        </span>
+                      )}
                     </span>
                   </td>
 
@@ -199,7 +208,7 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                   <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm text-center">
                     <span className="flex items-center gap-1 justify-center">
                       <BookOpen size={14} className="inline-block text-indigo-400" />
-                      {journal.articleCount}
+                      {t('insights.journals.topJournalsTable.articleCount', { count: journal.articleCount })}
                     </span>
                   </td>
 
@@ -207,7 +216,7 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                   <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm text-center">
                     <span className="flex items-center gap-1 justify-center">
                       <Users size={14} className="inline-block text-teal-500" />
-                      {journal.authorCount}
+                      {t('insights.journals.topJournalsTable.authorCount', { count: journal.authorCount })}
                     </span>
                   </td>
 
@@ -215,7 +224,7 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                   <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm text-center">
                     <span className="flex items-center gap-1 justify-center">
                       <Layers size={14} className="inline-block text-orange-400" />
-                      {journal.subjectCount}
+                      {t('insights.journals.topJournalsTable.subjectCount', { count: journal.subjectCount })}
                     </span>
                   </td>
 
@@ -235,19 +244,22 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                       >
                         <path d="M9 2v6H5.5a4.5 4.5 0 1 0 0 9h2M11 18v-6h3.5a4.5 4.5 0 1 0 0-9h-2" />
                       </svg>
-                      {journal.totalCitations}
+                      {t('insights.journals.topJournalsTable.citationVolume', { count: journal.totalCitations })}
                     </span>
                   </td>
 
                   {/* Impact */}
                   <td className="px-2 py-2 md:px-6 md:py-4 text-center">
-                    {impact !== null && impact !== undefined ? (
+                    {journal.impactFactor !== null && journal.impactFactor !== undefined ? (
                       <span
                         className={`text-xs md:text-base font-semibold bg-(--badge-green-bg) text-(--badge-green-text) px-3 py-1 rounded-lg ${
                           isHighImpact ? 'bg-orange-100 text-orange-700' : ''
                         }`}
+                        title={
+                          t('insights.journals.topJournalsTable.impactTooltip')
+                        }
                       >
-                        {Number(impact).toFixed(2)}
+                        {Number(journal.impactFactor).toFixed(2)}
                         {isHighImpact && (
                           <span className="ml-2 text-[9px] md:text-xs text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded">
                             {t('insights.journals.topJournalsTable.highImpact')}
@@ -255,7 +267,7 @@ export function TopJournalsTable({ timeRange }: TopJournalsTableProps) {
                         )}
                       </span>
                     ) : (
-                      'N/A'
+                      t('insights.journals.topJournalsTable.na')
                     )}
                   </td>
                 </tr>

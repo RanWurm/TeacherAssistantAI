@@ -26,9 +26,12 @@ export function MessageItem({ message }: MessageItemProps) {
 
   const timeAlignClass = dir === 'rtl' ? 'text-left' : 'text-right';
   const normalized = message.content
-    .replace(/\r\n/g, "\n")
-    .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n");
+  ? message.content
+      .replace(/\r\n/g, "\n")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+  : "";
+
 
   return (
     <div className="flex">

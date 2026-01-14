@@ -1,19 +1,38 @@
 'use client';
 
-import { useState,useRef } from 'react';
+import { useState,useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MessageList } from './components/message-list';
 import { ChatInput } from './components/chat-input';
-import { Message, INITIAL_MESSAGES } from './data/mock';
+import { Message } from './data/mock';
 import { askAgent } from '../../lib/api/agent';
 
 
 export default function ChatScreen() {
   const streamTimerRef = useRef<number | null>(null);
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 'init',
+      role: 'assistant',
+      content: t('chat.initialGreeting'),
+      timestamp: Date.now(),
+    },
+  ]);
+
+  useEffect(() => {
+    setMessages(prev =>
+      prev.map(m =>
+        m.id === 'init'
+          ? { ...m, content: t('chat.initialGreeting') }
+          : m
+      )
+    );
+  }, [i18n.language]);
+
 
  const handleSubmit = async (e: React.FormEvent) => {
   if (streamTimerRef.current) {

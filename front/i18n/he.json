@@ -15,24 +15,25 @@
         },
         "navLogo": {
             "mainTitle": "עוזר מחקר",
-            "subtitle": "רעיונות מחקר מונעי בינה מלאכותית"
+            "subtitle": "רעיונות מחקר מונעים בבינה מלאכותית"
         }
     },
     "chat": {
         "title": "עוזר מחקר",
+        "initialGreeting": "שלום, אני עוזר המחקר האישי שלך מבוסס בינה מלאכותית. כיצד אוכל לסייע לך היום?",
         "input": {
             "placeholder": "תאר את תחום המחקר שלך או שאל שאלה...",
             "submitButtonLabel": "שלח",
             "loadingLabel": "טוען...",
-            "footer": "עוזר מחקר AI משתמש במטא-דאטה של מאגר OpenAlex כדי להפיק רעיונות מחקר"
+            "footer": "עוזר מחקר AI עושה שימוש במטא-דאטה של OpenAlex כדי להפיק רעיונות מחקר"
         },
         "messageItem": {
-            "aiResponseLabel": "תשובת הבינה המלאכותית",
+            "aiResponseLabel": "תגובת הסוכן",
             "sqlQueryExecutedLabel": "שאילתת SQL שבוצעה",
             "resultsCountLabel": "{{count}} תוצאות"
         },
         "messageList": {
-            "loadingMessage": "מחפש מאמרים ומפיק רעיון מחקר...",
+            "loadingMessage": "מחפש מאמרים ומייצר רעיון מחקר...",
             "scrollToBottomLabel": "גלול לתחתית"
         }
     },
@@ -69,10 +70,13 @@
                     "veryLow": "נמוך מאוד"
                 },
                 "subjectLabel": "תחום",
+                "journalLabel": "כתב עת",
                 "accessibleLabel": {
                     "none": "{{subject}} × {{journal}}: ללא מאמרים",
                     "articles": "{{subject}} × {{journal}}: {{count}} מאמרים"
-                }
+                },
+                "topSubjectsNote": "5 התחומים שמופיעים במספר כתבי עת רב ביותר.",
+                "topJournalsNote": "4 כתבי העת שמפרסמים את מירב התחומים."
             },
             "languageImpactBarChart": {
                 "title": "השוואת שפות",
@@ -138,14 +142,20 @@
             },
             "multidisciplinaryVsSingle": {
                 "title": "רב-תחומי מול חד-תחומי",
-                "description": "השוואה בין מאמרים רב-תחומיים למאמרים חד-תחומיים.",
+                "description": "השוואה בין השפעת מחקר רב-תחומי (המשתרע על מספר תחומים) לבין מחקר חד-תחומי.",
                 "multiSubject": "רב-תחומי",
                 "singleSubject": "חד-תחומי",
+                "multiSubject_short": "רב",
+                "singleSubject_short": "יחיד",
+                "multiSubjectTitle": "רב-תחומי",
+                "singleSubjectTitle": "חד-תחומי",
+                "multiSubjectDescription": "מאמרים העוסקים ביותר מתחום אחד.",
+                "singleSubjectDescription": "מאמרים המתמקדים בתחום אחד.",
                 "articlesLabel": "מאמרים",
                 "avgCitationsLabel": "ממוצע ציטוטים",
-                "citationsLabel": "ציטוטים",
-                "authorsLabel": "{{count}} מחברים",
-                "journalsLabel": "{{count}} כתבי עת"
+                "totalCitationsLabel": "סך כל הציטוטים",
+                "uniqueAuthorsLabel": "מחברים ייחודיים",
+                "uniqueJournalsLabel": "כתבי עת ייחודיים"
             }
         },
         "researchers": {
@@ -249,8 +259,10 @@
         "journals": {
             "topJournalsTable": {
                 "title": "כתבי עת מובילים",
-                "subtitle": "כתבי עת בולטים וניתוח השפעה",
+                "subtitle": "הכתבי עת המובילים, מדורגים לפי פקטור השפעה וציטוטים עדכניים.",
                 "rank": "דירוג",
+                "numberRank": "#{{number}}",
+                "starRank": "★",
                 "journal": "כתב עת",
                 "publisher": "מוציא לאור",
                 "articles": "מאמרים",
@@ -258,40 +270,74 @@
                 "subjects": "תחומים",
                 "citations": "ציטוטים",
                 "impactFactor": "פקטור השפעה",
+                "impactFactorInfoLabel": "על פקטור השפעה",
+                "impactFactorInfo": "פקטור ההשפעה מודד את ממוצע הציטוטים למאמר בשנתיים האחרונות עבור כתב עת זה.",
+                "impactFactorFormula": "נוסחה: (ציטוטים למאמרים מהשנתיים האחרונות) ÷ (מספר המאמרים מהשנתיים האחרונות)",
                 "noData": "אין כתבי עת להצגה",
                 "highImpact": "השפעה גבוהה",
+                "na": "לא זמין",
                 "citationVolume": "{{count}} ציטוטים",
                 "articleCount": "{{count}} מאמרים",
                 "authorCount": "{{count}} מחברים",
                 "subjectCount": "{{count}} תחומים",
                 "citationRate": "{{count}} ציטוטים למאמר",
-                "impactTooltip": "פקטור השפעה = ציטוטים / מאמרים. מייצג ממוצע ציטוטים למאמר."
+                "impactTooltip": "פקטור השפעה = ציטוטים ÷ מאמרים (שנתיים אחרונות). מציג את ממוצע הציטוטים לכל מאמר שהתפרסם לאחרונה."
             },
-            "citationVolatilityChart": {
-                "title": "מפת תנודתיות הציטוטים",
-                "header": "מפת תנודתיות הציטוטים",
-                "description": "כל נקודה מייצגת <1>כתב עת</1>. המיקום מציג את עוצמת ויציבות הציטוטים.",
-                "tip": "<1>טיפ:</1> שם כתב העת מוצג מעל כל נקודה.",
-                "howToRead": {
-                    "xAxis": "<1>ציר X:</1> ממוצע ציטוטים למאמר <2>⇠ יותר ימינה = השפעה גבוהה יותר</2>",
-                    "yAxis": "<1>ציר Y:</1> תנודות ציטוטים (סטיית תקן) <2>⇠גבוה = פחות צפוי</2>",
-                    "bubbleSize": "<1>גודל הבועה:</1> מספר המאמרים שפורסמו"
-                },
+            "citationVolatilityTable": {
+                "title": "תנודתיות ציטוטים בין כתבי עת",
+                "subtitle": "כתבי עת ממופים לפי רוחב תחומים (ציר X) ופקטור השפעה (ציר Y). גודל כל בועה: מספר מאמרים.",
+                "yAxis": "פקטור השפעה",
+                "xAxis": "מספר תחומים",
+                "zAxis": "כמות מאמרים",
                 "tooltip": {
-                    "avgCitations": "ממוצע ציטוטים",
-                    "volatility": "תנודתיות (סטיית תקן)",
-                    "articles": "מאמרים",
-                    "range": "טווח: <1>{{min}}</1> – <2>{{max}}</2>"
+                    "impact": "פקטור השפעה",
+                    "subjectCount": "מספר תחומים",
+                    "articleCount": "כמות מאמרים",
+                    "na": "לא זמין"
                 },
-                "xAxisLabel": "ממוצע ציטוטים",
-                "yAxisLabel": "תנודתיות (סטיית תקן)"
+                "howToReadTitle": "כיצד לקרוא",
+                "howToRead": [
+                    "<b>שמאל</b> = כתבי עת ממוקדים יותר · <b>ימין</b> = בין-תחומיים יותר",
+                    "<b>גבוה יותר</b> = השפעה חזקה יותר (ממוצע ציטוטים למאמר)"
+                ],
+                "noData": "אין כתבי עת להצגה"
+            },
+            "subjectImpactChart": {
+                "title": "פקטור השפעה לפי תחום כתב עת",
+                "subtitle": "כל נקודה מציגה כתב עת. ציר X: מספר תחומים; ציר Y: פקטור השפעה.",
+                "description": "מציג כמה מההשפעה של כתב עת מגיעה מ-<1>10% המאמרים המצוטטים ביותר</1>.",
+                "yAxis": "חלק הציטוטים (%)",
+                "tooltip": {
+                    "share": "מהציטוטים הכוללים מגיעים מ-10% המאמרים המצוטטים ביותר"
+                }
             }
+        },
+        "citationVolatilityChart": {
+            "title": "מפת תנודתיות הציטוטים",
+            "header": "מפת תנודתיות הציטוטים",
+            "description": "כל נקודה מייצגת <1>כתב עת</1>. המיקום מציג את עוצמת ויציבות הציטוטים.",
+            "tip": "<1>טיפ:</1> שם כתב העת מוצג מעל כל נקודה.",
+            "howToRead": {
+                "xAxis": "<1>ציר X:</1> ממוצע ציטוטים למאמר <2>⇠ יותר ימינה = השפעה גבוהה יותר</2>",
+                "yAxis": "<1>ציר Y:</1> תנודות ציטוטים (סטיית תקן) <2>⇠גבוה = פחות צפוי</2>",
+                "bubbleSize": "<1>גודל הבועה:</1> מספר המאמרים שפורסמו"
+            },
+            "tooltip": {
+                "avgCitations": "ממוצע ציטוטים",
+                "volatility": "תנודתיות (סטיית תקן)",
+                "articles": "מאמרים",
+                "range": "טווח: <1>{{min}}</1> – <2>{{max}}</2>"
+            },
+            "xAxisLabel": "ממוצע ציטוטים",
+            "yAxisLabel": "תנודתיות (סטיית תקן)"
         }
     },
     "search": {
+        "byFilters": "חיפוש לפי סינון",
+        "byTitle": "חיפוש לפי כותרת",
         "empty": {
             "title": "לא נמצאו מאמרים",
-            "subtitle": "נסה לשנות את החיפוש או להסיר סינונים כדי לראות עוד תוצאות."
+            "subtitle": "נסה לשנות את החיפוש או להסיר מסננים כדי לראות עוד תוצאות."
         },
         "loading": {
             "title": "טוען נתונים...",
@@ -300,31 +346,45 @@
         "sort": {
             "citations": "המצוטטים ביותר",
             "year": "העדכניים ביותר",
-            "impact": "בעלי השפעה הגבוהה ביותר"
+            "impact": "בעלי ההשפעה הגבוהה ביותר"
         },
         "filters": {
-            "title": "סינון תוצאות",
+            "title": "סינונים",
+            "suggested": "הומלץ מהחיפוש",
             "subject": "נושא",
             "author": "מחבר",
             "keyword": "מילת מפתח",
             "type": "סוג",
+            "type.article": "מאמר",
+            "type.review": "סקירה",
+            "type.conferencePaper": "מאמר כנס",
+            "all": "הכל",
             "yearRange": "טווח שנים",
             "yearFrom": "משנה",
             "yearTo": "עד שנה",
             "language": "שפה",
-            "applyButton": "החל סינונים"
+            "language.en": "אנגלית",
+            "language.he": "עברית",
+            "language.fr": "צרפתית",
+            "language.de": "גרמנית",
+            "apply": "החל סינונים",
+            "inputPlaceholder": "חפש {{label}}...",
+            "noResults": "אין תוצאות",
+            "loading": "טוען…",
+            "showMore": "הצג עוד",
+            "selected": "{{count}} נבחרו"
         },
         "searchHeader": {
             "title": "חיפוש אקדמי",
-            "subtitle": "גלה ונתח מיליוני מאמרים אקדמיים",
+            "subtitle": "גלה ונתח מיליוני מאמרים מדעיים",
             "inputPlaceholder": "חפש לפי כותרת, מחבר, מילות מפתח או נושא...",
-            "inputAriaLabel": "חיפוש מאמרים אקדמיים",
-            "submitAriaLabel": "שליחה"
+            "inputAriaLabel": "חפש מאמרים אקדמיים",
+            "submitAriaLabel": "שלח חיפוש"
         },
         "resultsHeader": {
             "resultsCount": "{{count}} מאמרים נמצאו",
-            "sortLabel": "סדר לפי:",
-            "openDoi": "פתח מאמר במאגר חיצוני"
+            "sortLabel": "סינון לפי:",
+            "openDoi": "פתח מאמר באתר חיצוני"
         },
         "result": {
             "citations": "ציטוטים",
@@ -338,13 +398,16 @@
             "keyword": "מילת מפתח",
             "language": "שפה",
             "type": "סוג",
-            "openDoi": "פתח מאמר במאגר חיצוני"
+            "openDoi": "פתח מאמר באתר חיצוני"
         },
         "searchByTitle": {
             "inputPlaceholder": "הזן כותרת מאמר...",
-            "inputAriaLabel": "חפש לפי כותרת מאמר",
+            "inputAriaLabel": "חפש לפי כותרת המאמר",
             "button": "חיפוש",
-            "prompt": "הקלד כותרת ולחץ אנטר לחיפוש"
+            "prompt": "הקלד כותרת ולחץ Enter כדי לחפש",
+            "noResults": "לא נמצאו מאמרים עם כותרת זו.",
+            "loading": "מחפש...",
+            "resultsCount": "{{count}} מאמרים נמצאו"
         }
     }
 }

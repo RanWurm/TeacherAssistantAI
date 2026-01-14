@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useFilterOptions } from "@/hooks/useFilterOptions";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   label: string;
@@ -15,19 +16,12 @@ const PAGE_SIZE = 50;
 const HEADER_CLASS =
   "text-xs font-semibold uppercase tracking-wider text-(--text-secondary)";
 
-/*
- * This version implements API-based "Load more":
- * - The backend and useFilterOptions provide paginated results.
- * - Options, loading, hasMore, loadMore are all managed by useFilterOptions.
- * - "Load more" will fetch the next page.
- * - visibleCount is not needed, options includes all loaded so far.
- * 
- * Now: when user clicks "Show more", preserve scroll position in the dropdown.
- */
 export function AsyncMultiSelect({ label, value, onChange, fetcher }: Props) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+
   // Ref for the scrollable dropdown panel
   const dropdownPanelRef = useRef<HTMLDivElement>(null);
 
@@ -114,6 +108,30 @@ export function AsyncMultiSelect({ label, value, onChange, fetcher }: Props) {
     loadMore();
   }
 
+  // Lookup translation keys in en.json: 
+  // search.filters.inputPlaceholder, search.filters.loading, search.filters.noResults, 
+  // search.filters.showMore, search.filters.selected
+
+  function getPlaceholder() {
+    if (t) {
+      return t('search.filters.inputPlaceholder', { label });
+    }
+    return `Search ${label}`;
+  }
+  function getLoadingLabel() {
+    return t ? t('search.filters.loading') : "Loading…";
+  }
+  function getNoResultsLabel() {
+    return t ? t('search.filters.noResults') : "No results";
+  }
+  function getShowMoreLabel() {
+    return t ? t('search.filters.showMore') : "Show more";
+  }
+  function getSelectedLabel(count: number) {
+    // search.filters.selected: "{{count}} selected"
+    return t ? t('search.filters.selected', { count }) : `${count} selected`;
+  }
+
   return (
     <div ref={rootRef} className="space-y-2 relative">
       <label className={HEADER_CLASS}>{label}</label>
@@ -131,11 +149,16 @@ export function AsyncMultiSelect({ label, value, onChange, fetcher }: Props) {
                 type="button"
                 onClick={() => remove(v)}
                 className="hover:text-red-500 cursor-pointer"
+                aria-label={t ? t('search.filters.selected', { count: 1 }) : "Remove"}
               >
                 ×
               </button>
             </span>
           ))}
+          {/* Optional: show how many selected */}
+          {value.length > 1 && (
+            <span className="text-xs text-gray-500 pl-1">{getSelectedLabel(value.length)}</span>
+          )}
         </div>
       )}
 
@@ -151,11 +174,13 @@ export function AsyncMultiSelect({ label, value, onChange, fetcher }: Props) {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder={`Search ${label}`}
+          placeholder={getPlaceholder()}
+          aria-label={label}
           className="flex-1 bg-transparent outline-none text-sm"
         />
         <ChevronDown
           className="w-4 h-4 text-gray-400 cursor-pointer"
+          aria-label={open ? t ? t('search.filters.inputPlaceholder', { label }) : `Close` : t ? t('search.filters.inputPlaceholder', { label }) : `Open`}
           onClick={e => {
             e.stopPropagation();
             setOpen(open => open ? false : true);
@@ -168,16 +193,18 @@ export function AsyncMultiSelect({ label, value, onChange, fetcher }: Props) {
           ref={dropdownPanelRef}
           className="absolute z-30 w-full mt-1 max-h-56 overflow-auto
                         rounded-lg border bg-white shadow-md"
+          role="listbox"
+          aria-multiselectable="true"
         >
           {loading && (
             <>
-              <div className="px-3 py-2 text-sm text-gray-400">Loading…</div>
+              <div className="px-3 py-2 text-sm text-gray-400">{getLoadingLabel()}</div>
             </>
           )}
 
           {!loading && filtered.length === 0 && (
             <>
-              <div className="px-3 py-2 text-sm text-gray-400">No results</div>
+              <div className="px-3 py-2 text-sm text-gray-400">{getNoResultsLabel()}</div>
             </>
           )}
 
@@ -187,6 +214,8 @@ export function AsyncMultiSelect({ label, value, onChange, fetcher }: Props) {
               onClick={() => {
                 toggle(opt);
               }}
+              role="option"
+              aria-selected={value.includes(opt)}
               className={`px-3 py-2 text-sm cursor-pointer
                 ${value.includes(opt)
                   ? "bg-blue-50 text-blue-700 font-semibold"
@@ -202,7 +231,7 @@ export function AsyncMultiSelect({ label, value, onChange, fetcher }: Props) {
               onClick={handleShowMore}
               className="w-full px-3 py-2 text-sm text-blue-600 hover:bg-blue-50"
             >
-              Show more
+              {getShowMoreLabel()}
             </button>
           )}
         </div>

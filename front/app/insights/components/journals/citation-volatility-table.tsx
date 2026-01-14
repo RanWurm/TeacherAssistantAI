@@ -96,9 +96,8 @@ function ChartContent({
 
   return (
     <>
-      <div className="p-4" style={{ minHeight: 450 }}>
-        
-        <div style={{ height: '40vh', minWidth: 0 }}>
+      <div className="p-4" style={{ minHeight: 450 }}> 
+        <div dir="ltr" style={{ height: '40vh', minWidth: 0 }}>
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <XAxis
@@ -109,7 +108,11 @@ function ChartContent({
                   subjectCount >= 800 ? '800+' : subjectCount
                 }
               >
-                <Label value="Number of subjects" position="insideBottom" dy={15} />
+                <Label
+                  value={t('insights.journals.citationVolatilityTable.xAxis') || "Number of subjects"}
+                  position="insideBottom"
+                  dy={15}
+                />
               </XAxis>
               <YAxis
                 type="number"
@@ -122,7 +125,7 @@ function ChartContent({
                 tickFormatter={(v) => (v >= 1000 ? `${v / 1000}k` : v)}
               >
                 <Label
-                  value="Impact Factor"
+                  value={t('insights.journals.citationVolatilityTable.yAxis') || "Impact Factor"}
                   angle={-90}
                   position="middle"
                   dx={-40}
@@ -160,12 +163,9 @@ function ChartContent({
         <div className="border-t bg-gray-50 px-4 py-3 text-xs text-gray-700">
           <div className="font-semibold mb-1">{t('insights.journals.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
           <ul className="list-disc list-inside space-y-0.5">
-            <li>
-              <b>Left</b> = more focused journals · <b>Right</b> = more interdisciplinary
-            </li>
-            <li>
-              <b>Higher</b> = stronger impact (avg. citations per article)
-            </li>
+            {((t as any)('insights.journals.citationVolatilityTable.howToRead', { returnObjects: true }) as unknown as string[] ?? []).map((line, idx) => (
+              <li key={idx} dangerouslySetInnerHTML={{ __html: line }} />
+            ))}
           </ul>
         </div>
       </div>
@@ -213,12 +213,9 @@ export function SubjectImpactChart({ timeRange }: { timeRange: TimeRange }) {
           <div className="border-t bg-gray-50 px-4 py-3 text-xs text-gray-200 mt-2">
             <div className="font-semibold mb-1">{t('insights.journals.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
             <ul className="list-disc list-inside space-y-0.5">
-              <li>
-                <b>Left</b> = more focused journals · <b>Right</b> = more interdisciplinary
-              </li>
-              <li>
-                <b>Higher</b> = stronger impact (avg. citations per article)
-              </li>
+              {(t('insights.journals.citationVolatilityTable.howToRead', { returnObjects: true }) as string[] ?? []).map((line, idx) => (
+                <li key={idx} dangerouslySetInnerHTML={{ __html: line }} />
+              ))}
             </ul>
           </div>
         </div>
