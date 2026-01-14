@@ -46,7 +46,7 @@
             "overview": "Overview",
             "trends": "Trends",
             "researchers": "Researchers",
-            "journals": "Journals",
+            "sources": "Journals",
             "cross": "Cross Analysis"
         },
         "timeRanges": {
@@ -58,7 +58,7 @@
         "cross": {
             "title": "Cross-Analysis",
             "subtitle": "Cross-domain relationships and comparisons",
-            "subjectJournalHeatmap": {
+            "subjectSourceHeatmap": {
                 "title": "Subject × Journal Matrix",
                 "description": "This heatmap shows in which subject-journal pairs articles are most densely published. The top 5 subjects (by publication in the most journals) intersect with the top 4 journals (those publishing the most subjects). Darker squares mean a stronger subject–journal link.",
                 "maxCellLabel": "Max cell count",
@@ -75,7 +75,7 @@
                     "articles": "{{subject}} × {{journal}}: {{count}} articles"
                 },
                 "topSubjectsNote": "The 5 subjects that appear in the most journals.",
-                "topJournalsNote": "The 4 journals publishing the most diverse subjects."
+                "topSourcesNote": "The 4 journals publishing the most diverse subjects."
             },
             "languageImpactBarChart": {
                 "title": "Language Comparison",
@@ -150,15 +150,16 @@
                 "authorsLabel": "{{count}} author",
                 "authorsLabel_plural": "{{count}} authors",
                 "journalsLabel": "{{count}} journal",
-                "journalsLabel_plural": "{{count}} journals"
+                "journalsLabel_plural": "{{count}} sources"
             }
         },
-        "journals": {
-            "topJournalsTable": {
-                "title": "Top Journals",
-                "subtitle": "The leading journals, ranked by recent impact factor and citations.",
+       "sources": {
+            "topSourcesTable": {
+                "title": "Top Sources",
+                "subtitle": "The leading publication sources, ranked by recent impact factor and citations.",
                 "rank": "Rank",
-                "journal": "Journal",
+                "source": "Source",
+                "type": "Type",
                 "publisher": "Publisher",
                 "articles": "Articles",
                 "authors": "Authors",
@@ -166,9 +167,9 @@
                 "citations": "Citations",
                 "impactFactor": "Impact Factor",
                 "impactFactorInfoLabel": "About the impact factor",
-                "impactFactorInfo": "The impact factor measures average citations per article over the past 2 years for this journal.",
+                "impactFactorInfo": "The impact factor measures average citations per article over the past 2 years for this source.",
                 "impactFactorFormula": "Formula: (Citations to articles from the past 2 years) ÷ (Number of articles from the past 2 years)",
-                "noData": "No journals available to display",
+                "noData": "No sources available to display",
                 "highImpact": "High Impact",
                 "citationVolume": "{{count}} citations",
                 "articleCount": "{{count}} articles",
@@ -195,7 +196,7 @@
                     "affiliationFallback": "N/A",
                     "articles": "{{count}} articles",
                     "avgCitations": "{{count}} avg citations",
-                    "journals": "{{count}} journals",
+                    "journals": "{{count}} sources",
                     "subjects": "{{count}} subjects",
                     "mostCitedArticle": "Most cited article: {{count}} citations",
                     "yearsRange": "{{from}}–{{to}}",
@@ -215,7 +216,7 @@
                 "title": "Most Multidisciplinary Researchers",
                 "description": "Researchers with the widest disciplinary reach across domains.",
                 "domains": "{{count}} domains",
-                "affiliationFallback": "N/A",
+                "institutionFallback": "N/A",
                 "subjectsShowMore": "+{{count}} more subjects",
                 "articles": "{{count}} articles",
                 "avgCitations": "{{count}} avg citations"
@@ -266,7 +267,7 @@
                 "title": "Publications Timeline",
                 "articles": "articles",
                 "authors": "{{count}} authors",
-                "journals": "{{count}} journals",
+                "journals": "{{count}} sources",
                 "growthRate": "{{percent}}% change"
             },
             "overviewView": {
@@ -333,5 +334,7 @@
             "button": "Search",
             "prompt": "Type a title and press Enter to search"
         }
+        
     }
+    
 }

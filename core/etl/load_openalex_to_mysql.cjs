@@ -33,17 +33,24 @@ function normalizeWork(work) {
   const title = work?.title || "";
   if (!title) return null;
 
-  const journalName = work?.primary_location?.source?.display_name || null;
+  const sourceName = work?.primary_location?.source?.display_name || null;
+  const sourceType = work?.primary_location?.source?.type || null;
   const publisher = work?.primary_location?.source?.host_organization_name || null;
 
-  const authors = (work?.authorships || [])
-    .map((a) => ({
-      openalex_author_id: a?.author?.id || null,
-      name: a?.author?.display_name || null,
-      affiliation: a?.institutions?.[0]?.display_name || null,
-    }))
-    .filter((x) => x.openalex_author_id && x.name);
-  const subjects = (work?.concepts || [])
+ const authors = (work?.authorships || [])
+  .map((a) => ({
+    openalex_author_id: a?.author?.id || null,
+    name: a?.author?.display_name || null,
+    institutions: (a?.institutions || [])
+      .filter((inst) => inst?.id && inst?.display_name)
+      .map((inst) => ({
+        openalex_institution_id: inst.id,
+        name: inst.display_name,
+      })),
+  }))
+  .filter((x) => x.openalex_author_id && x.name);
+  
+    const subjects = (work?.concepts || [])
     .slice(0, 12)
     .map((c) => c?.display_name)
     .filter(Boolean);
@@ -62,32 +69,31 @@ function normalizeWork(work) {
     type: work?.type || null,
     citation_count: work?.cited_by_count ?? null,
     article_url: pickArticleUrl(work),
-    journal: journalName ? { name: journalName, impact_factor: null, publisher } : null,
+    source: sourceName ? { name: sourceName, type: sourceType, impact_factor: null, publisher } : null,
     authors,
     subjects,
     keywords,
   };
 }
 
-async function upsertJournal(conn, journal) {
-  if (!journal?.name) return null;
+async function upsertSource(conn, source) {
+  if (!source?.name) return null;
 
   await conn.execute(
-    `INSERT IGNORE INTO Journals (name, impact_factor, publisher) VALUES (?, ?, ?)`,
-    [journal.name, journal.impact_factor, journal.publisher]
+    `INSERT IGNORE INTO Sources (name, type, impact_factor, publisher) VALUES (?, ?, ?, ?)`,
+    [source.name, source.type, source.impact_factor, source.publisher]
   );
 
   const [rows] = await conn.execute(
-    `SELECT journal_id FROM Journals WHERE name = ?`,
-    [journal.name]
+    `SELECT source_id FROM Sources WHERE name = ?`,
+    [source.name]
   );
-  return rows?.[0]?.journal_id ?? null;
+  return rows?.[0]?.source_id ?? null;
 }
 
-async function upsertArticle(conn, r, journalId) {
-  // Uses UNIQUE(openalex_id) per your schema
+async function upsertArticle(conn, r, sourceId) {
   await conn.execute(
-    `INSERT INTO Articles (openalex_id, title, year, language, type, citation_count, journal_id, article_url)
+    `INSERT INTO Articles (openalex_id, title, year, language, type, citation_count, source_id, article_url)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
        title=VALUES(title),
@@ -95,7 +101,7 @@ async function upsertArticle(conn, r, journalId) {
        language=VALUES(language),
        type=VALUES(type),
        citation_count=VALUES(citation_count),
-       journal_id=VALUES(journal_id),
+       source_id=VALUES(source_id),
        article_url=VALUES(article_url)`,
     [
       r.openalex_id,
@@ -104,7 +110,7 @@ async function upsertArticle(conn, r, journalId) {
       r.language,
       r.type,
       r.citation_count,
-      journalId,
+      sourceId,
       r.article_url,
     ]
   );
@@ -118,12 +124,11 @@ async function upsertArticle(conn, r, journalId) {
 
 async function ensureAuthor(conn, author) {
   await conn.execute(
-    `INSERT INTO Authors (openalex_author_id, name, affiliation)
-     VALUES (?, ?, ?)
+    `INSERT INTO Authors (openalex_author_id, name)
+     VALUES (?, ?)
      ON DUPLICATE KEY UPDATE
-       name=VALUES(name),
-       affiliation=VALUES(affiliation)`,
-    [author.openalex_author_id, author.name, author.affiliation]
+       name=VALUES(name)`,
+    [author.openalex_author_id, author.name]
   );
 
   const [rows] = await conn.execute(
@@ -132,7 +137,6 @@ async function ensureAuthor(conn, author) {
   );
   return rows?.[0]?.author_id ?? null;
 }
-
 async function ensureSubject(conn, subjectName) {
   await conn.execute(
     `INSERT IGNORE INTO Subjects (subject_name) VALUES (?)`,
@@ -165,6 +169,24 @@ async function linkAuthor(conn, articleId, authorId) {
   );
 }
 
+async function ensureInstitution(conn, institution) {
+  await conn.execute(
+    `INSERT IGNORE INTO Institutions (openalex_institution_id, name) VALUES (?, ?)`,
+    [institution.openalex_institution_id, institution.name]
+  );
+
+  const [rows] = await conn.execute(
+    `SELECT institution_id FROM Institutions WHERE openalex_institution_id = ?`,
+    [institution.openalex_institution_id]
+  );
+  return rows?.[0]?.institution_id ?? null;
+}
+async function linkAuthorInstitution(conn, articleId, authorId, institutionId) {
+  await conn.execute(
+    `INSERT IGNORE INTO ArticleAuthorInstitutions (article_id, author_id, institution_id) VALUES (?, ?, ?)`,
+    [articleId, authorId, institutionId]
+  );
+}
 async function linkSubject(conn, articleId, subjectId) {
   await conn.execute(
     `INSERT IGNORE INTO ArticlesSubjects (article_id, subject_id) VALUES (?, ?)`,
@@ -185,13 +207,21 @@ async function loadBatch(pool, batch) {
     await conn.beginTransaction();
 
     for (const r of batch) {
-      const journalId = await upsertJournal(conn, r.journal);
-      const articleId = await upsertArticle(conn, r, journalId);
+      const sourceId = await upsertSource(conn, r.source);
+      const articleId = await upsertArticle(conn, r, sourceId);
       if (!articleId) continue;
 
       for (const au of r.authors) {
         const authorId = await ensureAuthor(conn, au);
-        if (authorId) await linkAuthor(conn, articleId, authorId);
+        if (authorId) {
+          await linkAuthor(conn, articleId, authorId);
+          for (const inst of au.institutions) {
+            const institutionId = await ensureInstitution(conn, inst);
+            if (institutionId) {
+              await linkAuthorInstitution(conn, articleId, authorId, institutionId);
+            }
+          }
+        }
       }
 
       for (const s of r.subjects) {

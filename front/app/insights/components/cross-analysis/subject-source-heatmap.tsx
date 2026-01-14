@@ -3,7 +3,7 @@ import type { TimeRange } from '../../types/insights.types';
 import { useTranslation } from 'react-i18next';
 import { useInsightsCross } from '@/hooks/insights/useInsightsCross';
 
-interface SubjectJournalHeatmapProps {
+interface SubjectSourceHeatmapProps {
   timeRange: TimeRange;
 }
 
@@ -15,19 +15,16 @@ function truncateLabel(label: string, maxLen = 30): { display: string; full: str
   };
 }
 
-// Use the logic from TopJournalsTable for direction-aware alignment class.
-export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps) {
+export function SubjectSourceHeatmap({ timeRange }: SubjectSourceHeatmapProps) {
   const { t, i18n } = useTranslation();
   const isRtl = i18n.dir() === 'rtl';
   const textAlignClass = isRtl ? 'text-right' : 'text-left';
 
   const { data, loading } = useInsightsCross(timeRange);
 
-  // SAFE: handle no data (not yet loaded)
-  const heatmap = data?.subjectJournalHeatmap ?? [];
-  // Get all unique subjects & journals from live data
+  const heatmap = data?.subjectSourceHeatmap ?? [];
   const subjects = Array.from(new Set(heatmap.map(h => h.subject)));
-  const journals = Array.from(new Set(heatmap.map(h => h.journal)));
+  const sources = Array.from(new Set(heatmap.map(h => h.source)));
   const maxCount = heatmap.length > 0 ? Math.max(...heatmap.map(h => h.articleCount)) : 0;
 
   const intensityLevels = [
@@ -39,7 +36,7 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
 
   const heatmapMap = new Map<string, number>();
   heatmap.forEach(item => {
-    heatmapMap.set(`${item.subject}-${item.journal}`, item.articleCount);
+    heatmapMap.set(`${item.subject}-${item.source}`, item.articleCount);
   });
 
   const getIntensityClass = (count: number) => {
@@ -51,23 +48,22 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
     return 'bg-blue-100 text-gray-800';
   };
 
-  const getAccessibleLabel = (count: number, subject: string, journal: string) => {
+  const getAccessibleLabel = (count: number, subject: string, source: string) => {
     if (count === 0) {
-      return t('insights.cross.subjectJournalHeatmap.accessibleLabel.none', {
+      return t('insights.cross.subjectSourceHeatmap.accessibleLabel.none', {
         subject,
-        journal,
-        defaultValue: '{{subject}} × {{journal}}: no articles',
+        source,
+        defaultValue: '{{subject}} × {{source}}: no articles',
       });
     }
-    return t('insights.cross.subjectJournalHeatmap.accessibleLabel.articles', {
+    return t('insights.cross.subjectSourceHeatmap.accessibleLabel.articles', {
       subject,
-      journal,
+      source,
       count: count,
-      defaultValue: '{{subject}} × {{journal}}: {{count}} articles',
+      defaultValue: '{{subject}} × {{source}}: {{count}} articles',
     });
   };
 
-  // column width: same for all, for header and body
   const COL_W = 'w-[130px]';
 
   return (
@@ -75,20 +71,20 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
       <div className="flex items-center gap-2 mb-2">
         <Grid3x3 className="w-4 h-4 text-gray-500" />
         <h3 className="text-sm font-semibold text-gray-900">
-          {t('insights.cross.subjectJournalHeatmap.title')}
+          {t('insights.cross.subjectSourceHeatmap.title')}
         </h3>
       </div>
 
       <p className="text-xs text-gray-600 mb-4 max-w-3xl">
-        {t('insights.cross.subjectJournalHeatmap.description')}
+        {t('insights.cross.subjectSourceHeatmap.description')}
       </p>
 
       <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2">
         <span className="text-xs text-gray-500">
-          {t('insights.cross.subjectJournalHeatmap.topSubjectsNote')}
+          {t('insights.cross.subjectSourceHeatmap.topSubjectsNote')}
         </span>
         <span className="text-xs text-gray-500">
-          {t('insights.cross.subjectJournalHeatmap.topJournalsNote')}
+          {t('insights.cross.subjectSourceHeatmap.topSourcesNote')}
         </span>
       </div>
 
@@ -129,13 +125,13 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
             <thead className="bg-gray-50">
               <tr>
                 <th className={`sticky left-0 bg-gray-50 z-10 px-3 py-2 font-semibold text-gray-700 border-r border-gray-200 whitespace-nowrap ${textAlignClass} ${COL_W}`}>
-                  {t('insights.cross.subjectJournalHeatmap.subjectLabel')}
+                  {t('insights.cross.subjectSourceHeatmap.subjectLabel')}
                 </th>
-                {journals.map(journal => {
-                  const tLabel = truncateLabel(journal, 30);
+                {sources.map(source => {
+                  const tLabel = truncateLabel(source, 30);
                   return (
                     <th
-                      key={journal}
+                      key={source}
                       className={`px-3 py-2 font-medium text-gray-700 whitespace-nowrap text-center ${COL_W}`}
                       title={tLabel.full !== tLabel.display ? tLabel.full : undefined}
                     >
@@ -172,7 +168,7 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
                         ${COL_W}
                       `}
                       style={{
-                        boxShadow: '2px 0 0 0 rgb(229 231 235)', // gray-200
+                        boxShadow: '2px 0 0 0 rgb(229 231 235)',
                       }}
                       title={tSubject.full !== tSubject.display ? tSubject.full : undefined}
                     >
@@ -187,15 +183,15 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
                         {tSubject.display}
                       </span>
                     </td>
-                    {journals.map(journal => {
-                      const count = heatmapMap.get(`${subject}-${journal}`) ?? 0;
+                    {sources.map(source => {
+                      const count = heatmapMap.get(`${subject}-${source}`) ?? 0;
                       return (
                         <td
-                          key={journal}
+                          key={source}
                           className={`relative px-3 py-2 text-center transition-colors ${getIntensityClass(
                             count
                           )} ${COL_W}`}
-                          title={getAccessibleLabel(count, subject, journal)}
+                          title={getAccessibleLabel(count, subject, source)}
                         >
                           {count > 0 ? count.toLocaleString() : '—'}
                         </td>
@@ -214,12 +210,12 @@ export function SubjectJournalHeatmap({ timeRange }: SubjectJournalHeatmapProps)
           {intensityLevels.map(d => (
             <span key={d.i18nKey} className="flex items-center gap-1.5">
               <span className={`w-3 h-3 rounded ${d.color}`} />
-              {t(`insights.cross.subjectJournalHeatmap.intensity.${d.i18nKey}`)}
+              {t(`insights.cross.subjectSourceHeatmap.intensity.${d.i18nKey}`)}
             </span>
           ))}
         </div>
         <span className="text-gray-500">
-          {t('insights.cross.subjectJournalHeatmap.maxCellLabel')}: <b className="text-gray-800">{maxCount.toLocaleString()}</b>
+          {t('insights.cross.subjectSourceHeatmap.maxCellLabel')}: <b className="text-gray-800">{maxCount.toLocaleString()}</b>
         </span>
       </div>
     </div>

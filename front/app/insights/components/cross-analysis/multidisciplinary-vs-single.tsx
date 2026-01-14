@@ -188,7 +188,7 @@ export function MultidisciplinaryVsSingle({ timeRange }: MultidisciplinaryVsSing
       avgCitations: data?.avgCitations ?? 0,
       totalCitations: data?.totalCitations ?? 0,
       uniqueAuthors: data?.authors ?? 0,
-      uniqueJournals: data?.journals ?? 0,
+      uniqueJournals: data?.sources ?? 0,
       percent: total ? ((type === 'single' ? single : multi) / total) * 100 : 0,
     };
   }

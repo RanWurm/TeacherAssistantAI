@@ -8,7 +8,7 @@ import { ViewTabs } from './components/view-tabs';
 import { OverviewView } from './components/overview/overview-view';
 import { TrendsView } from './components/trends/trends-view';
 import { ResearchersView } from './components/researchers/researchers-view';
-import { JournalsView } from './components/journals/journals-view';
+import { SourcesView } from './components/sources/sources-view';
 import { CrossAnalysisView } from './components/cross-analysis/cross-analysis-view';
 import type { ViewType, TimeRange } from './types/insights.types';
 
@@ -34,7 +34,7 @@ export default function InsightsPage() {
         {selectedView === 'overview' && <OverviewView timeRange={timeRange} />}
         {selectedView === 'trends' && <TrendsView timeRange={timeRange} />}
         {selectedView === 'researchers' && <ResearchersView timeRange={timeRange} />}
-        {selectedView === 'journals' && <JournalsView timeRange={timeRange} />}
+        {selectedView === 'sources' && <SourcesView timeRange={timeRange} />}
         {selectedView === 'cross' && <CrossAnalysisView timeRange={timeRange} />}
       </div>
     </div>

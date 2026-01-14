@@ -3,9 +3,9 @@ function yearFilter(fromYear?: number) {
 }
 
 /**
- * Top journals by citations
+ * Top sources by citations
  */
-export function buildTopJournalsQuery(
+export function buildTopSourcesQuery(
   fromYear?: number,
   limit: number = 5
 ) {
@@ -13,9 +13,10 @@ export function buildTopJournalsQuery(
 
   const sql = `
     SELECT
-      j.journal_id AS journal_id,
-      j.name       AS name,
-      j.publisher  AS publisher,
+      s.source_id  AS source_id,
+      s.name       AS name,
+      s.type       AS type,
+      s.publisher  AS publisher,
 
       COUNT(DISTINCT a.article_id) AS articleCount,
       COUNT(DISTINCT aa.author_id) AS authorCount,
@@ -33,19 +34,19 @@ export function buildTopJournalsQuery(
         2
       ) AS impactFactor
 
-    FROM Journals j
+    FROM Sources s
     JOIN Articles a
-      ON a.journal_id = j.journal_id
+      ON a.source_id = s.source_id
     LEFT JOIN ArticlesAuthors aa
       ON a.article_id = aa.article_id
     LEFT JOIN ArticlesSubjects asj
       ON a.article_id = asj.article_id
-    LEFT JOIN Subjects s
-      ON asj.subject_id = s.subject_id
+    LEFT JOIN Subjects sub
+      ON asj.subject_id = sub.subject_id
 
     ${where}
 
-    GROUP BY j.journal_id
+    GROUP BY s.source_id
     ORDER BY
       impactFactor DESC,
       totalCitations DESC
@@ -60,18 +61,18 @@ export function buildTopJournalsQuery(
 }
 
 /**
-/**
- * Calculates the citation concentration metric, defined as the percentage of a journal's citations 
+ * Calculates the citation concentration metric, defined as the percentage of a source's citations 
  * that come from its top 10% most cited articles. 
- * Also returns each journal's impact factor and article count.
+ * Also returns each source's impact factor and article count.
  */
 export function buildSubjectImpactQuery(fromYear?: number) {
   const where = yearFilter(fromYear);
 
   const sql = `
     SELECT
-      j.journal_id,
-      j.name AS journalName,
+      s.source_id,
+      s.name AS sourceName,
+      s.type AS sourceType,
 
       COUNT(DISTINCT asj.subject_id) AS subjectCount,
       COUNT(DISTINCT a.article_id) AS articleCount,
@@ -81,15 +82,15 @@ export function buildSubjectImpactQuery(fromYear?: number) {
         2
       ) AS impactFactor
 
-    FROM Journals j
+    FROM Sources s
     JOIN Articles a
-      ON a.journal_id = j.journal_id
+      ON a.source_id = s.source_id
     LEFT JOIN ArticlesSubjects asj
       ON a.article_id = asj.article_id
 
     ${where}
 
-    GROUP BY j.journal_id
+    GROUP BY s.source_id
 
     HAVING
       impactFactor IS NOT NULL

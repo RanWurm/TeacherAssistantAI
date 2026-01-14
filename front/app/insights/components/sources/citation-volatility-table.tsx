@@ -9,24 +9,21 @@ import {
   ZAxis,
 } from 'recharts';
 import { useTranslation, Trans } from 'react-i18next';
-import { useInsightsJournals } from '@/hooks/insights/useInsightsJournals';
+import { useInsightsSources } from '@/hooks/insights/useInsightsSources';
 import type { TimeRange } from '@/lib/api/insights.api';
 
-// Typed according to backend SubjectImpactPoint
 type Datum = {
-  journalName: string;
+  sourceName: string;
+  sourceType: string | null;
   subjectCount: number;
   impactFactor: number | null;
   articleCount: number;
 };
 
-// Mini chart skeleton while loading (smaller, more chart focus)
 function ChartLoadingSkeleton() {
-  // Animated skeleton chart with blue tones and animate-pulse
   return (
     <div className="flex flex-col items-center justify-center h-[40vh] min-h-[240px]">
       <div className="relative w-full h-full max-w-4xl min-h-[180px] aspect-[2.8/1] animate-pulse">
-        {/* Chart grid background in blue */}
         <div className="absolute inset-0">
           {[...Array(4)].map((_, i) => (
             <div
@@ -43,7 +40,6 @@ function ChartLoadingSkeleton() {
             />
           ))}
         </div>
-        {/* Blue skeleton dots */}
         {[0, 1, 2, 3, 4, 5, 6, 7].map((_, i) => {
           const skeletonBg = [
             'bg-blue-200',
@@ -70,11 +66,9 @@ function ChartLoadingSkeleton() {
             />
           );
         })}
-        {/* Blue axis lines */}
         <div className="absolute left-0 bottom-0 w-full h-0.5 bg-blue-200 rounded" />
         <div className="absolute left-0 bottom-0 h-full w-0.5 bg-blue-200 rounded" />
       </div>
-      {/* Axis label skeletons in blue */}
       <div className="flex justify-between w-full max-w-4xl mt-2 animate-pulse">
         <div className="h-3 w-32 bg-blue-100 rounded" />
         <div className="h-3 w-12 bg-blue-50 rounded" />
@@ -90,7 +84,6 @@ function ChartContent({
   chartData: Datum[];
   t: (s: string) => string;
 }) {
-  // Y axis domain:
   const yMin = chartData?.length ? Math.max(0.1, Math.min(...chartData.map(d => d.impactFactor!))) : 0;
   const yMax = chartData?.length ? Math.max(...chartData.map(d => d.impactFactor!)) : 'auto';
 
@@ -158,10 +151,10 @@ function ChartContent({
           </ResponsiveContainer>
         </div>
         <div className="border-t bg-gray-50 px-4 py-3 text-xs text-gray-700">
-          <div className="font-semibold mb-1">{t('insights.journals.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
+          <div className="font-semibold mb-1">{t('insights.sources.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
           <ul className="list-disc list-inside space-y-0.5">
             <li>
-              <b>Left</b> = more focused journals · <b>Right</b> = more interdisciplinary
+              <b>Left</b> = more focused sources · <b>Right</b> = more interdisciplinary
             </li>
             <li>
               <b>Higher</b> = stronger impact (avg. citations per article)
@@ -173,14 +166,14 @@ function ChartContent({
   );
 }
 
-// Tooltip adopted for recharts, compatible signature (no debug logs)
 function renderTooltipContent(props: any) {
   const { active, payload } = props;
   if (!active || !payload?.length) return null;
   const d: Datum = payload[0].payload;
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-xs">
-      <div className="font-semibold mb-1">{d.journalName}</div>
+      <div className="font-semibold mb-1">{d.sourceName}</div>
+      {d.sourceType && <div className="text-gray-500 mb-1">{d.sourceType}</div>}
       <div>
         Impact Factor:{" "}
         <b>{d.impactFactor === null ? <span className="text-gray-400">N/A</span> : d.impactFactor}</b>
@@ -194,9 +187,8 @@ function renderTooltipContent(props: any) {
 
 export function SubjectImpactChart({ timeRange }: { timeRange: TimeRange }) {
   const { t } = useTranslation();
-  const { data, loading } = useInsightsJournals(timeRange);
+  const { data, loading } = useInsightsSources(timeRange);
 
-  // Defensive: Drop null/NaN impactFactor, filter small N, cap subjectCount visually at 800
   const chartData: Datum[] = (data?.subjectImpact as Datum[] | undefined)?.map(d => ({
     ...d,
     impactFactor: Number(d.impactFactor),
@@ -207,14 +199,12 @@ export function SubjectImpactChart({ timeRange }: { timeRange: TimeRange }) {
     return (
       <div className="bg-white border rounded-lg overflow-hidden">
         <div className="p-4" style={{ minHeight: 260 }}>
-          {/* Chart area skeleton, more chart, fewer/finer UI elements */}
           <ChartLoadingSkeleton />
-          {/* How to read section faint */}
           <div className="border-t bg-gray-50 px-4 py-3 text-xs text-gray-200 mt-2">
-            <div className="font-semibold mb-1">{t('insights.journals.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
+            <div className="font-semibold mb-1">{t('insights.sources.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
             <ul className="list-disc list-inside space-y-0.5">
               <li>
-                <b>Left</b> = more focused journals · <b>Right</b> = more interdisciplinary
+                <b>Left</b> = more focused sources · <b>Right</b> = more interdisciplinary
               </li>
               <li>
                 <b>Higher</b> = stronger impact (avg. citations per article)

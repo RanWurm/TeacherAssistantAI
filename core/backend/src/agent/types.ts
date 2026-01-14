@@ -12,29 +12,31 @@ export interface Article {
   language: string | null;
   type: string | null;
   citation_count: number | null;
-  journal_id: number | null;
+  source_id: number | null;
   article_url: string | null;
 }
 
 export interface ArticleWithDetails extends Article {
-  journal_name?: string | null;
+  source_name?: string | null;
+  source_type?: string | null;
   publisher?: string | null;
-  authors?: { name: string; affiliation: string | null }[];
+  authors?: { name: string; institutions: string[] }[];
   subjects?: string[];
   keywords?: string[];
 }
 
-export interface Journal {
-  journal_id: number;
+export interface Source {
+  source_id: number;
   name: string;
+  type: string | null;
   impact_factor: number | null;
   publisher: string | null;
 }
 
 export interface Author {
   author_id: number;
+  openalex_author_id: string;
   name: string;
-  affiliation: string | null;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -43,6 +45,7 @@ export interface Author {
 
 export type ToolName =
   | "search_papers"
+  | "search_papers_with_pdf"
   | "get_paper_details"
   | "get_pdf_content"
   | "list_subjects"
@@ -92,12 +95,17 @@ export const ExecuteCustomQuerySchema = z.object({
   query: z.string().describe("SELECT query to execute (read-only)"),
 });
 
+export const SearchPapersWithPdfSchema = z.object({
+  query: z.string().describe("Search terms"),
+  limit: z.coerce.number().min(1).max(10).default(5),
+});
+
 export type SearchPapersParams = z.infer<typeof SearchPapersSchema>;
 export type GetPaperDetailsParams = z.infer<typeof GetPaperDetailsSchema>;
 export type GetPdfContentParams = z.infer<typeof GetPdfContentSchema>;
 export type GetAuthorPapersParams = z.infer<typeof GetAuthorPapersSchema>;
 export type ExecuteCustomQueryParams = z.infer<typeof ExecuteCustomQuerySchema>;
-
+export type SearchPapersWithPdfParams = z.infer<typeof SearchPapersWithPdfSchema>;
 // ─────────────────────────────────────────────────────────────
 // Agent / Strategy
 // ─────────────────────────────────────────────────────────────

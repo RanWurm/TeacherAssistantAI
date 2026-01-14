@@ -58,7 +58,7 @@
         "cross": {
             "title": "ניתוח רוחבי",
             "subtitle": "קשרים והשוואות בין תחומים",
-            "subjectJournalHeatmap": {
+            "subjectSourceHeatmap": {
                 "title": "התפלגות תחום × כתב עת",
                 "description": "מפת חום המציגה היכן מתרכז נפח המחקר בין תחומים וכתבי עת. תאים כהים יותר מעידים על התאמה חזקה.",
                 "maxCellLabel": "ערך תא מרבי",
@@ -153,7 +153,7 @@
                 "title": "חוקרים מובילים",
                 "subtitle": "גלה את החוקרים המובילים בדירוג לפי סך הציטוטים. כל כרטיס פרופיל כולל מדדי פרסומים וציטוטים, טווח מחקר (כתבי עת ותחומים), ותכונות בולטות כגון פעילות רב-תחומית, השפעה מתמשכת, או מיקוד מחקרי.",
                 "researcher": {
-                    "affiliationFallback": "ללא",
+                    "institutionFallback": "ללא",
                     "articles": "{{count}} מאמרים",
                     "avgCitations": "{{count}} ממוצע ציטוטים",
                     "journals": "{{count}} כתבי עת",
@@ -246,27 +246,32 @@
                 "subtitle": "פיזור מחקר ומדדים מערכתיים."
             }
         },
-        "journals": {
-            "topJournalsTable": {
-                "title": "כתבי עת מובילים",
-                "subtitle": "כתבי עת בולטים וניתוח השפעה",
-                "rank": "דירוג",
-                "journal": "כתב עת",
-                "publisher": "מוציא לאור",
-                "articles": "מאמרים",
-                "authors": "מחברים",
-                "subjects": "תחומים",
-                "citations": "ציטוטים",
-                "impactFactor": "פקטור השפעה",
-                "noData": "אין כתבי עת להצגה",
-                "highImpact": "השפעה גבוהה",
-                "citationVolume": "{{count}} ציטוטים",
-                "articleCount": "{{count}} מאמרים",
-                "authorCount": "{{count}} מחברים",
-                "subjectCount": "{{count}} תחומים",
-                "citationRate": "{{count}} ציטוטים למאמר",
-                "impactTooltip": "פקטור השפעה = ציטוטים / מאמרים. מייצג ממוצע ציטוטים למאמר."
-            },
+         "sources": {
+            "topSourcesTable": {
+            "title": "מקורות מובילים",
+            "subtitle": "מקורות הפרסום המובילים, מדורגים לפי גורם ההשפעה והציטוטים העדכניים.",
+            "rank": "דירוג",
+            "source": "מקור",
+            "type": "סוג",
+            "publisher": "מוציא לאור",
+            "articles": "מאמרים",
+            "authors": "מחברים",
+            "subjects": "תחומים",
+            "citations": "ציטוטים",
+            "impactFactor": "גורם השפעה",
+            "impactFactorInfoLabel": "על גורם ההשפעה",
+            "impactFactorInfo": "גורם ההשפעה מודד את ממוצע הציטוטים לכל מאמר עבור מקור זה במהלך השנתיים האחרונות.",
+            "impactFactorFormula": "נוסחה: (ציטוטים למאמרים מהשנתיים האחרונות) ÷ (מספר המאמרים מהשנתיים האחרונות)",
+            "noData": "אין מקורות זמינים להצגה",
+            "highImpact": "השפעה גבוהה",
+            "citationVolume": "{{count}} ציטוטים",
+            "articleCount": "{{count}} מאמרים",
+            "authorCount": "{{count}} מחברים",
+            "subjectCount": "{{count}} תחומים",
+            "citationRate": "{{count}} ציטוטים למאמר",
+            "impactTooltip": "גורם השפעה = ציטוטים ÷ מאמרים (בשנתיים האחרונות). מבטא את ממוצע הציטוטים לכל מאמר שפורסם לאחרונה."
+            }
+        },
             "citationVolatilityChart": {
                 "title": "מפת תנודתיות הציטוטים",
                 "header": "מפת תנודתיות הציטוטים",
@@ -286,65 +291,64 @@
                 "xAxisLabel": "ממוצע ציטוטים",
                 "yAxisLabel": "תנודתיות (סטיית תקן)"
             }
-        }
-    },
-    "search": {
-        "empty": {
-            "title": "לא נמצאו מאמרים",
-            "subtitle": "נסה לשנות את החיפוש או להסיר סינונים כדי לראות עוד תוצאות."
         },
-        "loading": {
-            "title": "טוען נתונים...",
-            "subtitle": "אנא המתן בזמן שאנו מביאים את תוצאות החיפוש שלך."
-        },
-        "sort": {
-            "citations": "המצוטטים ביותר",
-            "year": "העדכניים ביותר",
-            "impact": "בעלי השפעה הגבוהה ביותר"
-        },
-        "filters": {
-            "title": "סינון תוצאות",
-            "subject": "נושא",
-            "author": "מחבר",
-            "keyword": "מילת מפתח",
-            "type": "סוג",
-            "yearRange": "טווח שנים",
-            "yearFrom": "משנה",
-            "yearTo": "עד שנה",
-            "language": "שפה",
-            "applyButton": "החל סינונים"
-        },
-        "searchHeader": {
-            "title": "חיפוש אקדמי",
-            "subtitle": "גלה ונתח מיליוני מאמרים אקדמיים",
-            "inputPlaceholder": "חפש לפי כותרת, מחבר, מילות מפתח או נושא...",
-            "inputAriaLabel": "חיפוש מאמרים אקדמיים",
-            "submitAriaLabel": "שליחה"
-        },
-        "resultsHeader": {
-            "resultsCount": "{{count}} מאמרים נמצאו",
-            "sortLabel": "סדר לפי:",
-            "openDoi": "פתח מאמר במאגר חיצוני"
-        },
-        "result": {
-            "citations": "ציטוטים",
-            "noAuthors": "מחבר לא ידוע",
-            "showMore": "הצג עוד",
-            "showLess": "הצג פחות",
-            "yearFrom": "שנת פרסום",
-            "author": "מחבר/ים",
-            "subject": "נושא",
-            "subjects": "נושאים",
-            "keyword": "מילת מפתח",
-            "language": "שפה",
-            "type": "סוג",
-            "openDoi": "פתח מאמר במאגר חיצוני"
-        },
-        "searchByTitle": {
-            "inputPlaceholder": "הזן כותרת מאמר...",
-            "inputAriaLabel": "חפש לפי כותרת מאמר",
-            "button": "חיפוש",
-            "prompt": "הקלד כותרת ולחץ אנטר לחיפוש"
-        }
+        "search": {
+            "empty": {
+                "title": "לא נמצאו מאמרים",
+                "subtitle": "נסה לשנות את החיפוש או להסיר סינונים כדי לראות עוד תוצאות."
+            },
+            "loading": {
+                "title": "טוען נתונים...",
+                "subtitle": "אנא המתן בזמן שאנו מביאים את תוצאות החיפוש שלך."
+            },
+            "sort": {
+                "citations": "המצוטטים ביותר",
+                "year": "העדכניים ביותר",
+                "impact": "בעלי השפעה הגבוהה ביותר"
+            },
+            "filters": {
+                "title": "סינון תוצאות",
+                "subject": "נושא",
+                "author": "מחבר",
+                "keyword": "מילת מפתח",
+                "type": "סוג",
+                "yearRange": "טווח שנים",
+                "yearFrom": "משנה",
+                "yearTo": "עד שנה",
+                "language": "שפה",
+                "applyButton": "החל סינונים"
+            },
+            "searchHeader": {
+                "title": "חיפוש אקדמי",
+                "subtitle": "גלה ונתח מיליוני מאמרים אקדמיים",
+                "inputPlaceholder": "חפש לפי כותרת, מחבר, מילות מפתח או נושא...",
+                "inputAriaLabel": "חיפוש מאמרים אקדמיים",
+                "submitAriaLabel": "שליחה"
+            },
+            "resultsHeader": {
+                "resultsCount": "{{count}} מאמרים נמצאו",
+                "sortLabel": "סדר לפי:",
+                "openDoi": "פתח מאמר במאגר חיצוני"
+            },
+            "result": {
+                "citations": "ציטוטים",
+                "noAuthors": "מחבר לא ידוע",
+                "showMore": "הצג עוד",
+                "showLess": "הצג פחות",
+                "yearFrom": "שנת פרסום",
+                "author": "מחבר/ים",
+                "subject": "נושא",
+                "subjects": "נושאים",
+                "keyword": "מילת מפתח",
+                "language": "שפה",
+                "type": "סוג",
+                "openDoi": "פתח מאמר במאגר חיצוני"
+            },
+            "searchByTitle": {
+                "inputPlaceholder": "הזן כותרת מאמר...",
+                "inputAriaLabel": "חפש לפי כותרת מאמר",
+                "button": "חיפוש",
+                "prompt": "הקלד כותרת ולחץ אנטר לחיפוש"
+            }
     }
 }

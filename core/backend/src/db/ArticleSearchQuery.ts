@@ -32,13 +32,14 @@ export function buildArticlesSearchQuery(filters: ArticleSearchFilters) {
         "a.type",
         "a.citation_count",
         "a.article_url",
-        "j.name AS journal",
-        "j.publisher AS publisher",
-        "j.impact_factor AS impact_factor",
+        "src.name AS source",
+        "src.type AS source_type",
+        "src.publisher AS publisher",
+        "src.impact_factor AS impact_factor",
         "GROUP_CONCAT(DISTINCT au.name) AS authors",
       ],
       joins: [
-        { type: "LEFT JOIN", table: "Journals", as: "j", on: "a.journal_id = j.journal_id" },
+        { type: "LEFT JOIN", table: "Sources", as: "src", on: "a.source_id = src.source_id" },
         { type: "LEFT JOIN", table: "ArticlesAuthors", as: "aa", on: "a.article_id = aa.article_id" },
         { type: "LEFT JOIN", table: "Authors", as: "au", on: "aa.author_id = au.author_id" },
       ],
@@ -72,9 +73,9 @@ export function buildArticlesSearchQuery(filters: ArticleSearchFilters) {
     { type: "LEFT JOIN", table: "Keywords", as: "k", on: "ak.keyword_id = k.keyword_id" }
   );
 
-  // ---- JOURNAL (1-to-1) ----
+  // ---- SOURCE (1-to-1) ----
   joins.push(
-    { type: "LEFT JOIN", table: "Journals", as: "j", on: "a.journal_id = j.journal_id" }
+    { type: "LEFT JOIN", table: "Sources", as: "src", on: "a.source_id = src.source_id" }
   );
 
 
@@ -138,9 +139,10 @@ export function buildArticlesSearchQuery(filters: ArticleSearchFilters) {
       "a.type",
       "a.citation_count",
       "a.article_url",
-      "j.name AS journal",
-      "j.publisher AS publisher",
-      "j.impact_factor AS impact_factor",
+      "src.name AS source",
+      "src.type AS source_type",
+      "src.publisher AS publisher",
+      "src.impact_factor AS impact_factor",
       "GROUP_CONCAT(DISTINCT au.name) AS authors",
       "GROUP_CONCAT(DISTINCT s.subject_name) AS subjects",
       "GROUP_CONCAT(DISTINCT k.keyword) AS keywords",
