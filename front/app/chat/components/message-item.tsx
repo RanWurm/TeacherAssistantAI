@@ -1,5 +1,5 @@
 import { Sparkles, Database } from 'lucide-react';
-import { Message } from '../data/mock';
+import { Message } from '../page';
 import { useTranslation } from 'react-i18next';
 import { MessageTime } from './MessageTime';
 import ReactMarkdown from "react-markdown";
