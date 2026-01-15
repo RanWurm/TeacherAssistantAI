@@ -31,7 +31,6 @@ export function PublicationsTimeline({ timeRange }: PublicationsTimelineProps) {
         }
       })
       .catch(() => {
-        // log removed
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

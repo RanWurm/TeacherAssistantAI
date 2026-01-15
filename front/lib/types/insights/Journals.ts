@@ -12,14 +12,14 @@ export interface JournalStats {
   subjectCount: number;
 
   totalCitations: number;
-  impactFactor: number | null;
+  impactScore: number;
 }
 
 export interface SubjectImpactPoint {
   journal_id: number;
   journalName: string;
   subjectCount: number;
-  impactFactor: number;
+  impactScore: number;
   articleCount: number;
 }
 

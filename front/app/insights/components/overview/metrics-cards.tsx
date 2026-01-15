@@ -35,17 +35,12 @@ interface MetricsCardsProps {
 
 export function MetricsCards({ timeRange }: MetricsCardsProps) {
   const { t } = useTranslation();
-
   const { data, loading } = useInsightsOverview(timeRange);
 
-  useEffect(() => {
-    // logs removed
-  }, [loading, data, timeRange]);
+  useEffect(() => {}, [loading, data, timeRange]);
 
   const metrics = data?.metrics;
   const multidisciplinary = data?.multidisciplinary;
-
-  // logs removed
 
   const cards: MetricCard[] =
     metrics && multidisciplinary
@@ -70,10 +65,7 @@ export function MetricsCards({ timeRange }: MetricsCardsProps) {
           },
           {
             i18nKey: "insights.overview.metricsCards.avgCitations",
-            value:
-              typeof metrics.avgCitations === "number"
-                ? metrics.avgCitations
-                : 0,
+            value: typeof metrics.avgCitations === "number" ? metrics.avgCitations : 0,
             icon: TrendingUp,
             colorIdx: 3,
             format: () =>
@@ -108,9 +100,7 @@ export function MetricsCards({ timeRange }: MetricsCardsProps) {
         ]
       : [];
 
-  useEffect(() => {
-    // logs removed
-  }, [cards]);
+  useEffect(() => {}, [cards]);
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
@@ -131,9 +121,7 @@ export function MetricsCards({ timeRange }: MetricsCardsProps) {
                   rounded-lg flex items-center justify-center shadow
                   ${metricGradients[idx % metricGradients.length]}
                 `}
-              >
-                {" "}
-              </div>
+              ></div>
               <div className="flex-1 min-w-0">
                 <div className="h-3 bg-slate-300 rounded w-2/3 mb-1" />
                 <div className="h-4 bg-slate-200 rounded w-1/3" />
@@ -142,14 +130,11 @@ export function MetricsCards({ timeRange }: MetricsCardsProps) {
           ))
         : cards.map((metric, idx) => {
             const Icon = metric.icon;
-            const gradient =
-              metricGradients[metric.colorIdx % metricGradients.length];
+            const gradient = metricGradients[metric.colorIdx % metricGradients.length];
             const displayValue =
               metric.format !== undefined
                 ? metric.format(metric.value)
                 : metric.value.toLocaleString();
-
-            // logs removed
 
             return (
               <div

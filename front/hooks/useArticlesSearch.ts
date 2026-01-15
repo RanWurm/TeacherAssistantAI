@@ -32,17 +32,14 @@ export function useArticlesSearch() {
 
   async function search(filters: ArticleSearchFilters) {
     setLoading(true);
-    console.log('[useArticlesSearch] Search started. Filters:', filters);
     try {
       const res = await searchArticles(filters);
-      console.log('[useArticlesSearch] Search result:', res);
       setData(res);
     } catch (error) {
       console.error('[useArticlesSearch] Search error:', error);
       throw error;
     } finally {
       setLoading(false);
-      console.log('[useArticlesSearch] Search ended. Loading:', false);
     }
   }
 

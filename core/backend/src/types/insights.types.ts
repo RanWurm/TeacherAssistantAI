@@ -90,14 +90,14 @@ export interface OverviewMetrics {
     subjectCount: number;
   
     totalCitations: number;
-    impactFactor: number | null;
+    impactScore: number;
   }
   
   export interface SubjectImpactPoint {
     journal_id: number;
     journalName: string;
     subjectCount: number;
-    impactFactor: number | null;
+    impactScore: number;
     articleCount: number;
   }
   
