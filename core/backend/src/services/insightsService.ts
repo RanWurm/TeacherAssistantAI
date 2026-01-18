@@ -24,8 +24,12 @@ import {
 
 // ---- Researchers queries ----
 import {
-  buildTopResearchersQuery,
-  buildMultidisciplinaryResearchersQuery,
+  // buildTopResearchersQuery,
+  buildTopResearchersDetailsQuery,
+  buildTopResearchersCandidatesQuery,
+  // buildMultidisciplinaryResearchersQuery,
+  buildMultidisciplinaryResearchersDetailsQuery,
+  buildMultidisciplinaryResearchersCandidatesQuery,
 } from "../db/insights/researchersQueries";
 
 // ---- Journals queries ----
@@ -139,35 +143,53 @@ export async function getResearchersInsights(
 ): Promise<ResearchersInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
-  const topQ = buildTopResearchersQuery(fromYear);
-  const multiQ = buildMultidisciplinaryResearchersQuery(fromYear);
+  // Top researchers (already 2-phase אצלך)
+  const candidatesQ = buildTopResearchersCandidatesQuery(fromYear, 5);
+  const candidates = await query<any>(candidatesQ.sql, candidatesQ.params);
+  const authorIds = candidates.map((r) => r.author_id);
 
-  const topResearchers = await query<any>(topQ.sql, topQ.params);
-  const multidisciplinaryResearchersRaw = await query<any>(
-    multiQ.sql,
-    multiQ.params
+  const detailsQ = buildTopResearchersDetailsQuery(authorIds, fromYear);
+  const topResearchers = await query<any>(detailsQ.sql, detailsQ.params);
+
+  // Multidisciplinary researchers (NEW 2-phase)
+  const multiCandidatesQ = buildMultidisciplinaryResearchersCandidatesQuery(
+    fromYear,
+    3, // minSubjects
+    5  // limit
   );
 
-  // Adapter to the ResearcherStats type
-  const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map(r => ({
+  const multiCandidates = await query<any>(
+    multiCandidatesQ.sql,
+    multiCandidatesQ.params
+  );
+
+  const multiIds = multiCandidates.map((r) => r.author_id);
+
+  const multiDetailsQ = buildMultidisciplinaryResearchersDetailsQuery(
+    multiIds,
+    fromYear
+  );
+
+  const multidisciplinaryResearchersRaw = multiDetailsQ.sql
+    ? await query<any>(multiDetailsQ.sql, multiDetailsQ.params)
+    : [];
+
+  const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map((r) => ({
     author_id: r.author_id,
     name: r.name,
     affiliation: r.affiliation ?? null,
-    articleCount: r.articleCount,
-    subjectCount: r.subjectCount,
-    totalCitations: r.totalCitations,
-    avgCitationsPerArticle: r.avgCitationsPerArticle,
+    articleCount: Number(r.articleCount),
+    totalCitations: Number(r.totalCitations),
+    avgCitationsPerArticle: Number(r.avgCitationsPerArticle),
+    uniqueJournals: Number(r.uniqueJournals ?? 0),
+    uniqueSubjects: Number(r.subjectCount ?? 0),
+    mostCitedArticleCitations: r.mostCitedArticleCitations ? Number(r.mostCitedArticleCitations) : undefined,
+    firstPublicationYear: r.firstPublicationYear ? Number(r.firstPublicationYear) : undefined,
+    lastPublicationYear: r.lastPublicationYear ? Number(r.lastPublicationYear) : undefined,
     subjects:
-      typeof r.subjects === 'string' && r.subjects.length > 0
-        ? r.subjects.split('||')
+      typeof r.subjects === "string" && r.subjects.length > 0
+        ? r.subjects.split("||")
         : [],
-    // If these fields are missing in the SQL response, default to 0 or []
-    uniqueJournals: Array.isArray(r.uniqueJournals)
-      ? r.uniqueJournals
-      : [],
-    uniqueSubjects: Array.isArray(r.uniqueSubjects)
-      ? r.uniqueSubjects
-      : [],
   }));
 
   return {

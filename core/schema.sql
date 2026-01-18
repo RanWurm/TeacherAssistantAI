@@ -98,3 +98,22 @@ CREATE TABLE ArticlesKeywords (
     FOREIGN KEY (article_id) REFERENCES Articles(article_id),
     FOREIGN KEY (keyword_id) REFERENCES Keywords(keyword_id)
 );
+
+
+-- --------------------------------------------------
+-- 9. INDEXES
+-- --------------------------------------------------
+CREATE INDEX idx_articles_year ON Articles(year);
+
+CREATE INDEX idx_articles_citations_year
+ON Articles(citation_count DESC, year DESC);
+
+CREATE INDEX idx_authors_name ON Authors(name);
+
+ALTER TABLE Articles
+ADD FULLTEXT INDEX ft_articles_title (title);
+
+CREATE INDEX idx_subjects_name ON Subjects (subject_name);
+
+CREATE INDEX idx_keywords_keyword ON Keywords (keyword);
+

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../../styles/variables.css';
 
@@ -46,7 +46,8 @@ export default function SearchPage() {
   const [yearRange, setYearRange] = useState(INITIAL_YEAR_RANGE);
   const [sortBy, setSortBy] = useState<SortOption>('citations');
 
-  const { data, loading, search } = useArticlesSearch();
+  // Use useArticlesSearch and capture total/page if present
+  const { data, loading, search, page, total, setPage } = useArticlesSearch();
   const [appliedFilters, setAppliedFilters] = useState<any>(null);
   const [guidedQuery, setGuidedQuery] = useState('');
 
@@ -72,32 +73,39 @@ export default function SearchPage() {
     ]
   );
 
+  // apply filters button handler
   const onApplyFilters = () => {
+    setPage(1);
     setAppliedFilters(apiFilters);
   };
 
+  // Effect: On appliedFilters or page or changing mode to 'filters', fetch data
+  // (but not on every render, just when dependent values change)
+  useEffect(() => {
+    if (!appliedFilters || searchMode !== 'filters') return;
+    search(appliedFilters, page);
+  }, [appliedFilters, searchMode, page, search]);  
+
+  // Effect: When sortBy changes in filters mode, update appliedFilters (triggers search above)
+  useEffect(() => {
+    if (!appliedFilters || searchMode !== 'filters') return;
+  
+    if (appliedFilters.sortBy === sortBy) return;
+  
+    setAppliedFilters({
+      ...appliedFilters,
+      sortBy,
+    });
+  }, [sortBy, searchMode, appliedFilters]);
+  
+
+  // Initial load (component mount) - perform initial search if in 'filters' mode
   useEffect(() => {
     if (searchMode === 'filters') {
-      search(apiFilters);
       setAppliedFilters(apiFilters);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (!appliedFilters || searchMode !== 'filters') return;
-    search(appliedFilters);
-  }, [appliedFilters, searchMode]);
-
-  useEffect(() => {
-    if (!appliedFilters || searchMode !== 'filters') return;
-
-    setAppliedFilters({
-      ...appliedFilters,
-      sortBy: sortBy === 'citations' || sortBy === 'year' ? sortBy : 'year',
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortBy, searchMode]);
 
   const papers: Paper[] = useMemo(
     () => (data as unknown as Paper[]),
@@ -105,6 +113,11 @@ export default function SearchPage() {
   );
 
   const shouldShowEmptyState = !loading && papers.length === 0;
+
+  // Pagination handler for ResultsList
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   return (
     <div className="flex flex-col">
@@ -198,11 +211,11 @@ export default function SearchPage() {
           >
             <div className="sticky top-0 z-10 bg-(--surface) pb-2">
               <ResultsHeader
-                count={papers.length}
+                total={total}
                 sortBy={sortBy}
                 setSortBy={(v: string) => {
                   if (v === 'citations' || v === 'year' || v === 'impact') {
-                    setSortBy(v);
+                    setSortBy(v as SortOption);
                   }
                 }}
               />
@@ -222,7 +235,13 @@ export default function SearchPage() {
                   </p>
                 </div>
               ) : (
-                <ResultsList papers={papers} loading={loading} />
+                <ResultsList
+                  papers={papers}
+                  loading={loading}
+                  page={page}
+                  total={total}
+                  onPageChange={handlePageChange}
+                />
               )}
             </div>
           </main>
