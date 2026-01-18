@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { MessageItem } from './message-item';
-import { Message } from '../data/mock';
+import { Message } from '../page';
 import { Loader } from '../../../components/ui/Loader';
 import { ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

@@ -13,7 +13,7 @@ export interface SourceStats {
   subjectCount: number;
 
   totalCitations: number;
-  impactFactor: number | null;
+  impactScore: number;
 }
 
 export interface SubjectImpactPoint {
@@ -21,7 +21,7 @@ export interface SubjectImpactPoint {
   sourceName: string;
   sourceType: string | null;
   subjectCount: number;
-  impactFactor: number;
+  impactScore: number;
   articleCount: number;
 }
 

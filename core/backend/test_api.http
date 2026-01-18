@@ -248,3 +248,13 @@ Content-Type: application/json
   "limit": 10,
   "offset": 0
 }
+
+
+### search
+POST http://localhost:3001/api/articles/search
+Content-Type: application/json
+
+{
+  "page": 10,
+  "pageSize": 6
+}

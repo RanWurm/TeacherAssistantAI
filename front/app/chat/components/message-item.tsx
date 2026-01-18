@@ -1,5 +1,5 @@
 import { Sparkles, Database } from 'lucide-react';
-import { Message } from '../data/mock';
+import { Message } from '../page';
 import { useTranslation } from 'react-i18next';
 import { MessageTime } from './MessageTime';
 import ReactMarkdown from "react-markdown";
@@ -26,9 +26,12 @@ export function MessageItem({ message }: MessageItemProps) {
 
   const timeAlignClass = dir === 'rtl' ? 'text-left' : 'text-right';
   const normalized = message.content
-    .replace(/\r\n/g, "\n")
-    .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n");
+  ? message.content
+      .replace(/\r\n/g, "\n")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
+  : "";
+
 
   return (
     <div className="flex">
@@ -78,7 +81,7 @@ export function MessageItem({ message }: MessageItemProps) {
             </div>
           )}
 
-          <div className="text-sm leading-relaxed text-start break-words
+          <div className="text-sm leading-relaxed text-start wrap-break-word
                 [&_p]:m-0
                 [&_ol]:m-0 [&_ol]:pl-5
                 [&_li]:my-0

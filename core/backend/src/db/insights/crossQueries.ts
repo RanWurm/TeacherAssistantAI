@@ -82,26 +82,33 @@ export function buildMultidisciplinaryVsSingleQuery(fromYear?: number) {
   const where = yearFilter(fromYear);
 
   const sql = `
-    WITH subject_counts AS (
+    WITH base_articles AS (
+      SELECT
+        a.article_id,
+        a.citation_count,
+        a.source_id
+      FROM Articles a
+      ${where}
+    ),
+    subject_counts AS (
       SELECT
         asub.article_id,
         COUNT(*) AS subject_cnt
       FROM ArticlesSubjects asub
+      JOIN base_articles ba ON ba.article_id = asub.article_id
       GROUP BY asub.article_id
     ),
     article_types AS (
       SELECT
-        a.article_id,
-        a.citation_count,
-        a.source_id,
+        ba.article_id,
+        ba.citation_count,
+        ba.source_id,
         CASE
           WHEN sc.subject_cnt > 1 THEN 'multi'
           ELSE 'single'
         END AS type
-      FROM Articles a
-      JOIN subject_counts sc
-        ON a.article_id = sc.article_id
-      ${where}
+      FROM base_articles ba
+      JOIN subject_counts sc ON sc.article_id = ba.article_id
     )
     SELECT
       at.type,
@@ -111,8 +118,7 @@ export function buildMultidisciplinaryVsSingleQuery(fromYear?: number) {
       COUNT(DISTINCT aa.author_id)         AS authors,
       COUNT(DISTINCT at.source_id)         AS sources
     FROM article_types at
-    LEFT JOIN ArticlesAuthors aa
-      ON at.article_id = aa.article_id
+    LEFT JOIN ArticlesAuthors aa ON aa.article_id = at.article_id
     GROUP BY at.type
     ORDER BY at.type
   `.trim();

@@ -136,8 +136,8 @@ export async function getResearchersInsights(
 ): Promise<ResearchersInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
-  const topQ = buildTopResearchersQuery(fromYear);
-  const multiQ = buildMultidisciplinaryResearchersQuery(fromYear);
+  const topQ = buildTopResearchersQuery(fromYear, 5);
+  const multiQ = buildMultidisciplinaryResearchersQuery(fromYear, 3, 5);
 
   const topResearchersRaw = await query<any>(topQ.sql, topQ.params);
   const multidisciplinaryResearchersRaw = await query<any>(
@@ -148,33 +148,30 @@ export async function getResearchersInsights(
   const topResearchers = topResearchersRaw.map(r => ({
     ...r,
     institutions:
-  typeof r.institutions === 'string'
-    ? r.institutions.split('||')
-    : Array.isArray(r.institutions)
-      ? r.institutions
-      : [],
+      typeof r.institutions === 'string'
+        ? r.institutions.split('||')
+        : Array.isArray(r.institutions)
+          ? r.institutions
+          : [],
   }));
-  console.log("--------------------", multidisciplinaryResearchersRaw[0])
+
   const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map(r => ({
-  
-  author_id: Number(r.author_id),
-  name: r.name,
-  articleCount: Number(r.articleCount),
-  totalCitations: Number(r.totalCitations),
-  avgCitationsPerArticle: r.avgCitationsPerArticle === null ? null : Number(r.avgCitationsPerArticle),
-
-  uniqueSources: Number(r.uniqueSources ?? 0),
-  uniqueSubjects: Number(r.uniqueSubjects ?? 0),
-
-  institutions: typeof r.institutions === "string" && r.institutions.length > 0 ? r.institutions.split("||") : [],
-}));
-
+    author_id: Number(r.author_id),
+    name: r.name,
+    articleCount: Number(r.articleCount),
+    totalCitations: Number(r.totalCitations),
+    avgCitationsPerArticle: r.avgCitationsPerArticle === null ? null : Number(r.avgCitationsPerArticle),
+    uniqueSources: Number(r.uniqueSources ?? 0),
+    uniqueSubjects: Number(r.uniqueSubjects ?? 0),
+    institutions: typeof r.institutions === "string" && r.institutions.length > 0 ? r.institutions.split("||") : [],
+  }));
 
   return {
     topResearchers,
     multidisciplinaryResearchers,
   };
 }
+
 /* =========================
    Sources
 ========================= */

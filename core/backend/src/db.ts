@@ -21,7 +21,19 @@ export async function query<T = any>(
   console.log("SQL:", sql);
   console.log("Params:", params);
   try {
+    // Execute the main query as before
     const [rows] = await pool.execute(sql, params);
+
+    // Also execute EXPLAIN ANALYZE for the query to get query plan and performance info
+    try {
+      // For EXPLAIN ANALYZE, no LIMIT/OFFSET, but let's just prefix for now
+      const explainSql = `EXPLAIN ANALYZE ${sql}`;
+      const [explainRows] = await pool.execute(explainSql, params);
+      console.log("EXPLAIN ANALYZE output:", explainRows);
+    } catch (exErr) {
+      console.warn("EXPLAIN ANALYZE failed:", exErr);
+    }
+
     // In some cases, mysql2 returns RowDataPacket[] or OkPacket[]
     if (Array.isArray(rows)) {
       return rows as T[];

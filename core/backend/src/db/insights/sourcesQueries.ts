@@ -3,105 +3,128 @@ function yearFilter(fromYear?: number) {
 }
 
 /**
- * Top sources by citations
+ * Top sources by impact score
  */
 export function buildTopSourcesQuery(
   fromYear?: number,
   limit: number = 5
 ) {
   const where = yearFilter(fromYear);
+  const safeLimit = Math.max(1, Math.min(50, Math.floor(limit)));
 
   const sql = `
+    WITH source_articles AS (
+      SELECT
+        a.source_id,
+        COUNT(*) AS articleCount,
+        SUM(a.citation_count) AS totalCitations
+      FROM Articles a
+      ${where}
+      GROUP BY a.source_id
+      HAVING articleCount >= 10
+    ),
+    source_authors AS (
+      SELECT
+        a.source_id,
+        COUNT(DISTINCT aa.author_id) AS authorCount
+      FROM Articles a
+      JOIN ArticlesAuthors aa ON aa.article_id = a.article_id
+      ${where}
+      GROUP BY a.source_id
+    ),
+    source_subjects AS (
+      SELECT
+        a.source_id,
+        COUNT(DISTINCT asj.subject_id) AS subjectCount
+      FROM Articles a
+      JOIN ArticlesSubjects asj ON asj.article_id = a.article_id
+      ${where}
+      GROUP BY a.source_id
+    )
     SELECT
       s.source_id  AS source_id,
       s.name       AS name,
       s.type       AS type,
       s.publisher  AS publisher,
 
-      COUNT(DISTINCT a.article_id) AS articleCount,
-      COUNT(DISTINCT aa.author_id) AS authorCount,
-      COUNT(DISTINCT asj.subject_id)  AS subjectCount,
-
-      SUM(a.citation_count) AS totalCitations,
+      sa.articleCount,
+      COALESCE(au.authorCount, 0)  AS authorCount,
+      COALESCE(su.subjectCount, 0) AS subjectCount,
+      sa.totalCitations,
+      s.impact_factor AS impactFactor,
 
       ROUND(
-        AVG(
-          CASE
-            WHEN a.year >= YEAR(CURDATE()) - 2
-            THEN a.citation_count
-          END
-        ),
+        (sa.totalCitations / sa.articleCount)
+        * LN(1 + sa.articleCount),
         2
-      ) AS impactFactor
+      ) AS impactScore
 
-    FROM Sources s
-    JOIN Articles a
-      ON a.source_id = s.source_id
-    LEFT JOIN ArticlesAuthors aa
-      ON a.article_id = aa.article_id
-    LEFT JOIN ArticlesSubjects asj
-      ON a.article_id = asj.article_id
-    LEFT JOIN Subjects sub
-      ON asj.subject_id = sub.subject_id
+    FROM source_articles sa
+    JOIN Sources s ON s.source_id = sa.source_id
+    LEFT JOIN source_authors au  ON au.source_id = sa.source_id
+    LEFT JOIN source_subjects su ON su.source_id = sa.source_id
 
-    ${where}
-
-    GROUP BY s.source_id
-    ORDER BY
-      impactFactor DESC,
-      totalCitations DESC
-
-    LIMIT ${limit}
+    ORDER BY impactScore DESC, sa.totalCitations DESC
+    LIMIT ${safeLimit}
   `.trim();
 
-  return {
-    sql,
-    params: fromYear ? [fromYear] : [],
-  };
+  const params = fromYear ? [fromYear, fromYear, fromYear] : [];
+
+  return { sql, params };
 }
 
 /**
  * Calculates the citation concentration metric, defined as the percentage of a source's citations 
  * that come from its top 10% most cited articles. 
- * Also returns each source's impact factor and article count.
+ * Also returns each source's impact score and article count.
  */
 export function buildSubjectImpactQuery(fromYear?: number) {
   const where = yearFilter(fromYear);
 
   const sql = `
+    WITH source_articles AS (
+      SELECT
+        a.source_id,
+        COUNT(*) AS articleCount,
+        SUM(a.citation_count) AS totalCitations
+      FROM Articles a
+      ${where}
+      GROUP BY a.source_id
+      HAVING articleCount >= 1
+    ),
+    source_subjects AS (
+      SELECT
+        a.source_id,
+        COUNT(DISTINCT asj.subject_id) AS subjectCount
+      FROM Articles a
+      JOIN ArticlesSubjects asj ON asj.article_id = a.article_id
+      ${where}
+      GROUP BY a.source_id
+    )
     SELECT
       s.source_id,
       s.name AS sourceName,
       s.type AS sourceType,
 
-      COUNT(DISTINCT asj.subject_id) AS subjectCount,
-      COUNT(DISTINCT a.article_id) AS articleCount,
+      COALESCE(ss.subjectCount, 0) AS subjectCount,
+      s.impact_factor AS impactFactor,
+      sa.articleCount,
 
       ROUND(
-        AVG(a.citation_count),
+        (sa.totalCitations / sa.articleCount)
+        * LN(1 + sa.articleCount),
         2
-      ) AS impactFactor
+      ) AS impactScore
 
-    FROM Sources s
-    JOIN Articles a
-      ON a.source_id = s.source_id
-    LEFT JOIN ArticlesSubjects asj
-      ON a.article_id = asj.article_id
+    FROM source_articles sa
+    JOIN Sources s ON s.source_id = sa.source_id
+    LEFT JOIN source_subjects ss ON ss.source_id = sa.source_id
 
-    ${where}
-
-    GROUP BY s.source_id
-
-    HAVING
-      impactFactor IS NOT NULL
-      AND articleCount >= 0
-
-    ORDER BY impactFactor DESC
-    LIMIT 500
+    ORDER BY sourceName ASC
+    LIMIT 1000
   `.trim();
 
-  return {
-    sql,
-    params: fromYear ? [fromYear] : [],
-  };
+  const params = fromYear ? [fromYear, fromYear] : [];
+
+  return { sql, params };
 }

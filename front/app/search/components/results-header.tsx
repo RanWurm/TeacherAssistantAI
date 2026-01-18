@@ -1,19 +1,19 @@
 import { useTranslation } from 'react-i18next';
 
 interface ResultsHeaderProps {
-  count: number;
+  total: number;
   sortBy: string;
   setSortBy: (v: string) => void;
 }
 
-export function ResultsHeader({ count, sortBy, setSortBy }: ResultsHeaderProps) {
+export function ResultsHeader({ total, sortBy, setSortBy }: ResultsHeaderProps) {
   const { t } = useTranslation();
 
   return (
     <div className="flex justify-between mb-4 items-end">
       <span>
         {t('search.resultsHeader.resultsCount', {
-          count,
+          count: total,
           defaultValue: '{{count}} papers found',
         })}
       </span>

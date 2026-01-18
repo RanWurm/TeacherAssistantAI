@@ -11,7 +11,7 @@ interface KeywordCrossDomainProps {
 // Clamp a string if it's too long, show ellipsis (kept for keyword line)
 function clampText(txt: string, max: number): string {
   if (txt.length <= max) return txt;
-  const truncated = txt.slice(0, max).replace(/\s+\S*$/, ''); // don't cut in word
+  const truncated = txt.slice(0, max).replace(/\s+\S*$/, '');
   return truncated + '…';
 }
 

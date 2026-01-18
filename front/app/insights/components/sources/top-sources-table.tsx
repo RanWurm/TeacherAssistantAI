@@ -150,7 +150,7 @@ export function TopSourcesTable({ timeRange }: TopSourcesTableProps) {
                 <tr key={source.source_id} className="hover:bg-(--table-row-hover) transition-colors">
                   <td className="px-2 py-2 text-xs md:px-6 md:py-4 md:text-sm">
                     <span className={idx < 3 ? 'text-yellow-700 font-bold' : 'text-gray-500'}>
-                      {idx < 3 ? '★' : `#${idx + 1}`}
+                      {idx < 3 ? '⭐' : `#${idx + 1}`}
                     </span>
                   </td>
 
@@ -236,9 +236,8 @@ export function TopSourcesTable({ timeRange }: TopSourcesTableProps) {
                   <td className="px-2 py-2 md:px-6 md:py-4 text-center">
                     {impact !== null && impact !== undefined ? (
                       <span
-                        className={`text-xs md:text-base font-semibold bg-(--badge-green-bg) text-(--badge-green-text) px-3 py-1 rounded-lg ${
-                          isHighImpact ? 'bg-orange-100 text-orange-700' : ''
-                        }`}
+                        className={`text-xs md:text-base font-semibold bg-(--badge-green-bg) text-(--badge-green-text) px-3 py-1 rounded-lg`}
+                        title={t('insights.sources.topSourcesTable.impactTooltip') || ''}
                       >
                         {Number(impact).toFixed(2)}
                         {isHighImpact && (
@@ -248,7 +247,7 @@ export function TopSourcesTable({ timeRange }: TopSourcesTableProps) {
                         )}
                       </span>
                     ) : (
-                      'N/A'
+                      <span className="text-gray-400">N/A</span>
                     )}
                   </td>
                 </tr>

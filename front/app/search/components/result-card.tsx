@@ -26,7 +26,6 @@ export function ResultCard({ paper }: ResultCardProps) {
   const [showAllSubjects, setShowAllSubjects] = useState(false);
   const [showAllAuthors, setShowAllAuthors] = useState(false);
   const [showAllKeywords, setShowAllKeywords] = useState(false);
-  // FIX: Add state for publisher show more/less
   const [showFullPublisher, setShowFullPublisher] = useState(false);
   const [showFullJournal, setShowFullJournal] = useState(false);
 

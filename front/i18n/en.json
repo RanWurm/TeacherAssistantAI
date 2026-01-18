@@ -20,6 +20,7 @@
     },
     "chat": {
         "title": "Research Assistant",
+        "initialGreeting": "Hey I'm your personal AI research assistant. How may I assist you today?",
         "input": {
             "placeholder": "Describe your research area or ask a question...",
             "submitButtonLabel": "Send",
@@ -141,10 +142,17 @@
             },
             "multidisciplinaryVsSingle": {
                 "title": "Multidisciplinary vs Single-Subject",
-                "description": "Comparing broad multi-subject research with focused single-subject publications.",
-                "multiSubject": "Multi-Subject",
+                "description": "Compare the impact of multidisciplinary (spanning multiple subjects) vs. single-subject research.",
+                "multiSubject": "Multidisciplinary",
                 "singleSubject": "Single-Subject",
+                "multiSubject_short": "Multi",
+                "singleSubject_short": "Single",
+                "multiSubjectTitle": "Multidisciplinary",
+                "singleSubjectTitle": "Single-Subject",
+                "multiSubjectDescription": "Articles that span multiple subject areas.",
+                "singleSubjectDescription": "Articles that focus on a single subject area.",
                 "articlesLabel": "Articles",
+<<<<<<< HEAD
                 "avgCitationsLabel": "Avg. Citations",
                 "citationsLabel": "Citations",
                 "authorsLabel": "{{count}} author",
@@ -160,6 +168,22 @@
                 "rank": "Rank",
                 "source": "Source",
                 "type": "Type",
+=======
+                "avgCitationsLabel": "Avg. citations",
+                "totalCitationsLabel": "Total citations",
+                "uniqueAuthorsLabel": "Unique authors",
+                "uniqueJournalsLabel": "Unique journals"
+            }
+        },
+        "journals": {
+            "topJournalsTable": {
+                "title": "Top Journals",
+                "subtitle": "The leading journals, ranked by recent Impact Score and citations.",
+                "rank": "Rank",
+                "numberRank": "#{{number}}",
+                "starRank": "★",
+                "journal": "Journal",
+>>>>>>> origin/front-api
                 "publisher": "Publisher",
                 "articles": "Articles",
                 "authors": "Authors",
@@ -176,16 +200,92 @@
                 "authorCount": "{{count}} authors",
                 "subjectCount": "{{count}} subjects",
                 "citationRate": "{{count}} citations per article",
-                "impactTooltip": "Impact factor = citations ÷ articles (past 2 years). Expresses average citations per recently published article."
+                "impactTooltip": "Impact factor = citations ÷ articles (past 2 years). Expresses average citations per recently published article.",
+                "impactScore": "Impact Score",
+                "impactScoreInfoLabel": "About the Impact Score",
+                "impactScoreInfo": "Impact Score reflects the average citation strength of articles published in the selected time range, adjusted for publication volume.",
+                "impactScoreFormula": "Formula: [SUM(citations of articles in time window) ÷ COUNT(articles in time window)] × ln(1 + COUNT(articles in time window))",
+                "noData": "No journals available to display",
+                "na": "N/A",
+                "citationVolume": "{{count}}",
+                "articleCount": "{{count}}",
+                "authorCount": "{{count}}",
+                "subjectCount": "{{count}}",
+                "impactTooltip": "Impact Score = [citations ÷ articles] × ln(1 + articles)"
+            },
+            "citationVolatilityTable": {
+                "title": "Citation Volatility Across Journals",
+                "subtitle": "Journals mapped by subject breadth (X-axis) and Impact Score (Y-axis). Each bubble’s size: number of articles.",
+                "yAxis": "Impact Score",
+                "xAxis": "Number of subjects",
+                "zAxis": "Article count",
+                "tooltip": {
+                    "journalName": "Journal",
+                    "impact": "Impact Score",
+                    "na": "N/A",
+                    "meta": "{{subjectCount}} subjects · {{articleCount}} articles"
+                },
+                "howToReadTitle": "How to read",
+                "howToRead": [
+                    "<b>Left</b> = more focused journals · <b>Right</b> = more interdisciplinary",
+                    "<b>Higher</b> = stronger overall journal impact (citation quality × publication volume)"
+                ],
+                "noData": "No journals available to display"
             },
             "subjectImpactChart": {
-                "title": "Impact Factor by Journal Scope",
-                "subtitle": "Each point shows a journal. The X-axis: number of subjects covered; the Y-axis: impact factor.",
+                "title": "Impact Score by Journal Scope",
+                "subtitle": "Each point shows a journal. The X-axis: number of subjects covered; the Y-axis: Impact Score.",
                 "description": "Displays how much a journal’s impact comes from its <1>top 10% most cited articles</1>.",
                 "yAxis": "Share of citations (%)",
                 "tooltip": {
                     "share": "of total citations come from the top 10% of articles"
                 }
+            },
+            "citationVolatilityChart": {
+                "title": "Citation Volatility Map",
+                "header": "Citation Volatility Map",
+                "description": "Each point represents a <1>journal</1>. Placement indicates intensity and stability of citations.",
+                "tip": "<1>Tip:</1> Journal name is shown above each point.",
+                "whatYouSeeTitle": "So what does the chart show?",
+                "quadrant": {
+                    "lowerLeftTitle": "Lower left (most journals)",
+                    "lowerLeft": [
+                        "Few subjects",
+                        "Low impact",
+                        "Niche or younger journals"
+                    ],
+                    "upperLeftTitle": "Upper left (rare)",
+                    "upperLeft": [
+                        "Few subjects",
+                        "Very high impact",
+                        "Focused but strong journals (narrow domain, many citations)"
+                    ],
+                    "lowerRightTitle": "Lower right",
+                    "lowerRight": [
+                        "Many subjects",
+                        "Not high impact",
+                        "General but not prestigious journals"
+                    ],
+                    "upperRightTitle": "Upper right (almost none)",
+                    "upperRight": [
+                        "Many subjects",
+                        "High impact",
+                        "The 'Nature/Science/PNAS' of the world"
+                    ]
+                },
+                "howToRead": {
+                    "xAxis": "<1>X-axis:</1> Avg citations per article <2>⇠ further right = higher impact</2>",
+                    "yAxis": "<1>Y-axis:</1> Citation volatility (std deviation) <2>⇠higher = less predictable</2>",
+                    "bubbleSize": "<1>Bubble size:</1> Number of published articles"
+                },
+                "tooltip": {
+                    "avgCitations": "Avg citations",
+                    "volatility": "Volatility (std deviation)",
+                    "articles": "Articles",
+                    "range": "Range: <1>{{min}}</1> – <2>{{max}}</2>"
+                },
+                "xAxisLabel": "Avg citations",
+                "yAxisLabel": "Volatility (std deviation)"
             }
         },
         "researchers": {
@@ -241,8 +341,9 @@
             "keywordGrowthTable": {
                 "title": "Keyword Growth by Year",
                 "subtitle": "Year-over-year changes in article volume for key research keywords. Green = growth, red = decline.",
-                "previous": "Prev: {{count}}",
-                "growth": "Growth"
+                "previous": "Previous year: {{count}}",
+                "growth": "Change",
+                "showMore": "show more"
             },
             "keywordCrossDomain": {
                 "title": "Keywords Across Domains",
@@ -277,6 +378,8 @@
         }
     },
     "search": {
+        "byFilters": "Search by Filters",
+        "byTitle": "Search by Title",
         "empty": {
             "title": "No papers found",
             "subtitle": "Try adjusting your search or removing filters to see more results."
@@ -292,15 +395,29 @@
         },
         "filters": {
             "title": "Filters",
+            "suggested": "Suggested from search",
             "subject": "Subject",
             "author": "Author",
             "keyword": "Keyword",
             "type": "Type",
+            "type.article": "Article",
+            "type.review": "Review",
+            "type.conferencePaper": "Conference Paper",
+            "all": "All",
             "yearRange": "Year Range",
             "yearFrom": "From",
             "yearTo": "To",
             "language": "Language",
-            "applyButton": "Apply Filters"
+            "language.en": "English",
+            "language.he": "Hebrew",
+            "language.fr": "French",
+            "language.de": "German",
+            "apply": "Apply Filters",
+            "inputPlaceholder": "Search {{label}}...",
+            "noResults": "No results",
+            "loading": "Loading…",
+            "showMore": "Show more",
+            "selected": "{{count}} selected"
         },
         "searchHeader": {
             "title": "Academic Search",
@@ -332,9 +449,16 @@
             "inputPlaceholder": "Enter article title...",
             "inputAriaLabel": "Search by article title",
             "button": "Search",
-            "prompt": "Type a title and press Enter to search"
+            "prompt": "Type a title and press Enter to search",
+            "noResults": "No articles found matching that title.",
+            "loading": "Searching...",
+            "resultsCount": "{{count}} articles found"
         }
         
     }
+<<<<<<< HEAD
     
 }
+=======
+}
+>>>>>>> origin/front-api
