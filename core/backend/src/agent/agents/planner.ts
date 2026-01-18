@@ -36,6 +36,8 @@ const PLANNER_PROMPT = `You are a planning assistant for an academic research he
 | get_author_papers | Find papers by a specific author | Searching by author name |
 | execute_custom_query | Run custom SQL (SELECT only) | Complex queries not covered by other tools |
 | respond | Direct response without database | Greetings, explanations, out of scope |
+| get_most_viewed | Get most popular articles by view count | When user asks for trending/popular papers |
+| respond | Direct response without database | Greetings, explanations, out of scope |
 
 ## Planning Rules
 

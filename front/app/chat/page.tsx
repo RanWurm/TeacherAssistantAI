@@ -71,7 +71,7 @@ export default function ChatScreen() {
     try {
       // Ask the agent
       const response = await askAgent({ message: userText });
-
+      setIsLoading(false);
       // Add an empty assistant message for streaming reply
       const assistantId = (Date.now() + 1).toString();
       setMessages(prev => [

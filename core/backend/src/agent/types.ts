@@ -50,7 +50,8 @@ export type ToolName =
   | "get_pdf_content"
   | "list_subjects"
   | "get_author_papers"
-  | "execute_custom_query";
+  | "execute_custom_query"
+  | "get_most_viewed";
 
 export interface ToolCall {
   name: ToolName;
@@ -84,6 +85,7 @@ export const GetPaperDetailsSchema = z.object({
 export const GetPdfContentSchema = z.object({
   article_url: z.string().url().describe("URL to the PDF"),
   max_pages: z.number().min(1).max(3).default(1).describe("Pages to extract (1-3)"),
+  article_id: z.number().optional().describe("Article ID for view tracking"),
 });
 
 export const GetAuthorPapersSchema = z.object({
@@ -99,6 +101,12 @@ export const SearchPapersWithPdfSchema = z.object({
   query: z.string().describe("Search terms"),
   limit: z.coerce.number().min(1).max(10).default(5),
 });
+
+export const GetMostViewedSchema = z.object({
+  limit: z.coerce.number().min(1).max(20).default(10),
+});
+
+export type GetMostViewedParams = z.infer<typeof GetMostViewedSchema>;
 
 export type SearchPapersParams = z.infer<typeof SearchPapersSchema>;
 export type GetPaperDetailsParams = z.infer<typeof GetPaperDetailsSchema>;

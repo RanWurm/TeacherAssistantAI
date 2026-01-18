@@ -135,10 +135,9 @@ export async function searchPapers(params: {
   const values: unknown[] = [];
 
   if (params.query) {
-    conditions.push("(a.title LIKE ? OR k.keyword LIKE ?)");
-    values.push(`%${params.query}%`, `%${params.query}%`);
+    conditions.push("(MATCH(a.title) AGAINST(? IN NATURAL LANGUAGE MODE) OR k.keyword LIKE ?)");
+    values.push(params.query, `%${params.query}%`);
   }
-
   if (params.subject) {
     conditions.push("s.subject_name LIKE ?");
     values.push(`%${params.subject}%`);
@@ -289,13 +288,54 @@ export async function searchPapersWithPdf(params: { query?: string; limit?: numb
     FROM Articles a
     LEFT JOIN Sources src ON a.source_id = src.source_id
     WHERE (a.article_url LIKE '%arxiv.org%' 
-           OR a.article_url LIKE '%jmlr.org%'
-           OR a.article_url LIKE '%mlr.press%'
-           OR a.article_url LIKE '%.pdf')
-      AND (? IS NULL OR a.title LIKE CONCAT('%', ?, '%'))
+          OR a.article_url LIKE '%jmlr.org%'
+          OR a.article_url LIKE '%mlr.press%'
+          OR a.article_url LIKE '%.pdf')
+      AND (? IS NULL OR MATCH(a.title) AGAINST(? IN NATURAL LANGUAGE MODE))
     ORDER BY a.citation_count DESC
     LIMIT ?
   `;
 
   return executeReadOnlyQuery(sql, [params.query, params.query, limit]);
+}
+
+export async function incrementArticleView(articleId: number): Promise<void> {
+  const sql = `
+    INSERT INTO ArticleViews (article_id, view_count)
+    VALUES (?, 1)
+    ON DUPLICATE KEY UPDATE view_count = view_count + 1
+  `;
+  
+  try {
+    const pool = getPool();
+    await pool.execute(sql, [articleId]);
+  } catch (err) {
+    console.error(`[DB] Failed to increment view for article ${articleId}:`, err);
+  }
+}
+
+// חדש - להוסיף בסוף הקובץ
+export async function getMostViewedArticles(limit: number = 10) {
+  const sql = `
+    SELECT 
+      a.article_id,
+      a.title,
+      a.year,
+      a.citation_count,
+      a.article_url,
+      v.view_count,
+      v.last_viewed_at
+    FROM ArticleViews v
+    JOIN Articles a ON v.article_id = a.article_id
+    ORDER BY v.view_count DESC
+    LIMIT ?
+  `;
+  
+  return executeReadOnlyQuery(sql, [limit]);
+}
+
+export async function getArticleIdByUrl(url: string): Promise<number | null> {
+  const sql = `SELECT article_id FROM Articles WHERE article_url = ? LIMIT 1`;
+  const { rows } = await executeReadOnlyQuery(sql, [url]);
+  return rows[0]?.article_id ?? null;
 }

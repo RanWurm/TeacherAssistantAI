@@ -117,6 +117,14 @@ CREATE TABLE ArticleAuthorInstitutions (
     FOREIGN KEY (author_id) REFERENCES Authors(author_id),
     FOREIGN KEY (institution_id) REFERENCES Institutions(institution_id)
 );
+
+
+CREATE TABLE ArticleViews (
+    article_id INT PRIMARY KEY,
+    view_count INT NOT NULL DEFAULT 1,
+    last_viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (article_id) REFERENCES Articles(article_id)
+);
 -- --------------------------------------------------
 -- 9. INDEXES
 -- --------------------------------------------------
@@ -128,9 +136,14 @@ ON Articles(citation_count DESC, year DESC);
 CREATE INDEX idx_authors_name ON Authors(name);
 
 ALTER TABLE Articles
+
 ADD FULLTEXT INDEX ft_articles_title (title);
 
 CREATE INDEX idx_subjects_name ON Subjects (subject_name);
 
 CREATE INDEX idx_keywords_keyword ON Keywords (keyword);
 
+CREATE INDEX idx_articles_url_prefix ON Articles(article_url(100));
+CREATE INDEX idx_aa_author_id ON ArticlesAuthors(author_id);
+CREATE INDEX idx_aai_author_id ON ArticleAuthorInstitutions(author_id);
+CREATE INDEX idx_aai_institution_id ON ArticleAuthorInstitutions(institution_id);

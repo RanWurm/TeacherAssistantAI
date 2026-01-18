@@ -7,6 +7,7 @@ import {
   GetAuthorPapersSchema,
   ExecuteCustomQuerySchema,
     SearchPapersWithPdfSchema,
+    GetMostViewedSchema
 
 } from "./types";
 import * as db from "./db";
@@ -145,6 +146,23 @@ export const TOOL_DEFINITIONS = [
     },
   },
   {
+  type: "function" as const,
+    function: {
+      name: "get_most_viewed",
+      description: "Get the most viewed/popular articles based on user interactions.",
+      parameters: {
+        type: "object",
+        properties: {
+          limit: {
+            type: "number",
+            description: "Maximum results (1-20, default 10)",
+          },
+        },
+        required: [],
+      },
+    },
+  },
+  {
     type: "function" as const,
     function: {
       name: "search_papers_with_pdf",
@@ -206,12 +224,18 @@ export async function executeTool(
           return { name, result: null, tokens_used: 0, error: error || "Not found" };
         }
 
+        await db.incrementArticleView(params.article_id);
+        
         const result = formatPaperDetails(article);
         return { name, result, tokens_used: estimateTokens(JSON.stringify(result)) };
       }
 
       case "get_pdf_content": {
         const params = GetPdfContentSchema.parse(args);
+        const articleId = params.article_id ?? await db.getArticleIdByUrl(params.article_url);
+          if (articleId) {
+            await db.incrementArticleView(articleId);
+          }
         const pdfResult = await fetchAndExtractPdf(params.article_url, params.max_pages);
 
         if (pdfResult.error) {
@@ -284,9 +308,28 @@ export async function executeTool(
 
         return { name, result, tokens_used: estimateTokens(JSON.stringify(result)) };
         
-      }
+      }case "get_most_viewed": {
+          const params = GetMostViewedSchema.parse(args);
+          const { rows, error } = await db.getMostViewedArticles(params.limit);
 
-          case "search_papers_with_pdf": {
+          if (error) {
+            return { name, result: null, tokens_used: 0, error };
+          }
+
+          const result = rows.map((r: any) => ({
+            id: r.article_id,
+            title: truncateText(r.title, 100),
+            year: r.year,
+            citations: r.citation_count,
+            views: r.view_count,
+            last_viewed: r.last_viewed_at,
+            url: r.article_url,
+          }));
+
+          return { name, result, tokens_used: estimateTokens(JSON.stringify(result)) };
+        }
+
+      case "search_papers_with_pdf": {
       const params = SearchPapersWithPdfSchema.parse(args);
 
       const { rows, error } = await db.searchPapersWithPdf({
