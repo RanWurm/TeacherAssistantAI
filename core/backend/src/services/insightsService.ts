@@ -24,10 +24,8 @@ import {
 
 // ---- Researchers queries ----
 import {
-  // buildTopResearchersQuery,
   buildTopResearchersDetailsQuery,
   buildTopResearchersCandidatesQuery,
-  // buildMultidisciplinaryResearchersQuery,
   buildMultidisciplinaryResearchersDetailsQuery,
   buildMultidisciplinaryResearchersCandidatesQuery,
 } from "../db/insights/researchersQueries";
@@ -99,13 +97,13 @@ export async function getTrendsInsights(
 ): Promise<TrendsInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
-  // 1️⃣ מביאים Trending
+  // Fetch trending topics
   const trendingQ = buildTrendingTopicsQuery(fromYear, 5);
   const trendingTopics = await query<any>(trendingQ.sql, trendingQ.params);
 
   const topKeywords = trendingTopics.map(t => t.keyword);
 
-  // 2️⃣ Growth רק עבורם
+  // Growth only for trending topics
   const growthQ = buildKeywordGrowthQuery(topKeywords, fromYear);
   const keywordGrowth = growthQ.sql
     ? await query<any>(growthQ.sql, growthQ.params)
@@ -137,26 +135,24 @@ export async function getTrendsInsights(
 /* =========================
    Researchers
 ========================= */
-
 export async function getResearchersInsights(
   timeRange: string
 ): Promise<ResearchersInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
-  // Top researchers (already 2-phase אצלך)
+  // ----- Top Researchers -----
   const candidatesQ = buildTopResearchersCandidatesQuery(fromYear, 5);
   const candidates = await query<any>(candidatesQ.sql, candidatesQ.params);
   const authorIds = candidates.map((r) => r.author_id);
 
   const detailsQ = buildTopResearchersDetailsQuery(authorIds, fromYear);
-  const topResearchers = await query<any>(detailsQ.sql, detailsQ.params);
+  const topResearchers = detailsQ.sql
+    ? await query<any>(detailsQ.sql, detailsQ.params)
+    : [];
 
-  // Multidisciplinary researchers (NEW 2-phase)
-  const multiCandidatesQ = buildMultidisciplinaryResearchersCandidatesQuery(
-    fromYear,
-    3, // minSubjects
-    5  // limit
-  );
+  // ----- Multidisciplinary Researchers -----
+  const multiCandidatesQ =
+    buildMultidisciplinaryResearchersCandidatesQuery(fromYear, 3, 5);
 
   const multiCandidates = await query<any>(
     multiCandidatesQ.sql,
@@ -165,32 +161,38 @@ export async function getResearchersInsights(
 
   const multiIds = multiCandidates.map((r) => r.author_id);
 
-  const multiDetailsQ = buildMultidisciplinaryResearchersDetailsQuery(
-    multiIds,
-    fromYear
-  );
+  const multiDetailsQ =
+    buildMultidisciplinaryResearchersDetailsQuery(multiIds, fromYear);
 
   const multidisciplinaryResearchersRaw = multiDetailsQ.sql
     ? await query<any>(multiDetailsQ.sql, multiDetailsQ.params)
     : [];
 
-  const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map((r) => ({
-    author_id: r.author_id,
-    name: r.name,
-    affiliation: r.affiliation ?? null,
-    articleCount: Number(r.articleCount),
-    totalCitations: Number(r.totalCitations),
-    avgCitationsPerArticle: Number(r.avgCitationsPerArticle),
-    uniqueJournals: Number(r.uniqueJournals ?? 0),
-    uniqueSubjects: Number(r.subjectCount ?? 0),
-    mostCitedArticleCitations: r.mostCitedArticleCitations ? Number(r.mostCitedArticleCitations) : undefined,
-    firstPublicationYear: r.firstPublicationYear ? Number(r.firstPublicationYear) : undefined,
-    lastPublicationYear: r.lastPublicationYear ? Number(r.lastPublicationYear) : undefined,
-    subjects:
-      typeof r.subjects === "string" && r.subjects.length > 0
-        ? r.subjects.split("||")
-        : [],
-  }));
+  const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map(
+    (r) => ({
+      author_id: r.author_id,
+      name: r.name,
+      affiliation: r.affiliation ?? null,
+      articleCount: Number(r.articleCount),
+      totalCitations: Number(r.totalCitations),
+      avgCitationsPerArticle: Number(r.avgCitationsPerArticle),
+      uniqueJournals: Number(r.uniqueJournals ?? 0),
+      uniqueSubjects: Number(r.subjectCount ?? 0),
+      mostCitedArticleCitations: r.mostCitedArticleCitations
+        ? Number(r.mostCitedArticleCitations)
+        : undefined,
+      firstPublicationYear: r.firstPublicationYear
+        ? Number(r.firstPublicationYear)
+        : undefined,
+      lastPublicationYear: r.lastPublicationYear
+        ? Number(r.lastPublicationYear)
+        : undefined,
+      subjects:
+        typeof r.subjects === "string" && r.subjects.length > 0
+          ? r.subjects.split("||")
+          : [],
+    })
+  );
 
   return {
     topResearchers,

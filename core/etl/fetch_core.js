@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 
 const LIMIT = 100;
 const MAX_RESULTS = 10000;
-const QUERY = "machine learning";   // אפשר להחליף למה שאתה רוצה
+const QUERY = "machine learning"; // you can change this to your desired query
 
 function delay(ms) {
   return new Promise(r => setTimeout(r, ms));

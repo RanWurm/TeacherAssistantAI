@@ -3,61 +3,74 @@ function yearFilter(fromYear?: number) {
 }
 
 /**
- * Top journals by citations
+ * Top journals by impact score
  */
 export function buildTopJournalsQuery(
   fromYear?: number,
   limit: number = 5
 ) {
   const where = yearFilter(fromYear);
+  const safeLimit = Math.max(1, Math.min(50, Math.floor(limit)));
 
   const sql = `
+    WITH journal_articles AS (
+      SELECT
+        a.journal_id,
+        COUNT(*) AS articleCount,
+        SUM(a.citation_count) AS totalCitations
+      FROM Articles a
+      ${where}
+      GROUP BY a.journal_id
+      HAVING articleCount >= 10
+    ),
+    journal_authors AS (
+      SELECT
+        a.journal_id,
+        COUNT(DISTINCT aa.author_id) AS authorCount
+      FROM Articles a
+      JOIN ArticlesAuthors aa ON aa.article_id = a.article_id
+      ${where}
+      GROUP BY a.journal_id
+    ),
+    journal_subjects AS (
+      SELECT
+        a.journal_id,
+        COUNT(DISTINCT asj.subject_id) AS subjectCount
+      FROM Articles a
+      JOIN ArticlesSubjects asj ON asj.article_id = a.article_id
+      ${where}
+      GROUP BY a.journal_id
+    )
     SELECT
-      j.journal_id AS journal_id,
-      j.name       AS name,
-      j.publisher  AS publisher,
+      j.journal_id,
+      j.name,
+      j.publisher,
 
-      COUNT(DISTINCT a.article_id) AS articleCount,
-      COUNT(DISTINCT aa.author_id) AS authorCount,
-      COUNT(DISTINCT asj.subject_id) AS subjectCount,
-
-      SUM(a.citation_count) AS totalCitations,
+      ja.articleCount,
+      COALESCE(au.authorCount, 0)  AS authorCount,
+      COALESCE(su.subjectCount, 0) AS subjectCount,
+      ja.totalCitations,
 
       ROUND(
-        (
-          SUM(a.citation_count) / COUNT(DISTINCT a.article_id)
-        )
-        * LOG(1 + COUNT(DISTINCT a.article_id)),
+        (ja.totalCitations / ja.articleCount)
+        * LN(1 + ja.articleCount),
         2
       ) AS impactScore
 
-    FROM Journals j
-    JOIN Articles a
-      ON a.journal_id = j.journal_id
-    LEFT JOIN ArticlesAuthors aa
-      ON a.article_id = aa.article_id
-    LEFT JOIN ArticlesSubjects asj
-      ON a.article_id = asj.article_id
+    FROM journal_articles ja
+    JOIN Journals j ON j.journal_id = ja.journal_id
+    LEFT JOIN journal_authors au  ON au.journal_id = ja.journal_id
+    LEFT JOIN journal_subjects su ON su.journal_id = ja.journal_id
 
-    ${where}
-
-    GROUP BY j.journal_id
-
-    HAVING
-      articleCount >= 10
-
-    ORDER BY
-      impactScore DESC,
-      totalCitations DESC
-
-    LIMIT ${limit}
+    ORDER BY impactScore DESC, ja.totalCitations DESC
+    LIMIT ${safeLimit}
   `.trim();
 
-  return {
-    sql,
-    params: fromYear ? [fromYear] : [],
-  };
+  const params = fromYear ? [fromYear, fromYear, fromYear] : [];
+
+  return { sql, params };
 }
+
 
 
 /**
@@ -69,39 +82,47 @@ export function buildSubjectImpactQuery(fromYear?: number) {
   const where = yearFilter(fromYear);
 
   const sql = `
+    WITH journal_articles AS (
+      SELECT
+        a.journal_id,
+        COUNT(*) AS articleCount,
+        SUM(a.citation_count) AS totalCitations
+      FROM Articles a
+      ${where}
+      GROUP BY a.journal_id
+      HAVING articleCount >= 1
+    ),
+    journal_subjects AS (
+      SELECT
+        a.journal_id,
+        COUNT(DISTINCT asj.subject_id) AS subjectCount
+      FROM Articles a
+      JOIN ArticlesSubjects asj ON asj.article_id = a.article_id
+      ${where}
+      GROUP BY a.journal_id
+    )
     SELECT
       j.journal_id,
       j.name AS journalName,
 
-      COUNT(DISTINCT asj.subject_id) AS subjectCount,
-      COUNT(DISTINCT a.article_id) AS articleCount,
+      COALESCE(js.subjectCount, 0) AS subjectCount,
+      ja.articleCount,
 
       ROUND(
-        (
-          SUM( a.citation_count )
-          /
-          COUNT( DISTINCT a.article_id )
-        ) * LN(1 + COUNT(DISTINCT a.article_id)),
+        (ja.totalCitations / ja.articleCount)
+        * LN(1 + ja.articleCount),
         2
       ) AS impactScore
 
-    FROM Journals j
-    JOIN Articles a
-      ON a.journal_id = j.journal_id
-    LEFT JOIN ArticlesSubjects asj
-      ON a.article_id = asj.article_id
-
-    ${where}
-
-    GROUP BY j.journal_id
-    HAVING articleCount >= 1
+    FROM journal_articles ja
+    JOIN Journals j ON j.journal_id = ja.journal_id
+    LEFT JOIN journal_subjects js ON js.journal_id = ja.journal_id
 
     ORDER BY journalName ASC
     LIMIT 1000
   `.trim();
 
-  return {
-    sql,
-    params: fromYear ? [fromYear] : [],
-  };
+  const params = fromYear ? [fromYear, fromYear] : [];
+
+  return { sql, params };
 }

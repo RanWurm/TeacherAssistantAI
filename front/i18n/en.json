@@ -311,8 +311,9 @@
             "keywordGrowthTable": {
                 "title": "Keyword Growth by Year",
                 "subtitle": "Year-over-year changes in article volume for key research keywords. Green = growth, red = decline.",
-                "previous": "Prev: {{count}}",
-                "growth": "Growth"
+                "previous": "Previous year: {{count}}",
+                "growth": "Change",
+                "showMore": "show more"
             },
             "keywordCrossDomain": {
                 "title": "Keywords Across Domains",

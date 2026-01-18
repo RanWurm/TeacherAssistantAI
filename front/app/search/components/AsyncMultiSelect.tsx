@@ -108,10 +108,6 @@ export function AsyncMultiSelect({ label, value, onChange, fetcher }: Props) {
     loadMore();
   }
 
-  // Lookup translation keys in en.json: 
-  // search.filters.inputPlaceholder, search.filters.loading, search.filters.noResults, 
-  // search.filters.showMore, search.filters.selected
-
   function getPlaceholder() {
     if (t) {
       return t('search.filters.inputPlaceholder', { label });
@@ -128,7 +124,6 @@ export function AsyncMultiSelect({ label, value, onChange, fetcher }: Props) {
     return t ? t('search.filters.showMore') : "Show more";
   }
   function getSelectedLabel(count: number) {
-    // search.filters.selected: "{{count}} selected"
     return t ? t('search.filters.selected', { count }) : `${count} selected`;
   }
 
