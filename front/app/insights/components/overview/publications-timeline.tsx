@@ -202,10 +202,10 @@ export function PublicationsTimeline({ timeRange }: PublicationsTimelineProps) {
                     })}
                   </span>
                   <span>
-                    {t('insights.overview.publicationsTimeline.journals', {
-                      count: point.journalCount,
-                    })}
-                  </span>
+                  {t('insights.overview.publicationsTimeline.sources', {
+                    count: point.sourceCount,
+                  })}
+                </span>
                 </div>
               );
 

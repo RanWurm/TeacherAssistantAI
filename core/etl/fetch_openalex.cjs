@@ -102,7 +102,8 @@ async function processSubject(subject, quota, staggerMs = 0) {
       const oaUrl = w.best_oa_location?.pdf_url 
         || w.primary_location?.pdf_url 
         || w.open_access?.oa_url;
-      if (oaUrl) {
+      const hasSource = w.primary_location?.source?.display_name;
+      if (oaUrl && hasSource) {
         appendJsonl(subject, w);
         st.pulled += 1;
         if (st.pulled >= quota) break;

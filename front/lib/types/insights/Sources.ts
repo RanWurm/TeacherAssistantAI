@@ -1,10 +1,11 @@
 /* =========================
-   Journals
+   Sources
 ========================= */
 
-export interface JournalStats {
-  journal_id: number;
+export interface SourceStats {
+  source_id: number;
   name: string;
+  type: string | null;
   publisher: string | null;
 
   articleCount: number;
@@ -16,15 +17,15 @@ export interface JournalStats {
 }
 
 export interface SubjectImpactPoint {
-  journal_id: number;
-  journalName: string;
+  source_id: number;
+  sourceName: string;
+  sourceType: string | null;
   subjectCount: number;
   impactScore: number;
   articleCount: number;
 }
 
-export interface JournalsInsights {
-  topJournals: JournalStats[];
+export interface SourcesInsights {
+  topSources: SourceStats[];
   subjectImpact: SubjectImpactPoint[];
 }
-

@@ -80,7 +80,7 @@ function MultiSingleCard({
           />
         </div>
       </div>
-      {/* Footer stats row: Authors + Journals */}
+      {/* Footer stats row: Authors + Sources */}
       <div className="flex items-center justify-between text-xs text-gray-500 mt-auto pt-2 border-t border-gray-100">
         <div>
           <div className="font-medium text-gray-900">
@@ -92,10 +92,10 @@ function MultiSingleCard({
         </div>
         <div>
           <div className="font-medium text-gray-900">
-            {card.uniqueJournals.toLocaleString()}
+            {card.uniqueSources.toLocaleString()}
           </div>
           <div>
-            {t('insights.cross.multidisciplinaryVsSingle.uniqueJournalsLabel')}
+            {t('insights.cross.multidisciplinaryVsSingle.uniqueSourcesLabel')}
           </div>
         </div>
       </div>
@@ -139,7 +139,7 @@ function MultiSingleCardSkeleton({ type }: { type: 'single' | 'multi' }) {
           <div className={`absolute top-0 left-0 h-2 ${bgLoading} rounded`} style={{ width: `60%` }} />
         </div>
       </div>
-      {/* Footer: authors & journals skeleton */}
+      {/* Footer: authors & sources skeleton */}
       <div className="flex items-center justify-between text-xs text-gray-400 mt-auto pt-2 border-t border-gray-100">
         <div>
           <div className={`h-4 w-10 ${bgLoading} rounded mb-1`} />
@@ -187,7 +187,7 @@ export function MultidisciplinaryVsSingle({ timeRange }: MultidisciplinaryVsSing
       avgCitations: data?.avgCitations ?? 0,
       totalCitations: data?.totalCitations ?? 0,
       uniqueAuthors: data?.authors ?? 0,
-      uniqueJournals: data?.journals ?? 0,
+      uniqueSources: data?.sources ?? 0,
       percent: total ? ((type === 'single' ? single : multi) / total) * 100 : 0,
     };
   }

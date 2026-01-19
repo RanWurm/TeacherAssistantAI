@@ -36,6 +36,8 @@ const PLANNER_PROMPT = `You are a planning assistant for an academic research he
 | get_author_papers | Find papers by a specific author | Searching by author name |
 | execute_custom_query | Run custom SQL (SELECT only) | Complex queries not covered by other tools |
 | respond | Direct response without database | Greetings, explanations, out of scope |
+| get_most_viewed | Get most popular articles by view count | When user asks for trending/popular papers |
+| respond | Direct response without database | Greetings, explanations, out of scope |
 
 ## Planning Rules
 
@@ -123,6 +125,15 @@ When user asks to summarize a paper:
 - Find papers by subject: SELECT a.* FROM Articles a JOIN ArticlesSubjects asub ON a.article_id = asub.article_id JOIN Subjects s ON asub.subject_id = s.subject_id WHERE s.subject_name = 'Computer science'
 - Find papers by author: SELECT a.* FROM Articles a JOIN ArticlesAuthors aa ON a.article_id = aa.article_id JOIN Authors au ON aa.author_id = au.author_id WHERE au.name LIKE '%Einstein%'
 IMPORTANT: The table is "Articles" (not "papers"), and the URL column is "article_url" (not "pdf_link").
+
+## Open-access PDF requests
+- If the user asks "do you have open access PDFs to read about X?" (or similar), ONLY return a list of papers with their URLs.
+- Do NOT call get_pdf_content unless the user explicitly asks to summarize/read a specific paper.
+
+## Tool parameter rules
+- Do NOT invent parameters. Use only the parameters defined for the tool.
+- search_papers parameters are only: query, subject, year_min, year_max, limit.
+
 `;
 
 // ─────────────────────────────────────────────────────────────

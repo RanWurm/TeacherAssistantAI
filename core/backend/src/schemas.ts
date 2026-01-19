@@ -1,7 +1,8 @@
 // backend/src/schemas.ts
-export interface Journal {
-  journal_id: number;
+export interface Source {
+  source_id: number;
   name: string;
+  type: string | null;
   impact_factor: number | null;
   publisher: string | null;
 }
@@ -13,13 +14,18 @@ export interface Article {
   language: string | null;
   type: string | null;
   citation_count: number | null;
-  journal_id: number | null;
+  source_id: number | null;
 }
 
 export interface Author {
   author_id: number;
   name: string;
-  affiliation: string | null;
+}
+
+export interface Institution {
+  institution_id: number;
+  openalex_institution_id: string;
+  name: string;
 }
 
 export interface Subject {
@@ -35,6 +41,12 @@ export interface Keyword {
 export interface ArticleAuthor {
   article_id: number;
   author_id: number;
+}
+
+export interface ArticleAuthorInstitution {
+  article_id: number;
+  author_id: number;
+  institution_id: number;
 }
 
 export interface ArticleSubject {

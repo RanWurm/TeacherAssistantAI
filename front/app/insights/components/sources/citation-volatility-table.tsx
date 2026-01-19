@@ -9,13 +9,12 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
-import { useInsightsJournals } from '@/hooks/insights/useInsightsJournals';
+import { useInsightsSources } from '@/hooks/insights/useInsightsSources';
 import type { TimeRange } from '@/lib/api/insights.api';
 
-
-// Typed according to backend SubjectImpactPoint
 type Datum = {
-  journalName: string;
+  sourceName: string;
+  sourceType: string | null;
   subjectCount: number;
   subjectCountVisual: number;
   impactScore: number | null;
@@ -23,7 +22,6 @@ type Datum = {
   articleCount: number;
 };
 
-// Mini chart skeleton while loading (smaller, more chart focus)
 function ChartLoadingSkeleton() {
   return (
     <div className="flex flex-col items-center justify-center h-[40vh] min-h-[240px]">
@@ -81,7 +79,6 @@ function ChartLoadingSkeleton() {
   );
 }
 
-// --- Helper to inject maxX, maxY properly so ChartContent/XAxis don't break lint/types ---
 type ChartContentProps = {
   chartData: Datum[];
   t: (s: string) => string;
@@ -105,7 +102,7 @@ function ChartContent({ chartData, t, maxX, maxY, xMedian, yMedian }: ChartConte
                 tickFormatter={(v) => v === maxX ? `${Math.round(maxX)}+` : v}
               >
                 <Label
-                  value={t('insights.journals.citationVolatilityTable.xAxis') || "Number of subjects"}
+                  value={t('insights.sources.citationVolatilityTable.xAxis') || "Number of subjects"}
                   position="insideBottom"
                   dy={15}
                 />
@@ -125,7 +122,7 @@ function ChartContent({ chartData, t, maxX, maxY, xMedian, yMedian }: ChartConte
                 }
               >
                 <Label
-                  value={t('insights.journals.citationVolatilityTable.yAxis') || "Impact Score"}
+                  value={t('insights.sources.citationVolatilityTable.yAxis') || "Impact Score"}
                   angle={-90}
                   position="middle"
                   dx={-40}
@@ -145,11 +142,14 @@ function ChartContent({ chartData, t, maxX, maxY, xMedian, yMedian }: ChartConte
           </ResponsiveContainer>
         </div>
         <div className="border-t bg-gray-50 px-4 py-3 text-xs text-gray-700">
-          <div className="font-semibold mb-1">{t('insights.journals.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
+          <div className="font-semibold mb-1">{t('insights.sources.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
           <ul className="list-disc list-inside space-y-0.5">
-            {((t as any)('insights.journals.citationVolatilityTable.howToRead', { returnObjects: true }) as unknown as string[] ?? []).map((line: string, idx: number) => (
-              <li key={idx} dangerouslySetInnerHTML={{ __html: line }} />
-            ))}
+            <li>
+              <b>Left</b> = more focused sources · <b>Right</b> = more interdisciplinary
+            </li>
+            <li>
+              <b>Higher</b> = stronger impact (avg. citations per article)
+            </li>
           </ul>
         </div>
       </div>
@@ -170,23 +170,20 @@ function renderTooltipContent(props: any) {
       dir={dir}
       className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-xs"
     >
-      <div className="font-semibold mb-1">
-        {t('insights.journals.citationVolatilityTable.tooltip.journalName', 'Journal')}
-        {': '}
-        {d.journalName}
-      </div>
+      <div className="font-semibold mb-1">{d.sourceName}</div>
+      {d.sourceType && <div className="text-gray-500 mb-1">{d.sourceType}</div>}
       <div>
-        {t('insights.journals.citationVolatilityTable.tooltip.impact', 'Impact Score')}
+        {t('insights.sources.citationVolatilityTable.tooltip.impact') || 'Impact Score'}
         {': '}
         <b>
           {d.impactScore === null || d.impactScore === undefined
-            ? <span className="text-gray-400">{t('insights.journals.citationVolatilityTable.tooltip.na', 'N/A')}</span>
+            ? <span className="text-gray-400">{t('insights.sources.citationVolatilityTable.tooltip.na') || 'N/A'}</span>
             : d.impactScore
           }
         </b>
       </div>
       <div className="text-gray-500 mt-1">
-        {t('insights.journals.citationVolatilityTable.tooltip.meta', {
+        {t('insights.sources.citationVolatilityTable.tooltip.meta', {
           subjectCount: d.subjectCount,
           articleCount: d.articleCount
         })}
@@ -200,38 +197,38 @@ function ChartInsights() {
   const quadrants = [
     {
       icon: "🔹",
-      title: t("insights.journals.citationVolatilityChart.quadrant.lowerLeftTitle", "Lower left (most journals)"),
+      title: t("insights.sources.citationVolatilityChart.quadrant.lowerLeftTitle", "Lower left (most sources)"),
       items: [
-        t("insights.journals.citationVolatilityChart.quadrant.lowerLeft.0", "Few subjects"),
-        t("insights.journals.citationVolatilityChart.quadrant.lowerLeft.1", "Low impact"),
-        t("insights.journals.citationVolatilityChart.quadrant.lowerLeft.2", "Niche or younger journals"),
+        t("insights.sources.citationVolatilityChart.quadrant.lowerLeft.0", "Few subjects"),
+        t("insights.sources.citationVolatilityChart.quadrant.lowerLeft.1", "Low impact"),
+        t("insights.sources.citationVolatilityChart.quadrant.lowerLeft.2", "Niche or younger sources"),
       ],
     },
     {
       icon: "🔹",
-      title: t("insights.journals.citationVolatilityChart.quadrant.upperLeftTitle", "Upper left (rare)"),
+      title: t("insights.sources.citationVolatilityChart.quadrant.upperLeftTitle", "Upper left (rare)"),
       items: [
-        t("insights.journals.citationVolatilityChart.quadrant.upperLeft.0", "Few subjects"),
-        t("insights.journals.citationVolatilityChart.quadrant.upperLeft.1", "Very high impact"),
-        t("insights.journals.citationVolatilityChart.quadrant.upperLeft.2", "Focused but strong journals (narrow domain, many citations)"),
+        t("insights.sources.citationVolatilityChart.quadrant.upperLeft.0", "Few subjects"),
+        t("insights.sources.citationVolatilityChart.quadrant.upperLeft.1", "Very high impact"),
+        t("insights.sources.citationVolatilityChart.quadrant.upperLeft.2", "Focused but strong sources (narrow domain, many citations)"),
       ],
     },
     {
       icon: "🔹",
-      title: t("insights.journals.citationVolatilityChart.quadrant.lowerRightTitle", "Lower right"),
+      title: t("insights.sources.citationVolatilityChart.quadrant.lowerRightTitle", "Lower right"),
       items: [
-        t("insights.journals.citationVolatilityChart.quadrant.lowerRight.0", "Many subjects"),
-        t("insights.journals.citationVolatilityChart.quadrant.lowerRight.1", "Not high impact"),
-        t("insights.journals.citationVolatilityChart.quadrant.lowerRight.2", "General but not prestigious journals"),
+        t("insights.sources.citationVolatilityChart.quadrant.lowerRight.0", "Many subjects"),
+        t("insights.sources.citationVolatilityChart.quadrant.lowerRight.1", "Not high impact"),
+        t("insights.sources.citationVolatilityChart.quadrant.lowerRight.2", "General but not prestigious sources"),
       ],
     },
     {
       icon: "🔹",
-      title: t("insights.journals.citationVolatilityChart.quadrant.upperRightTitle", "Upper right (almost none)"),
+      title: t("insights.sources.citationVolatilityChart.quadrant.upperRightTitle", "Upper right (almost none)"),
       items: [
-        t("insights.journals.citationVolatilityChart.quadrant.upperRight.0", "Many subjects"),
-        t("insights.journals.citationVolatilityChart.quadrant.upperRight.1", "High impact"),
-        t("insights.journals.citationVolatilityChart.quadrant.upperRight.2", "The 'Nature/Science/PNAS' of the world"),
+        t("insights.sources.citationVolatilityChart.quadrant.upperRight.0", "Many subjects"),
+        t("insights.sources.citationVolatilityChart.quadrant.upperRight.1", "High impact"),
+        t("insights.sources.citationVolatilityChart.quadrant.upperRight.2", "The 'Nature/Science/PNAS' of the world"),
       ],
     }
   ];
@@ -239,7 +236,7 @@ function ChartInsights() {
   return (
     <div className="border-t bg-gray-50 px-4 py-3 text-xs text-gray-700 leading-relaxed">
       <div className="font-semibold mb-2 text-base">
-        {t("insights.journals.citationVolatilityChart.whatYouSeeTitle", "2️⃣ So what does the chart show?")}
+        {t("insights.sources.citationVolatilityChart.whatYouSeeTitle", "2️⃣ So what does the chart show?")}
       </div>
       <div className="space-y-3">
         {quadrants.map((q, i) => (
@@ -281,13 +278,11 @@ function roundMaxY(values: number[]): number {
 
 export function SubjectImpactChart({ timeRange }: { timeRange: TimeRange }) {
   const { t } = useTranslation();
-  const { data, loading } = useInsightsJournals(timeRange);
+  const { data, loading } = useInsightsSources(timeRange);
 
-  // Defensive: only run if data?.subjectImpact
   const subjectCounts =
     data?.subjectImpact?.map((d: any) => d.subjectCount) ?? [];
 
-  // Get all impactScores (dropping null/undefined/NaN) for yMedian
   const impactScores =
     data?.subjectImpact
       ?.map((d: any) =>
@@ -303,7 +298,6 @@ export function SubjectImpactChart({ timeRange }: { timeRange: TimeRange }) {
   const xMedian = maxX / 3;
   const yMedian = maxY / 3;
 
-  // Defensive: Drop null/NaN impactScore, filter small N, cap subjectCount visually at maxX
   const chartData: Datum[] =
     (data?.subjectImpact as Datum[] | undefined)?.map(d => ({
       ...d,
@@ -322,11 +316,14 @@ export function SubjectImpactChart({ timeRange }: { timeRange: TimeRange }) {
         <div className="p-4" style={{ minHeight: 260 }}>
           <ChartLoadingSkeleton />
           <div className="border-t bg-gray-50 px-4 py-3 text-xs text-gray-200 mt-2">
-            <div className="font-semibold mb-1">{t('insights.journals.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
+            <div className="font-semibold mb-1">{t('insights.sources.citationVolatilityTable.howToReadTitle') || "How to read"}</div>
             <ul className="list-disc list-inside space-y-0.5">
-              {(t('insights.journals.citationVolatilityTable.howToRead', { returnObjects: true }) as string[] ?? []).map((line, idx) => (
-                <li key={idx} dangerouslySetInnerHTML={{ __html: line }} />
-              ))}
+              <li>
+                <b>Left</b> = more focused sources · <b>Right</b> = more interdisciplinary
+              </li>
+              <li>
+                <b>Higher</b> = stronger impact (avg. citations per article)
+              </li>
             </ul>
           </div>
         </div>

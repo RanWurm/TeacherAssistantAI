@@ -13,7 +13,7 @@ export function getPool(): Pool {
       user: process.env.DB_USER || "root",
       password: process.env.DB_PASS || "",
       database: process.env.DB_NAME || "teacher_assistant",
-      port: Number(process.env.DB_PORT) || 3306,
+      port: Number(process.env.DB_PORT) || 3307,
       waitForConnections: true,
       connectionLimit: 5,
       charset: "utf8mb4",
@@ -39,57 +39,56 @@ const FORBIDDEN_PATTERNS = [
   /\b(CALL|EXECUTE|PREPARE)\b/i,
   /\bINTO\s+OUTFILE\b/i,
   /\bLOAD\s+DATA\b/i,
-  /;.*;/,  // Multiple statements
+  /;.*;/,
 ];
 
 const ALLOWED_TABLES = [
   "Articles",
-  "Journals", 
+  "Sources",
   "Authors",
+  "Institutions",
   "Subjects",
   "Keywords",
   "ArticlesAuthors",
+  "ArticleAuthorInstitutions",
   "ArticlesSubjects",
   "ArticlesKeywords",
 ];
 
 export function validateReadOnlyQuery(sql: string): { valid: boolean; error?: string } {
   const trimmed = sql.trim();
-  
-  // Must start with SELECT
+
   if (!/^SELECT\b/i.test(trimmed)) {
     return { valid: false, error: "Query must start with SELECT" };
   }
 
-  // Check forbidden patterns
   for (const pattern of FORBIDDEN_PATTERNS) {
     if (pattern.test(trimmed)) {
       return { valid: false, error: `Forbidden SQL pattern detected: ${pattern}` };
     }
   }
 
-  // Verify only allowed tables are referenced (basic check)
   const fromMatch = trimmed.match(/\bFROM\s+(\w+)/gi);
   const joinMatch = trimmed.match(/\bJOIN\s+(\w+)/gi);
-  
+
   const referencedTables: string[] = [];
-  
+
   if (fromMatch) {
-    fromMatch.forEach(m => {
+    fromMatch.forEach((m) => {
       const table = m.replace(/FROM\s+/i, "").trim();
       referencedTables.push(table);
     });
   }
-  
+
   if (joinMatch) {
-    joinMatch.forEach(m => {
+    joinMatch.forEach((m) => {
       const table = m.replace(/JOIN\s+/i, "").trim();
       referencedTables.push(table);
     });
   }
 
   for (const table of referencedTables) {
-    if (!ALLOWED_TABLES.some(t => t.toLowerCase() === table.toLowerCase())) {
+    if (!ALLOWED_TABLES.some((t) => t.toLowerCase() === table.toLowerCase())) {
       return { valid: false, error: `Table not allowed: ${table}` };
     }
   }
@@ -106,7 +105,7 @@ export async function executeReadOnlyQuery<T extends RowDataPacket[]>(
   params: unknown[] = []
 ): Promise<{ rows: T; error?: string }> {
   const validation = validateReadOnlyQuery(sql);
-  
+
   if (!validation.valid) {
     return { rows: [] as unknown as T, error: validation.error };
   }
@@ -136,10 +135,9 @@ export async function searchPapers(params: {
   const values: unknown[] = [];
 
   if (params.query) {
-    conditions.push("(a.title LIKE ? OR k.keyword LIKE ?)");
-    values.push(`%${params.query}%`, `%${params.query}%`);
+    conditions.push("(MATCH(a.title) AGAINST(? IN NATURAL LANGUAGE MODE) OR k.keyword LIKE ?)");
+    values.push(params.query, `%${params.query}%`);
   }
-
   if (params.subject) {
     conditions.push("s.subject_name LIKE ?");
     values.push(`%${params.subject}%`);
@@ -165,9 +163,10 @@ export async function searchPapers(params: {
       a.year,
       a.citation_count,
       a.article_url,
-      j.name AS journal_name
+      src.name AS source_name,
+      src.type AS source_type
     FROM Articles a
-    LEFT JOIN Journals j ON a.journal_id = j.journal_id
+    LEFT JOIN Sources src ON a.source_id = src.source_id
     LEFT JOIN ArticlesSubjects asub ON a.article_id = asub.article_id
     LEFT JOIN Subjects s ON asub.subject_id = s.subject_id
     LEFT JOIN ArticlesKeywords ak ON a.article_id = ak.article_id
@@ -181,15 +180,15 @@ export async function searchPapers(params: {
 }
 
 export async function getPaperDetails(articleId: number) {
-  // Base article info
   const articleSql = `
     SELECT 
       a.*,
-      j.name AS journal_name,
-      j.publisher,
-      j.impact_factor
+      src.name AS source_name,
+      src.type AS source_type,
+      src.publisher,
+      src.impact_factor
     FROM Articles a
-    LEFT JOIN Journals j ON a.journal_id = j.journal_id
+    LEFT JOIN Sources src ON a.source_id = src.source_id
     WHERE a.article_id = ?
   `;
 
@@ -200,16 +199,29 @@ export async function getPaperDetails(articleId: number) {
 
   const article = articles[0];
 
-  // Authors
   const authorsSql = `
-    SELECT au.name, au.affiliation
+    SELECT au.author_id, au.name
     FROM Authors au
     JOIN ArticlesAuthors aa ON au.author_id = aa.author_id
     WHERE aa.article_id = ?
   `;
   const { rows: authors } = await executeReadOnlyQuery(authorsSql, [articleId]);
 
-  // Subjects
+  const institutionsSql = `
+    SELECT aai.author_id, i.name AS institution_name
+    FROM ArticleAuthorInstitutions aai
+    JOIN Institutions i ON aai.institution_id = i.institution_id
+    WHERE aai.article_id = ?
+  `;
+  const { rows: institutions } = await executeReadOnlyQuery(institutionsSql, [articleId]);
+
+  const authorsWithInstitutions = authors.map((a: any) => ({
+    name: a.name,
+    institutions: institutions
+      .filter((i: any) => i.author_id === a.author_id)
+      .map((i: any) => i.institution_name),
+  }));
+
   const subjectsSql = `
     SELECT s.subject_name
     FROM Subjects s
@@ -218,7 +230,6 @@ export async function getPaperDetails(articleId: number) {
   `;
   const { rows: subjects } = await executeReadOnlyQuery(subjectsSql, [articleId]);
 
-  // Keywords
   const keywordsSql = `
     SELECT k.keyword
     FROM Keywords k
@@ -230,7 +241,7 @@ export async function getPaperDetails(articleId: number) {
   return {
     article: {
       ...article,
-      authors: authors.map((a: any) => ({ name: a.name, affiliation: a.affiliation })),
+      authors: authorsWithInstitutions,
       subjects: subjects.map((s: any) => s.subject_name),
       keywords: keywords.map((k: any) => k.keyword),
     },
@@ -245,8 +256,7 @@ export async function getAuthorPapers(authorName: string, limit = 5) {
       a.title,
       a.year,
       a.citation_count,
-      au.name AS author_name,
-      au.affiliation
+      au.name AS author_name
     FROM Articles a
     JOIN ArticlesAuthors aa ON a.article_id = aa.article_id
     JOIN Authors au ON aa.author_id = au.author_id
@@ -270,24 +280,62 @@ export async function listSubjects() {
   return executeReadOnlyQuery(sql);
 }
 
-export async function searchPapersWithPdf(params: {
-  query?: string;
-  limit?: number;
-}) {
+export async function searchPapersWithPdf(params: { query?: string; limit?: number }) {
   const limit = Math.min(params.limit || 5, 10);
-  
+
   const sql = `
-    SELECT a.article_id, a.title, a.year, a.citation_count, a.article_url, j.name as journal_name
+    SELECT a.article_id, a.title, a.year, a.citation_count, a.article_url, src.name as source_name
     FROM Articles a
-    LEFT JOIN Journals j ON a.journal_id = j.journal_id
+    LEFT JOIN Sources src ON a.source_id = src.source_id
     WHERE (a.article_url LIKE '%arxiv.org%' 
-           OR a.article_url LIKE '%jmlr.org%'
-           OR a.article_url LIKE '%mlr.press%'
-           OR a.article_url LIKE '%.pdf')
-      AND (? IS NULL OR a.title LIKE CONCAT('%', ?, '%'))
+          OR a.article_url LIKE '%jmlr.org%'
+          OR a.article_url LIKE '%mlr.press%'
+          OR a.article_url LIKE '%.pdf')
+      AND (? IS NULL OR MATCH(a.title) AGAINST(? IN NATURAL LANGUAGE MODE))
     ORDER BY a.citation_count DESC
     LIMIT ?
   `;
-  
+
   return executeReadOnlyQuery(sql, [params.query, params.query, limit]);
+}
+
+export async function incrementArticleView(articleId: number): Promise<void> {
+  const sql = `
+    INSERT INTO ArticleViews (article_id, view_count)
+    VALUES (?, 1)
+    ON DUPLICATE KEY UPDATE view_count = view_count + 1
+  `;
+  
+  try {
+    const pool = getPool();
+    await pool.execute(sql, [articleId]);
+  } catch (err) {
+    console.error(`[DB] Failed to increment view for article ${articleId}:`, err);
+  }
+}
+
+// חדש - להוסיף בסוף הקובץ
+export async function getMostViewedArticles(limit: number = 10) {
+  const sql = `
+    SELECT 
+      a.article_id,
+      a.title,
+      a.year,
+      a.citation_count,
+      a.article_url,
+      v.view_count,
+      v.last_viewed_at
+    FROM ArticleViews v
+    JOIN Articles a ON v.article_id = a.article_id
+    ORDER BY v.view_count DESC
+    LIMIT ?
+  `;
+  
+  return executeReadOnlyQuery(sql, [limit]);
+}
+
+export async function getArticleIdByUrl(url: string): Promise<number | null> {
+  const sql = `SELECT article_id FROM Articles WHERE article_url = ? LIMIT 1`;
+  const { rows } = await executeReadOnlyQuery(sql, [url]);
+  return rows[0]?.article_id ?? null;
 }

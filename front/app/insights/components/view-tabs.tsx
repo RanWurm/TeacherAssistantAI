@@ -12,7 +12,7 @@ const tabs: Tab[] = [
   { id: 'overview', labelKey: 'insights.tabs.overview', icon: BarChart3 },
   { id: 'trends', labelKey: 'insights.tabs.trends', icon: TrendingUp },
   { id: 'researchers', labelKey: 'insights.tabs.researchers', icon: Users },
-  { id: 'journals', labelKey: 'insights.tabs.journals', icon: BookOpen },
+  { id: 'sources', labelKey: 'insights.tabs.sources', icon: BookOpen },
   { id: 'cross', labelKey: 'insights.tabs.cross', icon: Network },
 ];
 
@@ -63,7 +63,6 @@ export function ViewTabs({ selectedView, setSelectedView, timeRange, setTimeRang
                 title={t(tab.labelKey)}
               >
                 <Icon className="w-5 h-5 mb-0.5" />
-                {/* Hide label on small screens, show on sm+ */}
                 <span className="hidden sm:inline whitespace-nowrap">
                   {t(tab.labelKey)}
                 </span>

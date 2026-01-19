@@ -1,7 +1,6 @@
 // backend/src/db/ArticleSearchQuery.ts
 import { buildSelectQuery } from "../queryBuilder";
 
-// Guard against empty articleIds to avoid SQL errors
 function inPlaceholders(n: number): string {
   if (n <= 0) return "NULL";
   return Array.from({ length: n }, () => "?").join(", ");
@@ -9,7 +8,6 @@ function inPlaceholders(n: number): string {
 
 export function buildArticlesByIdsQuery(articleIds: number[]) {
   if (!Array.isArray(articleIds) || articleIds.length === 0) {
-    // Defensive: return a query that returns no results if called with empty array
     return {
       sql: "SELECT * FROM Articles WHERE 1=0",
       params: [],
@@ -31,15 +29,16 @@ export function buildArticlesByIdsQuery(articleIds: number[]) {
       "a.type",
       "a.citation_count",
       "a.article_url",
-      "j.name AS journal",
-      "j.publisher AS publisher",
-      "j.impact_factor AS impact_factor",
+      "src.name AS source",
+      "src.type AS source_type",
+      "src.publisher AS publisher",
+      "src.impact_factor AS impact_factor",
       "GROUP_CONCAT(DISTINCT au.name) AS authors",
       "GROUP_CONCAT(DISTINCT s.subject_name) AS subjects",
       "GROUP_CONCAT(DISTINCT k.keyword) AS keywords",
     ],
     joins: [
-      { type: "LEFT JOIN", table: "Journals", as: "j", on: "a.journal_id = j.journal_id" },
+      { type: "LEFT JOIN", table: "Sources", as: "src", on: "a.source_id = src.source_id" },
       { type: "LEFT JOIN", table: "ArticlesAuthors", as: "aa", on: "a.article_id = aa.article_id" },
       { type: "LEFT JOIN", table: "Authors", as: "au", on: "aa.author_id = au.author_id" },
       { type: "LEFT JOIN", table: "ArticlesSubjects", as: "asub", on: "a.article_id = asub.article_id" },

@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { fetchJournalsInsights } from "@/lib/api/insights.api";
-import type { JournalsInsights } from "@/lib/types/insights/Journals";
+import { fetchSourcesInsights } from "@/lib/api/insights.api";
+import type { SourcesInsights } from "@/lib/types/insights/Sources";
 import type { TimeRange } from "@/lib/api/insights.api";
 
-export function useInsightsJournals(timeRange: TimeRange) {
-  const [data, setData] = useState<JournalsInsights | null>(null);
+export function useInsightsSources(timeRange: TimeRange) {
+  const [data, setData] = useState<SourcesInsights | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    fetchJournalsInsights(timeRange)
+    fetchSourcesInsights(timeRange)
       .then(setData)
       .finally(() => setLoading(false));
   }, [timeRange]);

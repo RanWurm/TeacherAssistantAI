@@ -22,6 +22,7 @@ Guidelines:
 - Be concise but informative
 - Highlight key findings (titles, years, citations)
 - If listing papers, format them nicely with numbers
+- include the URL when it exists (e.g., "PDF/URL: <url>") for each listed paper when the user ask for sources.
 - If there were errors, explain what went wrong
 - Offer to help further if relevant
 - Respond in the same language as the user's original message
@@ -69,9 +70,12 @@ export class ExecutorAgent {
       if (lastResult) {
         const item = Array.isArray(lastResult) ? lastResult[0] : lastResult;
         for (const [key, val] of Object.entries(step.params)) {
-          if (typeof val === 'string' && val.startsWith('<')) {
-            if (key.includes('id')) step.params[key] = item?.id ?? item?.article_id;
-            if (key.includes('url')) step.params[key] = item?.url ?? item?.article_url;
+          if (typeof val !== 'string' || !val.startsWith('<')) continue;
+
+          if (key === 'article_id') {
+            step.params[key] = item?.article_id ?? item?.id;
+          } else if (key === 'article_url') {
+            step.params[key] = item?.article_url ?? item?.url;
           }
         }
       }
@@ -154,16 +158,20 @@ export class ExecutorAgent {
    * Coerce string parameters to numbers where needed
    */
 private coerceParams(params: Record<string, unknown>): Record<string, unknown> {
-  const numericFields = ['limit', 'year_min', 'year_max', 'max_pages', 'article_id'];
-  const coerced = { ...params };
+  const numericFields = ['limit', 'year_min', 'year_max', 'max_pages', 'article_id'] as const;
+  const coerced: Record<string, unknown> = { ...params };
 
   for (const field of numericFields) {
-    if (coerced[field] !== undefined) {
-      coerced[field] = Number(coerced[field]);
+    if (coerced[field] === undefined) continue;
+
+    const n = Number(coerced[field]);
+    if (!Number.isFinite(n)) {
+      delete coerced[field];
+      continue;
     }
+    coerced[field] = n;
   }
 
-  // Enforce limits
   if (coerced.max_pages !== undefined) {
     coerced.max_pages = Math.min(Number(coerced.max_pages), 3);
   }
@@ -173,7 +181,6 @@ private coerceParams(params: Record<string, unknown>): Record<string, unknown> {
 
   return coerced;
 }
-
   /**
    * Check if a step is critical for the plan
    */

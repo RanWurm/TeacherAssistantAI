@@ -1,13 +1,13 @@
-import { TopJournalsTable } from './top-journals-table';
+import { TopSourcesTable } from './top-sources-table';
 import { SubjectImpactChart } from './citation-volatility-table';
 import type { TimeRange } from '../../types/insights.types';
 import { useTranslation } from 'react-i18next';
 
-interface JournalsViewProps {
+interface SourcesViewProps {
   timeRange: TimeRange;
 }
 
-export function JournalsView({ timeRange }: JournalsViewProps) {
+export function SourcesView({ timeRange }: SourcesViewProps) {
   const { t } = useTranslation();
 
   return (
@@ -15,21 +15,21 @@ export function JournalsView({ timeRange }: JournalsViewProps) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">
-            {t('insights.journals.topJournalsTable.title')}
+            {t('insights.sources.topSourcesTable.title')}
           </h2>
           <p className="text-sm text-gray-600 mt-0.5">
-            {t('insights.journals.topJournalsTable.subtitle')}
+            {t('insights.sources.topSourcesTable.subtitle')}
           </p>
         </div>
       </div>
-      <TopJournalsTable timeRange={timeRange} />
+      <TopSourcesTable timeRange={timeRange} />
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-1">
-            {t('insights.journals.subjectImpactChart.title')}
+            {t('insights.sources.subjectImpactChart.title')}
           </h2>
           <p className="text-sm text-gray-600 mb-2">
-            {t('insights.journals.subjectImpactChart.subtitle')}
+            {t('insights.sources.subjectImpactChart.subtitle')}
           </p>
         </div>
       </div>

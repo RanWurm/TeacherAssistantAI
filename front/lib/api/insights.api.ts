@@ -2,7 +2,7 @@ import { apiRequest } from "./client";
 import type { OverviewInsights } from "../types/insights/Overview";
 import type { TrendsInsights } from "../types/insights/Trends";
 import type { ResearchersInsights } from "../types/insights/Researchers";
-import type { JournalsInsights } from "../types/insights/Journals";
+import type { SourcesInsights } from "../types/insights/Sources";
 import type { CrossInsights } from "../types/insights/CrossAnalysis";
 
 export type TimeRange = "1y" | "3y" | "5y" | "all";
@@ -39,9 +39,9 @@ export function fetchResearchersInsights(timeRange: TimeRange) {
   );
 }
 
-export function fetchJournalsInsights(timeRange: TimeRange) {
-  return apiRequest<JournalsInsights>(
-    "/api/insights/journals",
+export function fetchSourcesInsights(timeRange: TimeRange) {
+  return apiRequest<SourcesInsights>(
+    "/api/insights/sources",
     "POST",
     { timeRange } satisfies TimeRangeBody
   );

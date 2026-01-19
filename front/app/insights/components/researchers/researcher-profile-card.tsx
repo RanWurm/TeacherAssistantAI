@@ -7,7 +7,6 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-// Import the type for type safety and consistency
 import type { ResearcherStats } from '@/lib/types/insights/Researchers';
 
 interface ResearcherProfileCardProps {
@@ -32,7 +31,6 @@ export function ResearcherProfileCard({
     .map(n => n[0])
     .join('');
 
-  // Compute insight label (i18n)
   let insightKey: string;
   if (researcher.uniqueSubjects >= 6) {
     insightKey = 'insights.researchers.topResearchers.researcher.insight.multidisciplinary';
@@ -49,7 +47,6 @@ export function ResearcherProfileCard({
     insightKey = 'insights.researchers.topResearchers.researcher.insight.focusedProfile';
   }
 
-  // Rank label (i18n)
   let rankLabel: string;
   if (rank === 1) {
     rankLabel = t('insights.researchers.topResearchers.researcher.rankGold');
@@ -61,13 +58,10 @@ export function ResearcherProfileCard({
     rankLabel = t('insights.researchers.topResearchers.researcher.rankOther', { rank });
   }
 
-  // i18n metrics using en.json keys for metrics
-  const affiliation =
-    researcher.affiliation ||
-    t('insights.researchers.topResearchers.researcher.affiliationFallback');
-
-  // Prepare metrics as array and render with keys to ensure uniqueness
-  // Also ensure the key is unique by combining with the value (stringified for safety)
+  const institutionsDisplay =
+  Array.isArray(researcher.institutions) && researcher.institutions.length > 0
+    ? researcher.institutions[0]
+    : t('insights.researchers.topResearchers.researcher.institutionFallback');
   const metrics = [
     {
       key: `articles-${researcher.articleCount}`,
@@ -84,10 +78,10 @@ export function ResearcherProfileCard({
       }),
     },
     {
-      key: `journals-${researcher.uniqueJournals}`,
+      key: `sources-${researcher.uniqueSources}`,
       icon: BookOpen,
-      label: t('insights.researchers.topResearchers.researcher.journals', {
-        count: researcher.uniqueJournals,
+      label: t('insights.researchers.topResearchers.researcher.sources', {
+        count: researcher.uniqueSources,
       }),
     },
     {
@@ -99,7 +93,6 @@ export function ResearcherProfileCard({
     },
   ];
 
-  // Responsive sizing: use smaller paddings, fonts, and gaps on small screens
   return (
     <div
       className="
@@ -109,7 +102,6 @@ export function ResearcherProfileCard({
       text-sm sm:text-base
       "
     >
-      {/* Rank badge */}
       <div
         className={`absolute top-2 sm:top-4 ${isRtl ? 'left-2 sm:left-4' : 'right-2 sm:right-4'
           } 
@@ -119,9 +111,7 @@ export function ResearcherProfileCard({
         {rankLabel}
       </div>
 
-      {/* Header */}
       <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-        {/* Impact ring */}
         <div className="relative w-10 h-10 sm:w-14 sm:h-14 rounded-full flex items-center justify-center">
           <div
             className="
@@ -139,12 +129,11 @@ export function ResearcherProfileCard({
           </div>
           <div className="flex items-center gap-1 text-[11px] sm:text-xs text-gray-500">
             <Building2 className="w-3 h-3" />
-            {affiliation}
+            {institutionsDisplay}
           </div>
         </div>
       </div>
 
-      {/* Metrics */}
       <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-gray-700 mb-2 sm:mb-3">
         {metrics.map(({ key, icon: Icon, label }) => (
           <div className="flex items-center gap-1" key={key}>
@@ -154,7 +143,6 @@ export function ResearcherProfileCard({
         ))}
       </div>
 
-      {/* Insight */}
       <div className="text-[11px] sm:text-xs font-medium text-blue-700 bg-blue-50 inline-block px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">
         {t(insightKey)}
       </div>

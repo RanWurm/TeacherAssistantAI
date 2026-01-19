@@ -58,8 +58,8 @@ export function MetricsCards({ timeRange }: MetricsCardsProps) {
             colorIdx: 1,
           },
           {
-            i18nKey: "insights.overview.metricsCards.journals",
-            value: metrics.journals,
+            i18nKey: "insights.overview.metricsCards.sources",
+            value: metrics.sources,
             icon: BookOpen,
             colorIdx: 2,
           },

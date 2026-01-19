@@ -1,4 +1,4 @@
-import { SubjectJournalHeatmap } from './subject-journal-heatmap';
+import { SubjectSourceHeatmap } from './subject-source-heatmap';
 import { LanguageImpactBarChart } from './language-impact-bar-chart';
 import { MultidisciplinaryVsSingle } from './multidisciplinary-vs-single';
 import type { TimeRange } from '../../types/insights.types';
@@ -23,7 +23,7 @@ export function CrossAnalysisView({ timeRange }: CrossAnalysisViewProps) {
         </div>
       </div>
 
-      <SubjectJournalHeatmap timeRange={timeRange} />
+      <SubjectSourceHeatmap timeRange={timeRange} />
       <LanguageImpactBarChart timeRange={timeRange} />
       <MultidisciplinaryVsSingle timeRange={timeRange} />
     </div>
