@@ -129,7 +129,9 @@ export function ResearcherProfileCard({
           </div>
           <div className="flex items-center gap-1 text-[11px] sm:text-xs text-gray-500">
             <Building2 className="w-3 h-3" />
-            {institutionsDisplay}
+            {typeof institutionsDisplay === 'string' && institutionsDisplay.length > 30
+              ? `${institutionsDisplay.slice(0, 27)}...`
+              : institutionsDisplay}
           </div>
         </div>
       </div>

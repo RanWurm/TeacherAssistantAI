@@ -64,30 +64,38 @@ export interface TrendsInsights {
 export interface TopResearcherStats {
   author_id: number;
   name: string;
+  institutions: string[];
   articleCount: number;
   totalCitations: number;
   avgCitationsPerArticle: number | null;
-  uniqueJournals: number;
+  uniqueSources: number;
   uniqueSubjects: number;
   mostCitedArticleCitations: number;
-  firstPublicationYear: number | null;
-  lastPublicationYear: number | null;
+  firstPublicationYear?: number;
+  lastPublicationYear?: number;
 }
 
 export interface MultidisciplinaryResearcherStats {
   author_id: number;
   name: string;
+  institutions: string[];
   articleCount: number;
-  subjectCount: number;
   totalCitations: number;
   avgCitationsPerArticle: number | null;
+  subjectCount: number;
   subjects: string[];
+  uniqueSources: number;
+  uniqueSubjects: number;
+  mostCitedArticleCitations: number;
+  firstPublicationYear?: number;
+  lastPublicationYear?: number;
 }
 
 export interface ResearchersInsights {
   topResearchers: TopResearcherStats[];
   multidisciplinaryResearchers: MultidisciplinaryResearcherStats[];
 }
+
 
 /* ---------- Sources ---------- */
 

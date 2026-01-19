@@ -169,39 +169,63 @@ export async function getResearchersInsights(
   const topResearchers = topResearchersRaw.map(r => ({
     author_id: Number(r.author_id),
     name: r.name,
+    institutions:
+      typeof r.institutions === "string" && r.institutions.length > 0
+        ? r.institutions.split("||")
+        : Array.isArray(r.institutions)
+          ? r.institutions
+          : [],
     articleCount: Number(r.articleCount ?? 0),
     totalCitations: Number(r.totalCitations ?? 0),
     avgCitationsPerArticle:
       r.avgCitationsPerArticle === null || r.avgCitationsPerArticle === undefined
         ? null
         : Number(r.avgCitationsPerArticle),
-    uniqueJournals: Number(r.uniqueJournals ?? 0),
+    uniqueSources: Number(r.uniqueSources ?? 0),
     uniqueSubjects: Number(r.uniqueSubjects ?? 0),
     mostCitedArticleCitations:
       typeof r.mostCitedArticleCitations === 'number'
         ? r.mostCitedArticleCitations
         : Number(r.mostCitedArticleCitations ?? 0),
     firstPublicationYear:
-      r.firstPublicationYear ? Number(r.firstPublicationYear) : null,
+      r.firstPublicationYear ? Number(r.firstPublicationYear) : undefined,
     lastPublicationYear:
-      r.lastPublicationYear ? Number(r.lastPublicationYear) : null,
+      r.lastPublicationYear ? Number(r.lastPublicationYear) : undefined,
   }));
 
   // Format "multidisciplinary researchers"
   const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map(r => ({
     author_id: Number(r.author_id),
     name: r.name,
+    institutions:
+      typeof r.institutions === "string" && r.institutions.length > 0
+        ? r.institutions.split("||")
+        : Array.isArray(r.institutions)
+          ? r.institutions
+          : [],
     articleCount: Number(r.articleCount ?? 0),
-    subjectCount: Number(r.subjectCount ?? 0),
     totalCitations: Number(r.totalCitations ?? 0),
     avgCitationsPerArticle:
       r.avgCitationsPerArticle === null || r.avgCitationsPerArticle === undefined
         ? null
         : Number(r.avgCitationsPerArticle),
+    subjectCount: Number(r.subjectCount ?? 0),
     subjects:
       typeof r.subjects === "string" && r.subjects.length > 0
         ? r.subjects.split("||")
-        : [],
+        : Array.isArray(r.subjects)
+          ? r.subjects
+          : [],
+    uniqueSources: Number(r.uniqueSources ?? 0),
+    uniqueSubjects: Number(r.subjectCount ?? 0),
+    mostCitedArticleCitations:
+      typeof r.mostCitedArticleCitations === 'number'
+        ? r.mostCitedArticleCitations
+        : Number(r.mostCitedArticleCitations ?? 0),
+    firstPublicationYear:
+      r.firstPublicationYear ? Number(r.firstPublicationYear) : undefined,
+    lastPublicationYear:
+      r.lastPublicationYear ? Number(r.lastPublicationYear) : undefined,
   }));
 
   return {
