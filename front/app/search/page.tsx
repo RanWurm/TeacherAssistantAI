@@ -25,6 +25,7 @@ export interface Paper {
   authors?: string | null;
   subjects?: string | null;
   keywords?: string | null;
+  views?: number | null;
 }
 
 const INITIAL_YEAR_RANGE = { min: 2015, max: 2024 };

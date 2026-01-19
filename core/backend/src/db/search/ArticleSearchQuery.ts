@@ -29,6 +29,8 @@ export function buildArticlesByIdsQuery(articleIds: number[]) {
       "a.type",
       "a.citation_count",
       "a.article_url",
+      // Replace a.views with av.view_count as views
+      "av.view_count AS views",
       "src.name AS source",
       "src.type AS source_type",
       "src.publisher AS publisher",
@@ -44,6 +46,8 @@ export function buildArticlesByIdsQuery(articleIds: number[]) {
       { type: "LEFT JOIN", table: "Subjects", as: "s", on: "asub.subject_id = s.subject_id" },
       { type: "LEFT JOIN", table: "ArticlesKeywords", as: "ak", on: "a.article_id = ak.article_id" },
       { type: "LEFT JOIN", table: "Keywords", as: "k", on: "ak.keyword_id = k.keyword_id" },
+      // Add LEFT JOIN to ArticleViews
+      { type: "LEFT JOIN", table: "ArticleViews", as: "av", on: "a.article_id = av.article_id" },
     ],
     filters: [{
       clause: `a.article_id IN (${placeholders})`,

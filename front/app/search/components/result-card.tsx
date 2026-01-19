@@ -309,6 +309,16 @@ export function ResultCard({ paper }: ResultCardProps) {
             </div>
           )}
 
+          {/* Views */}
+          {typeof paper.views === 'number' && (
+            <div className="flex flex-col gap-0.5 mt-1">
+              <div className="text-[11px] sm:text-xs font-medium text-(--gray-600)">
+                {t('search.result.views')}: {paper.views}
+              </div>
+            </div>
+          )}
+
+
           {/* Language + Type aligned bottom */}
           <div
             className={`mt-3 flex gap-2 text-xs ${
