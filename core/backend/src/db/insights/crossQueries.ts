@@ -1,126 +1,88 @@
 function yearFilter(fromYear?: number) {
-    return fromYear ? "WHERE a.year >= ?" : "";
+  return fromYear ? "WHERE a.year >= ?" : "";
 }
 
 /**
- * Subject × Journal heatmap
+ * Subject × Source heatmap (efficient)
  */
-export function buildSubjectJournalHeatmapQuery(
-    fromYear?: number
-) {
-    const where = yearFilter(fromYear);
+/**
+ * Subject × Source heatmap (MySQL-compatible: avoids LIMIT in IN subqueries)
+ * 
+ * Approach: 
+ *   1. Preselect top N subjects and sources in CTEs/top-subqueries using JOINs instead of IN (...LIMIT...).
+ *   2. Join only on those top N for the heatmap, thus avoiding MySQL "LIMIT & IN" subquery limitation.
+ */
+export function buildSubjectSourceHeatmapQuery(fromYear?: number) {
+  const SUBJECT_LIMIT = 5;
+  const SOURCE_LIMIT = 4;
 
-    const sql = `
-    WITH
-    top_journals AS (
-      SELECT
-        j.journal_id,
-        j.name AS journal
-      FROM Articles a
-      JOIN Journals j ON a.journal_id = j.journal_id
-      JOIN ArticlesSubjects asub ON a.article_id = asub.article_id
-      ${where}
-      GROUP BY j.journal_id
-      ORDER BY COUNT(DISTINCT asub.subject_id) DESC
-      LIMIT 4
-    ),
-    top_subjects AS (
-      SELECT
-        s.subject_id,
-        s.subject_name AS subject
-      FROM Articles a
-      JOIN ArticlesSubjects asub ON a.article_id = asub.article_id
-      JOIN Subjects s ON asub.subject_id = s.subject_id
-      ${where}
-      GROUP BY s.subject_id
-      ORDER BY COUNT(DISTINCT a.journal_id) DESC
-      LIMIT 5
-    )
+  const topSubjectWhere = fromYear ? "WHERE a2.year >= ?" : "";
+  const topSourceWhere = fromYear ? "WHERE a3.year >= ?" : "";
+
+  const sql = `
     SELECT
-      ts.subject,
-      tj.journal,
+      sub.subject_name AS subject,
+      s.name           AS source,
       COUNT(DISTINCT a.article_id) AS articleCount
     FROM Articles a
-    JOIN ArticlesSubjects asub ON a.article_id = asub.article_id
-    JOIN top_subjects ts ON asub.subject_id = ts.subject_id
-    JOIN top_journals tj ON a.journal_id = tj.journal_id
-    GROUP BY ts.subject, tj.journal
-    ORDER BY ts.subject, tj.journal
+    JOIN ArticlesSubjects asub ON asub.article_id = a.article_id
+    JOIN Subjects sub          ON sub.subject_id = asub.subject_id
+    JOIN Sources s             ON s.source_id = a.source_id
+
+    -- Join to limited subjects
+    INNER JOIN (
+      SELECT asub2.subject_id
+      FROM ArticlesSubjects asub2
+      JOIN Articles a2 ON a2.article_id = asub2.article_id
+      ${topSubjectWhere}
+      GROUP BY asub2.subject_id
+      ORDER BY COUNT(*) DESC
+      LIMIT ${SUBJECT_LIMIT}
+    ) topSubjects ON topSubjects.subject_id = sub.subject_id
+
+    -- Join to limited sources
+    INNER JOIN (
+      SELECT a3.source_id
+      FROM Articles a3
+      ${topSourceWhere}
+      GROUP BY a3.source_id
+      ORDER BY COUNT(*) DESC
+      LIMIT ${SOURCE_LIMIT}
+    ) topSources ON topSources.source_id = s.source_id
+
+    ${fromYear ? "WHERE a.year >= ?" : ""}
+    GROUP BY sub.subject_id, s.source_id
+    ORDER BY subject, source
   `.trim();
-  
-    return {
-      sql,
-      params: fromYear ? [fromYear, fromYear] : [],
-    };
+
+  const params: number[] = [];
+  if (fromYear) {
+    params.push(fromYear); // for topSubjectWhere
+    params.push(fromYear); // for topSourceWhere
+    params.push(fromYear); // for outer WHERE
+  }
+
+  return {
+    sql,
+    params,
+  };
 }
 
 /**
  * Language impact
  */
-export function buildLanguageImpactQuery(
-    fromYear?: number
-) {
-    const where = yearFilter(fromYear);
-
-    const sql = `
-      SELECT
-        a.language                  AS language,
-        COUNT(DISTINCT a.article_id) AS articleCount,
-        AVG(a.citation_count)       AS avgCitations
-      FROM Articles a
-      ${where}
-      GROUP BY a.language
-      ORDER BY articleCount DESC
-    `.trim();
-
-    return {
-        sql,
-        params: fromYear ? [fromYear] : [],
-    };
-}
-
-/**
- * Multidisciplinary vs Single-subject comparison
- */
-export function buildMultidisciplinaryVsSingleQuery(
-  fromYear?: number
-) {
+export function buildLanguageImpactQuery(fromYear?: number) {
   const where = yearFilter(fromYear);
 
   const sql = `
-    WITH subject_counts AS (
-      SELECT
-        asub.article_id,
-        COUNT(*) AS subject_cnt
-      FROM ArticlesSubjects asub
-      GROUP BY asub.article_id
-    ),
-    article_types AS (
-      SELECT
-        a.article_id,
-        a.citation_count,
-        a.journal_id,
-        CASE
-          WHEN sc.subject_cnt > 1 THEN 'multi'
-          ELSE 'single'
-        END AS type
-      FROM Articles a
-      JOIN subject_counts sc
-        ON a.article_id = sc.article_id
-      ${where}
-    )
     SELECT
-      at.type,
-      COUNT(DISTINCT at.article_id)        AS articles,
-      AVG(at.citation_count)               AS avgCitations,
-      SUM(at.citation_count)               AS totalCitations,
-      COUNT(DISTINCT aa.author_id)         AS authors,
-      COUNT(DISTINCT at.journal_id)        AS journals
-    FROM article_types at
-    LEFT JOIN ArticlesAuthors aa
-      ON at.article_id = aa.article_id
-    GROUP BY at.type
-    ORDER BY at.type
+      a.language            AS language,
+      COUNT(*)              AS articleCount,
+      AVG(a.citation_count) AS avgCitations
+    FROM Articles a
+    ${where}
+    GROUP BY a.language
+    ORDER BY articleCount DESC
   `.trim();
 
   return {
@@ -128,3 +90,48 @@ export function buildMultidisciplinaryVsSingleQuery(
     params: fromYear ? [fromYear] : [],
   };
 }
+
+/**
+ * Multidisciplinary vs Single-subject comparison (efficient)
+ */
+export function buildMultidisciplinaryVsSingleQuery(fromYear?: number) {
+  const where = yearFilter(fromYear);
+
+  const sql = `
+    SELECT
+      t.type,
+      COUNT(*)                          AS articles,
+      AVG(t.citation_count)             AS avgCitations,
+      SUM(t.citation_count)             AS totalCitations,
+      COUNT(DISTINCT aa.author_id)      AS authors,
+      COUNT(DISTINCT t.source_id)       AS sources
+    FROM (
+      SELECT
+        a.article_id,
+        a.citation_count,
+        a.source_id,
+        CASE
+          WHEN MIN(asub.subject_id) <> MAX(asub.subject_id) THEN 'multi'
+          ELSE 'single'
+        END AS type
+      FROM Articles a
+      JOIN ArticlesSubjects asub
+        ON asub.article_id = a.article_id
+      ${where}
+      GROUP BY
+        a.article_id,
+        a.citation_count,
+        a.source_id
+    ) t
+    LEFT JOIN ArticlesAuthors aa
+      ON aa.article_id = t.article_id
+    GROUP BY t.type
+    ORDER BY t.type
+  `.trim();
+
+  return {
+    sql,
+    params: fromYear ? [fromYear] : [],
+  };
+}
+

@@ -6,6 +6,9 @@ import {
   GetPdfContentSchema,
   GetAuthorPapersSchema,
   ExecuteCustomQuerySchema,
+    SearchPapersWithPdfSchema,
+    GetMostViewedSchema
+
 } from "./types";
 import * as db from "./db";
 import { fetchAndExtractPdf, extractAbstract, estimateTokens } from "./pdf";
@@ -41,7 +44,7 @@ export const TOOL_DEFINITIONS = [
             description: "Maximum publication year",
           },
           limit: {
-            type: "string",
+            type: "number",
             description: "Maximum results to return (1-10, default 5)",
           },
         },
@@ -54,7 +57,7 @@ export const TOOL_DEFINITIONS = [
     function: {
       name: "get_paper_details",
       description:
-        "Get full details of a specific paper including authors, subjects, keywords, and journal info. Use after search_papers to get more info.",
+        "Get full details of a specific paper including authors, subjects, keywords, and source info. Use after search_papers to get more info.",
       parameters: {
         type: "object",
         properties: {
@@ -70,9 +73,9 @@ export const TOOL_DEFINITIONS = [
   {
     type: "function" as const,
     function: {
-       name: "get_pdf_content",
-  description:
-    "Fetch and extract text from a paper's PDF. Note: Not all papers have open access PDFs - some URLs are DOIs that may not resolve to downloadable PDFs. If extraction fails, inform the user.",
+      name: "get_pdf_content",
+      description:
+        "Fetch and extract text from a paper's PDF. Note: Not all papers have open access PDFs - some URLs are DOIs that may not resolve to downloadable PDFs. If extraction fails, inform the user.",
       parameters: {
         type: "object",
         properties: {
@@ -115,7 +118,7 @@ export const TOOL_DEFINITIONS = [
             description: "Author name to search (partial match supported)",
           },
           limit: {
-            type: "string",
+            type: "number",
             description: "Maximum results to return (1-10, default 5)",
           },
         },
@@ -135,7 +138,7 @@ export const TOOL_DEFINITIONS = [
           query: {
             type: "string",
             description:
-              "SQL SELECT query. Tables: Articles, Journals, Authors, Subjects, Keywords, ArticlesAuthors, ArticlesSubjects, ArticlesKeywords",
+              "SQL SELECT query. Tables: Articles, Sources, Authors, Institutions, Subjects, Keywords, ArticlesAuthors, ArticleAuthorInstitutions, ArticlesSubjects, ArticlesKeywords",
           },
         },
         required: ["query"],
@@ -144,25 +147,43 @@ export const TOOL_DEFINITIONS = [
   },
   {
   type: "function" as const,
-  function: {
-    name: "search_papers_with_pdf",
-    description: "Search for papers that have open access PDFs available (arXiv, JMLR, etc). Use this when user wants to read/summarize paper content without specifying a particular paper.",
-    parameters: {
-      type: "object",
-      properties: {
-        query: {
-          type: "string",
-          description: "Search terms",
+    function: {
+      name: "get_most_viewed",
+      description: "Get the most viewed/popular articles based on user interactions.",
+      parameters: {
+        type: "object",
+        properties: {
+          limit: {
+            type: "number",
+            description: "Maximum results (1-20, default 10)",
+          },
         },
-        limit: {
-          type: "string",
-          description: "Maximum results (1-10, default 5)",
-        },
+        required: [],
       },
-      required: ["query"],
     },
   },
-},
+  {
+    type: "function" as const,
+    function: {
+      name: "search_papers_with_pdf",
+      description:
+        "Search for papers that have open access PDFs available (arXiv, JMLR, etc). Use this when user wants to read/summarize paper content without specifying a particular paper.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: {
+            type: "string",
+            description: "Search terms",
+          },
+          limit: {
+            type: "number",
+            description: "Maximum results (1-10, default 5)",
+          },
+        },
+        required: ["query"],
+      },
+    },
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -203,19 +224,24 @@ export async function executeTool(
           return { name, result: null, tokens_used: 0, error: error || "Not found" };
         }
 
+        await db.incrementArticleView(params.article_id);
+        
         const result = formatPaperDetails(article);
         return { name, result, tokens_used: estimateTokens(JSON.stringify(result)) };
       }
 
       case "get_pdf_content": {
         const params = GetPdfContentSchema.parse(args);
+        const articleId = params.article_id ?? await db.getArticleIdByUrl(params.article_url);
+          if (articleId) {
+            await db.incrementArticleView(articleId);
+          }
         const pdfResult = await fetchAndExtractPdf(params.article_url, params.max_pages);
 
         if (pdfResult.error) {
           return { name, result: null, tokens_used: 0, error: pdfResult.error };
         }
 
-        // Extract abstract for efficiency
         const abstract = extractAbstract(pdfResult.text);
 
         const result = {
@@ -258,7 +284,6 @@ export async function executeTool(
           year: r.year,
           citations: r.citation_count,
           author: r.author_name,
-          affiliation: r.affiliation,
         }));
 
         return { name, result, tokens_used: estimateTokens(JSON.stringify(result)) };
@@ -272,7 +297,6 @@ export async function executeTool(
           return { name, result: null, tokens_used: 0, error };
         }
 
-        // Limit rows to avoid token explosion
         const limitedRows = rows.slice(0, 20);
         const truncated = rows.length > 20;
 
@@ -283,7 +307,43 @@ export async function executeTool(
         };
 
         return { name, result, tokens_used: estimateTokens(JSON.stringify(result)) };
+        
+      }case "get_most_viewed": {
+          const params = GetMostViewedSchema.parse(args);
+          const { rows, error } = await db.getMostViewedArticles(params.limit);
+
+          if (error) {
+            return { name, result: null, tokens_used: 0, error };
+          }
+
+          const result = rows.map((r: any) => ({
+            id: r.article_id,
+            title: truncateText(r.title, 100),
+            year: r.year,
+            citations: r.citation_count,
+            views: r.view_count,
+            last_viewed: r.last_viewed_at,
+            url: r.article_url,
+          }));
+
+          return { name, result, tokens_used: estimateTokens(JSON.stringify(result)) };
+        }
+
+      case "search_papers_with_pdf": {
+      const params = SearchPapersWithPdfSchema.parse(args);
+
+      const { rows, error } = await db.searchPapersWithPdf({
+        query: params.query,
+        limit: params.limit,
+      });
+
+      if (error) {
+        return { name, result: null, tokens_used: 0, error };
       }
+
+      const result = formatSearchResults(rows);
+      return { name, result, tokens_used: estimateTokens(JSON.stringify(result)) };
+    }
 
       default:
         return { name, result: null, tokens_used: 0, error: `Unknown tool: ${name}` };
@@ -304,7 +364,8 @@ function formatSearchResults(rows: any[]) {
     title: truncateText(r.title, 100),
     year: r.year,
     citations: r.citation_count,
-    journal: r.journal_name ? truncateText(r.journal_name, 50) : null,
+    source: r.source_name ? truncateText(r.source_name, 50) : null,
+    source_type: r.source_type,
     url: r.article_url,
   }));
 }
@@ -318,11 +379,11 @@ function formatPaperDetails(article: any) {
     language: article.language,
     citations: article.citation_count,
     url: article.article_url,
-    journal: article.journal_name
+    source: article.source_name
       ? {
-          name: article.journal_name,
+          name: article.source_name,
+          type: article.source_type,
           publisher: article.publisher,
-          impact_factor: article.impact_factor,
         }
       : null,
     authors: article.authors?.slice(0, 10) || [],

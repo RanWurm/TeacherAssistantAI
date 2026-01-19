@@ -47,7 +47,7 @@ function buildSystemPrompt(strategies: Strategy[]): string {
 ## Database Schema
 Tables available:
 - Articles (article_id, title, year, language, type, citation_count, article_url)
-- Journals (journal_id, name, impact_factor, publisher)
+- Journals (journal_id, name, publisher)
 - Authors (author_id, name, affiliation)
 - Subjects (subject_name)
 - Keywords (keyword)

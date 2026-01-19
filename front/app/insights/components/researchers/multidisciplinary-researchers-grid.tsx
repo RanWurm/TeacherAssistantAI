@@ -40,24 +40,30 @@ export function MultidisciplinaryResearchersGrid({
       cancelled = true;
     };
   }, [timeRange]);
-
+  console.log(data?.multidisciplinaryResearchers?.at(-1));
   const researchers =
-    data?.multidisciplinaryResearchers?.map((r: any) => ({
-      authorId: String(r.author_id),
-      name: r.name,
-      affiliation: (r as any).affiliation ?? undefined,
-      subjectCount: r.subjectCount,
-      articleCount: r.articleCount,
-      avgCitationsPerArticle:
-        'avgCitationsPerArticle' in r
-          ? (r as any).avgCitationsPerArticle
-          : r.avgCitations ?? 0,
-      subjects: typeof r.subjects === 'string'
+  data?.multidisciplinaryResearchers?.map((r: any) => ({
+    authorId: String(r.author_id),
+    name: r.name,
+    institutions:
+  typeof r.institutions === 'string'
+    ? r.institutions.split('||')
+    : Array.isArray(r.institutions)
+      ? r.institutions
+      : [],
+    subjectCount: r.subjectCount,
+    articleCount: r.articleCount,
+    avgCitationsPerArticle:
+      'avgCitationsPerArticle' in r
+        ? (r as any).avgCitationsPerArticle
+        : r.avgCitations ?? 0,
+    subjects:
+      typeof r.subjects === 'string'
         ? (r.subjects as string).split('||')
         : Array.isArray((r as any).subjects)
           ? (r as any).subjects
           : [],
-    })) ?? [];
+  })) ?? [];
 
   const isRtl = i18n.dir() === 'rtl';
 

@@ -3,7 +3,7 @@ import {
   OverviewInsights,
   TrendsInsights,
   ResearchersInsights,
-  JournalsInsights,
+  SourcesInsights,
   CrossInsights,
   MultidisciplinaryVsSingle,
 } from "../types/insights.types";
@@ -24,19 +24,21 @@ import {
 
 // ---- Researchers queries ----
 import {
-  buildTopResearchersQuery,
-  buildMultidisciplinaryResearchersQuery,
+  buildTopResearchersCandidatesQuery,
+  buildTopResearchersDetailsQuery,
+  buildMultidisciplinaryResearchersCandidatesQuery,
+  buildMultidisciplinaryResearchersDetailsQuery
 } from "../db/insights/researchersQueries";
 
-// ---- Journals queries ----
+// ---- Sources queries ----
 import {
-  buildTopJournalsQuery,
+  buildTopSourcesQuery,
   buildSubjectImpactQuery,
-} from "../db/insights/journalsQueries";
+} from "../db/insights/sourcesQueries";
 
 // ---- Cross queries ----
 import {
-  buildSubjectJournalHeatmapQuery,
+  buildSubjectSourceHeatmapQuery,
   buildLanguageImpactQuery,
   buildMultidisciplinaryVsSingleQuery,
 } from "../db/insights/crossQueries";
@@ -89,39 +91,43 @@ export async function getOverviewInsights(
 /* =========================
    Trends
 ========================= */
-
 export async function getTrendsInsights(
   timeRange: string
 ): Promise<TrendsInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
-  // 1️⃣ מביאים Trending
+  // 1. Get trending topics (top N keywords)
   const trendingQ = buildTrendingTopicsQuery(fromYear, 5);
   const trendingTopics = await query<any>(trendingQ.sql, trendingQ.params);
-
   const topKeywords = trendingTopics.map(t => t.keyword);
 
-  // 2️⃣ Growth רק עבורם
-  const growthQ = buildKeywordGrowthQuery(topKeywords, fromYear);
-  const keywordGrowth = growthQ.sql
-    ? await query<any>(growthQ.sql, growthQ.params)
-    : [];
+  // 2. Get their keyword growth (yearly article counts per keyword)
+  let keywordGrowth: any[] = [];
+  if (topKeywords.length) {
+    const growthQ = buildKeywordGrowthQuery(topKeywords, fromYear);
+    if (growthQ.sql) {
+      keywordGrowth = await query<any>(growthQ.sql, growthQ.params);
+    }
+  }
 
-  const crossQ = buildKeywordCrossDomainQuery(topKeywords, fromYear);
-
-  const keywordCrossDomainRaw = crossQ.sql
-    ? await query<any>(crossQ.sql, crossQ.params)
-    : [];
-
-  const keywordCrossDomain = keywordCrossDomainRaw.map(row => ({
-    keyword: row.keyword,
-    subjectCount: Number(row.subjectCount),
-    articleCount: Number(row.articleCount),
-    subjects:
-      typeof row.subjects === 'string' && row.subjects.length > 0
-        ? row.subjects.split('||')
-        : [],
-  }));
+  // 3. Get their cross-domain stats (count of unique subjects for each keyword)
+  let keywordCrossDomain: any[] = [];
+  if (topKeywords.length) {
+    // Use buildKeywordCrossDomainQuery directly (from file_context_1)
+    const crossDomainQ = buildKeywordCrossDomainQuery(topKeywords, fromYear, 2); // at least 2 subjects
+    if (crossDomainQ.sql) {
+      const resultRows = await query<any>(crossDomainQ.sql, crossDomainQ.params);
+      keywordCrossDomain = resultRows.map(row => ({
+        keyword: row.keyword,
+        subjectCount: Number(row.subjectCount),
+        articleCount: Number(row.articleCount),
+        subjects:
+          typeof row.subjects === 'string' && row.subjects.length > 0
+            ? row.subjects.split('||')
+            : [],
+      }));
+    }
+  }
 
   return {
     trendingTopics,
@@ -130,44 +136,96 @@ export async function getTrendsInsights(
   };
 }
 
+
 /* =========================
    Researchers
 ========================= */
-
 export async function getResearchersInsights(
   timeRange: string
 ): Promise<ResearchersInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
-  const topQ = buildTopResearchersQuery(fromYear);
-  const multiQ = buildMultidisciplinaryResearchersQuery(fromYear);
+  // Step 1: Top researchers (by citations)
+  // Get candidate top researcher IDs
+  const candidatesQuery = buildTopResearchersCandidatesQuery(fromYear, 5);
+  const candidateRows = await query<any>(candidatesQuery.sql, candidatesQuery.params);
+  const candidateIds = candidateRows.map((row: any) => Number(row.author_id));
 
-  const topResearchers = await query<any>(topQ.sql, topQ.params);
-  const multidisciplinaryResearchersRaw = await query<any>(
-    multiQ.sql,
-    multiQ.params
-  );
+  // Now get full stats for these top researchers
+  const topQ = buildTopResearchersDetailsQuery(candidateIds, fromYear);
+  const topResearchersRaw = topQ.sql ? (await query<any>(topQ.sql, topQ.params)) : [];
 
-  // Adapter to the ResearcherStats type
-  const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map(r => ({
-    author_id: r.author_id,
+  // Step 2: Multidisciplinary researchers (multiple subjects)
+  // Get candidate multidisciplinary researcher IDs
+  const multiCandidatesQuery = buildMultidisciplinaryResearchersCandidatesQuery(fromYear, 3, 5);
+  const multiCandidateRows = await query<any>(multiCandidatesQuery.sql, multiCandidatesQuery.params);
+  const multiCandidateIds = multiCandidateRows.map((row: any) => Number(row.author_id));
+
+  // Now get full stats for multidisciplinary researchers
+  const multiQ = buildMultidisciplinaryResearchersDetailsQuery(multiCandidateIds, fromYear);
+  const multidisciplinaryResearchersRaw = multiQ.sql ? (await query<any>(multiQ.sql, multiQ.params)) : [];
+
+  // Format "top researchers"
+  const topResearchers = topResearchersRaw.map(r => ({
+    author_id: Number(r.author_id),
     name: r.name,
-    affiliation: r.affiliation ?? null,
-    articleCount: r.articleCount,
-    subjectCount: r.subjectCount,
-    totalCitations: r.totalCitations,
-    avgCitationsPerArticle: r.avgCitationsPerArticle,
+    institutions:
+      typeof r.institutions === "string" && r.institutions.length > 0
+        ? r.institutions.split("||")
+        : Array.isArray(r.institutions)
+          ? r.institutions
+          : [],
+    articleCount: Number(r.articleCount ?? 0),
+    totalCitations: Number(r.totalCitations ?? 0),
+    avgCitationsPerArticle:
+      r.avgCitationsPerArticle === null || r.avgCitationsPerArticle === undefined
+        ? null
+        : Number(r.avgCitationsPerArticle),
+    uniqueSources: Number(r.uniqueSources ?? 0),
+    uniqueSubjects: Number(r.uniqueSubjects ?? 0),
+    mostCitedArticleCitations:
+      typeof r.mostCitedArticleCitations === 'number'
+        ? r.mostCitedArticleCitations
+        : Number(r.mostCitedArticleCitations ?? 0),
+    firstPublicationYear:
+      r.firstPublicationYear ? Number(r.firstPublicationYear) : undefined,
+    lastPublicationYear:
+      r.lastPublicationYear ? Number(r.lastPublicationYear) : undefined,
+  }));
+
+  // Format "multidisciplinary researchers"
+  const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map(r => ({
+    author_id: Number(r.author_id),
+    name: r.name,
+    institutions:
+      typeof r.institutions === "string" && r.institutions.length > 0
+        ? r.institutions.split("||")
+        : Array.isArray(r.institutions)
+          ? r.institutions
+          : [],
+    articleCount: Number(r.articleCount ?? 0),
+    totalCitations: Number(r.totalCitations ?? 0),
+    avgCitationsPerArticle:
+      r.avgCitationsPerArticle === null || r.avgCitationsPerArticle === undefined
+        ? null
+        : Number(r.avgCitationsPerArticle),
+    subjectCount: Number(r.subjectCount ?? 0),
     subjects:
-      typeof r.subjects === 'string' && r.subjects.length > 0
-        ? r.subjects.split('||')
-        : [],
-    // If these fields are missing in the SQL response, default to 0 or []
-    uniqueJournals: Array.isArray(r.uniqueJournals)
-      ? r.uniqueJournals
-      : [],
-    uniqueSubjects: Array.isArray(r.uniqueSubjects)
-      ? r.uniqueSubjects
-      : [],
+      typeof r.subjects === "string" && r.subjects.length > 0
+        ? r.subjects.split("||")
+        : Array.isArray(r.subjects)
+          ? r.subjects
+          : [],
+    uniqueSources: Number(r.uniqueSources ?? 0),
+    uniqueSubjects: Number(r.subjectCount ?? 0),
+    mostCitedArticleCitations:
+      typeof r.mostCitedArticleCitations === 'number'
+        ? r.mostCitedArticleCitations
+        : Number(r.mostCitedArticleCitations ?? 0),
+    firstPublicationYear:
+      r.firstPublicationYear ? Number(r.firstPublicationYear) : undefined,
+    lastPublicationYear:
+      r.lastPublicationYear ? Number(r.lastPublicationYear) : undefined,
   }));
 
   return {
@@ -177,22 +235,22 @@ export async function getResearchersInsights(
 }
 
 /* =========================
-   Journals
+   Sources
 ========================= */
 
-export async function getJournalsInsights(
+export async function getSourcesInsights(
   timeRange: string
-): Promise<JournalsInsights> {
+): Promise<SourcesInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
-  const topQ = buildTopJournalsQuery(fromYear);
+  const topQ = buildTopSourcesQuery(fromYear);
   const volQ = buildSubjectImpactQuery(fromYear);
 
-  const topJournals = await query<any>(topQ.sql, topQ.params);
+  const topSources = await query<any>(topQ.sql, topQ.params);
   const subjectImpact = await query<any>(volQ.sql, volQ.params);
 
   return {
-    topJournals,
+    topSources,
     subjectImpact,
   };
 }
@@ -206,11 +264,11 @@ export async function getCrossInsights(
 ): Promise<CrossInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
-  const heatmapQ = buildSubjectJournalHeatmapQuery(fromYear);
+  const heatmapQ = buildSubjectSourceHeatmapQuery(fromYear);
   const languageQ = buildLanguageImpactQuery(fromYear);
   const multiQ = buildMultidisciplinaryVsSingleQuery(fromYear);
 
-  const subjectJournalHeatmap = await query<any>(
+  const subjectSourceHeatmap = await query<any>(
     heatmapQ.sql,
     heatmapQ.params
   );
@@ -232,11 +290,11 @@ export async function getCrossInsights(
       avgCitations: Number(row.avgCitations),
       totalCitations: Number(row.totalCitations),
       authors: Number(row.authors),
-      journals: Number(row.journals),
+      sources: Number(row.sources),
     }));
 
   return {
-    subjectJournalHeatmap,
+    subjectSourceHeatmap,
     languageImpact,
     multidisciplinaryVsSingle,
   };

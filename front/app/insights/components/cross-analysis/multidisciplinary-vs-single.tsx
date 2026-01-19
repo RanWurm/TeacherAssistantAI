@@ -7,13 +7,10 @@ interface MultidisciplinaryVsSingleProps {
   timeRange: TimeRange;
 }
 
-// Helper to get multidisciplinary/single values regardless of whether API returns object or an array
+// Helper for API response structure (array or object)
 function getMultiSingle(data: any) {
-  let single = undefined;
-  let multi = undefined;
-  if (!data) {
-    return { single, multi };
-  }
+  let single, multi;
+  if (!data) return { single, multi };
   if (Array.isArray(data)) {
     single = data.find((d) => d.type === 'single');
     multi = data.find((d) => d.type === 'multi');
@@ -59,7 +56,7 @@ function MultiSingleCard({
         </div>
         <div className="text-right">
           <div className="text-xs text-gray-600 mb-0.5">
-            {t('insights.cross.multidisciplinaryVsSingle.avgCitationsLabel', 'Avg. Citations')}
+            {t('insights.cross.multidisciplinaryVsSingle.avgCitationsLabel')}
           </div>
           <div className="text-lg font-semibold text-gray-900">
             {card.avgCitations.toLocaleString(undefined, { maximumFractionDigits: 1 })}
@@ -69,7 +66,9 @@ function MultiSingleCard({
       {/* Progress section: Citations label, bar, total citations */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-1 text-xs text-gray-600">
-          <span>{t('insights.cross.multidisciplinaryVsSingle.totalCitationsLabel', 'Citations')}</span>
+          <span>
+            {t('insights.cross.multidisciplinaryVsSingle.totalCitationsLabel')}
+          </span>
           <span className={`font-medium ${isRtl ? 'order-first' : ''}`}>
             {card.totalCitations.toLocaleString()}
           </span>
@@ -81,22 +80,22 @@ function MultiSingleCard({
           />
         </div>
       </div>
-      {/* Footer stats row: Authors + Journals */}
+      {/* Footer stats row: Authors + Sources */}
       <div className="flex items-center justify-between text-xs text-gray-500 mt-auto pt-2 border-t border-gray-100">
         <div>
           <div className="font-medium text-gray-900">
             {card.uniqueAuthors.toLocaleString()}
           </div>
           <div>
-            {t('insights.cross.multidisciplinaryVsSingle.uniqueAuthorsLabel', 'Authors')}
+            {t('insights.cross.multidisciplinaryVsSingle.uniqueAuthorsLabel')}
           </div>
         </div>
         <div>
           <div className="font-medium text-gray-900">
-            {card.uniqueJournals.toLocaleString()}
+            {card.uniqueSources.toLocaleString()}
           </div>
           <div>
-            {t('insights.cross.multidisciplinaryVsSingle.uniqueJournalsLabel', 'Journals')}
+            {t('insights.cross.multidisciplinaryVsSingle.uniqueSourcesLabel')}
           </div>
         </div>
       </div>
@@ -104,8 +103,8 @@ function MultiSingleCard({
   );
 }
 
-// Skeleton UI for loading state (special colors: header gray, first card blue, second card purple)
-function MultiSingleCardSkeleton({ type, index }: { type: 'single' | 'multi'; index?: number }) {
+// Skeleton UI for loading state
+function MultiSingleCardSkeleton({ type }: { type: 'single' | 'multi' }) {
   const bgCard =
     type === 'single'
       ? 'bg-blue-50/80 border-blue-100'
@@ -114,7 +113,7 @@ function MultiSingleCardSkeleton({ type, index }: { type: 'single' | 'multi'; in
 
   return (
     <div className={`p-3 rounded-lg border ${bgCard} sm:p-3 p-2 flex flex-col h-full animate-pulse`}>
-      {/* Icon + title skeleton (Header, always gray) */}
+      {/* Icon + title skeleton */}
       <div className="flex items-center gap-2 mb-4">
         <div className={`w-4 h-4 rounded-full ${bgLoading}`} />
         <div className="h-4 w-24 rounded bg-gray-200" />
@@ -140,7 +139,7 @@ function MultiSingleCardSkeleton({ type, index }: { type: 'single' | 'multi'; in
           <div className={`absolute top-0 left-0 h-2 ${bgLoading} rounded`} style={{ width: `60%` }} />
         </div>
       </div>
-      {/* Footer: authors & journals skeleton */}
+      {/* Footer: authors & sources skeleton */}
       <div className="flex items-center justify-between text-xs text-gray-400 mt-auto pt-2 border-t border-gray-100">
         <div>
           <div className={`h-4 w-10 ${bgLoading} rounded mb-1`} />
@@ -188,7 +187,7 @@ export function MultidisciplinaryVsSingle({ timeRange }: MultidisciplinaryVsSing
       avgCitations: data?.avgCitations ?? 0,
       totalCitations: data?.totalCitations ?? 0,
       uniqueAuthors: data?.authors ?? 0,
-      uniqueJournals: data?.journals ?? 0,
+      uniqueSources: data?.sources ?? 0,
       percent: total ? ((type === 'single' ? single : multi) / total) * 100 : 0,
     };
   }

@@ -1,21 +1,25 @@
 -- schema.sql
 -- Drop in correct dependency order
+DROP TABLE IF EXISTS ArticleViews;
+DROP TABLE IF EXISTS ArticleAuthorInstitutions;
 DROP TABLE IF EXISTS ArticlesKeywords;
 DROP TABLE IF EXISTS ArticlesSubjects;
 DROP TABLE IF EXISTS ArticlesAuthors;
+DROP TABLE IF EXISTS Institutions;
 DROP TABLE IF EXISTS Keywords;
 DROP TABLE IF EXISTS Subjects;
 DROP TABLE IF EXISTS Authors;
 DROP TABLE IF EXISTS Articles;
+DROP TABLE IF EXISTS Sources;
 DROP TABLE IF EXISTS Journals;
 
 -- --------------------------------------------------
--- 1. Journals
+-- 1. Sources
 -- --------------------------------------------------
-CREATE TABLE Journals (
-    journal_id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Sources (
+    source_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    impact_factor FLOAT,
+    type VARCHAR(64),
     publisher VARCHAR(255),
     UNIQUE(name)
 );
@@ -31,12 +35,12 @@ CREATE TABLE Articles (
     language VARCHAR(64),
     type VARCHAR(128),
     citation_count INT,
-    journal_id INT NULL DEFAULT NULL,
+    source_id INT NULL DEFAULT NULL,
     article_url TEXT NULL,
-
     UNIQUE KEY uq_articles_openalex_id (openalex_id),
-    FOREIGN KEY (journal_id) REFERENCES Journals(journal_id)
+    FOREIGN KEY (source_id) REFERENCES Sources(source_id)
 );
+
 -- --------------------------------------------------
 -- 3. Authors
 -- --------------------------------------------------
@@ -44,7 +48,6 @@ CREATE TABLE Authors (
     author_id INT AUTO_INCREMENT PRIMARY KEY,
     openalex_author_id VARCHAR(64) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    affiliation VARCHAR(255),
     UNIQUE KEY uq_openalex_author_id (openalex_author_id)
 );
 
@@ -67,7 +70,17 @@ CREATE TABLE Keywords (
 );
 
 -- --------------------------------------------------
--- 6. ArticlesAuthors (Many-to-Many)
+-- 6. Institutions
+-- --------------------------------------------------
+CREATE TABLE Institutions (
+    institution_id INT AUTO_INCREMENT PRIMARY KEY,
+    openalex_institution_id VARCHAR(64) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    UNIQUE KEY uq_openalex_institution_id (openalex_institution_id)
+);
+
+-- --------------------------------------------------
+-- 7. ArticlesAuthors (Many-to-Many)
 -- --------------------------------------------------
 CREATE TABLE ArticlesAuthors (
     article_id INT,
@@ -78,7 +91,7 @@ CREATE TABLE ArticlesAuthors (
 );
 
 -- --------------------------------------------------
--- 7. ArticlesSubjects (Many-to-Many)
+-- 8. ArticlesSubjects (Many-to-Many)
 -- --------------------------------------------------
 CREATE TABLE ArticlesSubjects (
     article_id INT,
@@ -89,7 +102,7 @@ CREATE TABLE ArticlesSubjects (
 );
 
 -- --------------------------------------------------
--- 8. ArticlesKeywords (Many-to-Many)
+-- 9. ArticlesKeywords (Many-to-Many)
 -- --------------------------------------------------
 CREATE TABLE ArticlesKeywords (
     article_id INT,
@@ -98,3 +111,44 @@ CREATE TABLE ArticlesKeywords (
     FOREIGN KEY (article_id) REFERENCES Articles(article_id),
     FOREIGN KEY (keyword_id) REFERENCES Keywords(keyword_id)
 );
+
+-- --------------------------------------------------
+-- 10. ArticleAuthorInstitutions (Many-to-Many)
+-- --------------------------------------------------
+CREATE TABLE ArticleAuthorInstitutions (
+    article_id INT,
+    author_id INT,
+    institution_id INT,
+    PRIMARY KEY (article_id, author_id, institution_id),
+    FOREIGN KEY (article_id) REFERENCES Articles(article_id),
+    FOREIGN KEY (author_id) REFERENCES Authors(author_id),
+    FOREIGN KEY (institution_id) REFERENCES Institutions(institution_id)
+);
+
+-- --------------------------------------------------
+-- 11. ArticleViews (Tracking)
+-- --------------------------------------------------
+CREATE TABLE ArticleViews (
+    article_id INT PRIMARY KEY,
+    view_count INT NOT NULL DEFAULT 1,
+    last_viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (article_id) REFERENCES Articles(article_id)
+);
+
+-- --------------------------------------------------
+-- 12. INDEXES
+-- --------------------------------------------------
+CREATE INDEX idx_articles_year ON Articles(year);
+CREATE INDEX idx_articles_citations_year ON Articles(citation_count DESC, year DESC);
+CREATE INDEX idx_articles_url_prefix ON Articles(article_url(100));
+ALTER TABLE Articles ADD FULLTEXT INDEX ft_articles_title (title);
+
+CREATE INDEX idx_authors_name ON Authors(name);
+CREATE INDEX idx_subjects_name ON Subjects(subject_name);
+CREATE INDEX idx_keywords_keyword ON Keywords(keyword);
+
+CREATE INDEX idx_aa_author_id ON ArticlesAuthors(author_id);
+CREATE INDEX idx_aai_author_id ON ArticleAuthorInstitutions(author_id);
+CREATE INDEX idx_aai_institution_id ON ArticleAuthorInstitutions(institution_id);
+
+CREATE INDEX idx_views_count ON ArticleViews(view_count DESC);

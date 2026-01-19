@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { BarChart3 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { TimeRange } from '../../types/insights.types';
@@ -17,6 +17,7 @@ type GrowthRow = {
 };
 
 const LIMIT = 3;
+const ROWS_PER_PAGE = 8;
 
 // Gentle loading color gradients analogous to publications-timeline.tsx
 const skeletonYearClass =
@@ -31,7 +32,7 @@ const skeletonPercentBarBg =
   'relative h-1.5 bg-gradient-to-r from-blue-100 via-blue-50 to-purple-100 rounded-full overflow-hidden';
 
 export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data, loading } = useInsightsTrends(timeRange);
 
   const FROM_YEAR_MAP: Record<TimeRange, number | undefined> = {
@@ -89,8 +90,7 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
           ? ([topic.keyword, filtered] as [string, GrowthRow[]])
           : null;
       })
-      .filter(Boolean)
-      .slice(0, LIMIT) as [string, GrowthRow[]][];
+      .filter(Boolean) as [string, GrowthRow[]][];
   }, [data, displayFromYear]);
 
   const maxCount = useMemo(() => {
@@ -99,6 +99,34 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
       ...(data?.keywordGrowth.map(r => r.articleCount) ?? [1])
     );
   }, [data]);
+
+  // Map of keyword => number of shown rows (pagination state)
+  const [visibleCounts, setVisibleCounts] = useState<Record<string, number>>({});
+
+  const handleShowMore = (keyword: string, total: number) => {
+    setVisibleCounts(prev =>
+      ({
+        ...prev,
+        [keyword]: Math.min((prev[keyword] || ROWS_PER_PAGE) + ROWS_PER_PAGE, total),
+      })
+    );
+  };
+
+  // Reset visibleCounts if keywords change (optional: prevent memory leaks)
+  React.useEffect(() => {
+    setVisibleCounts(current => {
+      const newState: Record<string, number> = {};
+      for (const [keyword, rows] of processed) {
+        newState[keyword] = current[keyword] || ROWS_PER_PAGE;
+      }
+      return newState;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [processed]);
+
+  // Hebrew LTR override for numbers: attach dir="ltr" to all numbers
+  const isHebrew = i18n.language === 'he';
+
 
   return (
     <div className="bg-linear-to-br from-blue-50 via-white to-violet-50 border border-blue-100 rounded-2xl shadow-lg p-6">
@@ -113,7 +141,6 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
       </p>
 
       {loading ? (
-        // Skeleton inspired by publications-timeline.tsx: gentle blues/purples, animating
         <div className="space-y-3 flex-1 animate-pulse">
           {Array.from({ length: 3 }).map((_, idx) => (
             <div key={idx} className="space-y-2">
@@ -150,63 +177,78 @@ export function KeywordGrowthTable({ timeRange }: KeywordGrowthTableProps) {
         </div>
       ) : (
         <div className="space-y-4">
-          {processed.map(([keyword, rows]) => (
-            <div key={keyword} className="space-y-2">
-              <div className="text-xs font-semibold text-gray-700 mb-2">
-                {keyword}
-              </div>
+          {processed.map(([keyword, rows]) => {
+            const currVisible = visibleCounts[keyword] || ROWS_PER_PAGE;
+            const canShowMore = currVisible < rows.length;
+            const shownRows = rows.slice(0, currVisible);
 
-              {rows.map((item) => {
-                const percent = (item.articleCount / maxCount) * 100;
-                const isPositive = item.growth >= 0;
-
-                return (
-                  <div
-                    key={item.year}
-                    className="flex items-center gap-3 hover:bg-gray-50 -mx-1 px-1 py-1.5 rounded"
-                  >
-                    <div className="w-12 text-xs text-gray-600">{item.year}</div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">
-                            {t('insights.trends.keywordGrowthTable.previous', {
-                              count: item.previousYearCount,
-                            })}
-                          </span>
-                          <span className="text-sm font-semibold text-gray-900">
-                            {item.articleCount.toLocaleString()}
+            return (
+              <div key={keyword} className="space-y-2">
+                <div className="text-xs font-semibold text-gray-700 mb-2">
+                  {keyword}
+                </div>
+                {shownRows.map((item) => {
+                  const percent = (item.articleCount / maxCount) * 100;
+                  const isPositive = item.growth >= 0;
+                  return (
+                    <div
+                      key={item.year}
+                      className="flex items-center gap-3 hover:bg-gray-50 -mx-1 px-1 py-1.5 rounded"
+                    >
+                      <div
+                        className="w-12 text-xs text-gray-600"
+                        {...(isHebrew ? { dir: 'ltr' } : {})}
+                      >
+                        {item.year}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500" {...(isHebrew ? { dir: 'ltr' } : {})}>
+                              {t('insights.trends.keywordGrowthTable.previous', {
+                                count: item.previousYearCount,
+                              })}
+                            </span>
+                            <span className="text-sm font-semibold text-gray-900" {...(isHebrew ? { dir: 'ltr' } : {})}>
+                              {item.articleCount.toLocaleString()}
+                            </span>
+                          </div>
+                          <span
+                            dir="ltr"
+                            className={`text-xs font-medium px-1.5 py-0.5 rounded ${
+                              isPositive
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-red-100 text-red-700'
+                            }`}
+                          >
+                            {isPositive ? '+' : ''}
+                            {item.growth}
                           </span>
                         </div>
-
-                        <span
-                          dir="ltr"
-                          className={`text-xs font-medium px-1.5 py-0.5 rounded ${
-                            isPositive
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-red-100 text-red-700'
-                          }`}
-                        >
-                          {isPositive ? '+' : ''}
-                          {item.growth}
-                        </span>
-                      </div>
-
-                      <div className="relative h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className={`absolute inset-y-0 left-0 rounded-full transition-all duration-700 ${
-                            isPositive ? 'bg-green-500' : 'bg-red-500'
-                          }`}
-                          style={{ width: `${percent}%` }}
-                        />
+                        <div className="relative h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className={`absolute inset-y-0 left-0 rounded-full transition-all duration-700 ${
+                              isPositive ? 'bg-green-500' : 'bg-red-500'
+                            }`}
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+                  );
+                })}
+                {canShowMore && (
+                  <button
+                    type="button"
+                    className="block w-full mt-2 py-2 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded transition"
+                    onClick={() => handleShowMore(keyword, rows.length)}
+                  >
+                    {t('insights.trends.keywordGrowthTable.showMore')}
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

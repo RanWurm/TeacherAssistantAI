@@ -14,8 +14,8 @@ export const articleSearchSchema = z.object({
   fromYear: z.number().int().min(0).optional(),
   toYear: z.number().int().min(0).optional(),
 
-  limit: z.number().int().min(1).max(1000).optional(),
-  offset: z.number().int().min(0).optional(),
+  page: z.number().int().min(1).optional(),
+  pageSize: z.number().int().min(1).max(100).optional(),
 
   sortBy: z.enum(["citations", "year"]).optional(),
 });

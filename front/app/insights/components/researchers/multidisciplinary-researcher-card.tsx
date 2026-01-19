@@ -11,7 +11,7 @@ interface MultidisciplinaryResearcherCardProps {
   researcher: {
     authorId: string;
     name: string;
-    affiliation?: string;
+    institutions?: string[];
     subjectCount: number;
     articleCount: number;
     avgCitationsPerArticle: number;
@@ -19,7 +19,6 @@ interface MultidisciplinaryResearcherCardProps {
   };
 }
 
-// Helper component to show more subjects in a popover/list
 function ShowMoreSubjects({
   subjects,
   start,
@@ -65,26 +64,26 @@ export function MultidisciplinaryResearcherCard({
 }: MultidisciplinaryResearcherCardProps) {
   const { t } = useTranslation();
 
-  // i18n: fallback for affiliation
-  const affiliation =
-    researcher.affiliation ||
-    t('insights.researchers.multidisciplinaryResearchers.affiliationFallback');
-  // i18n: badge for count of domains
+  const institutionsDisplay =
+    researcher.institutions && researcher.institutions.length > 0
+     ? researcher.institutions[0]
+      : t('insights.researchers.multidisciplinaryResearchers.institutionFallback');
+
   const domainsLabel = t(
     'insights.researchers.multidisciplinaryResearchers.domains',
     { count: researcher.subjectCount }
   );
-  // i18n: show more label
+
   const showMoreLabel = (count: number) =>
     t('insights.researchers.multidisciplinaryResearchers.subjectsShowMore', {
       count,
     });
-  // i18n: articles count
+
   const articleCountLabel = t(
     'insights.researchers.multidisciplinaryResearchers.articles',
     { count: researcher.articleCount }
   );
-  // i18n: avg citations
+
   const avgCitationsLabel = t(
     'insights.researchers.multidisciplinaryResearchers.avgCitations',
     { count: researcher.avgCitationsPerArticle }
@@ -92,7 +91,6 @@ export function MultidisciplinaryResearcherCard({
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl px-4 py-3 hover:shadow-md transition">
-      {/* Header */}
       <div className="flex items-start justify-between mb-2">
         <div>
           <div className="font-semibold text-gray-900">
@@ -100,7 +98,7 @@ export function MultidisciplinaryResearcherCard({
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-500">
             <Building2 className="w-3 h-3" />
-            {affiliation}
+            {institutionsDisplay}
           </div>
         </div>
 
@@ -110,7 +108,6 @@ export function MultidisciplinaryResearcherCard({
         </div>
       </div>
 
-      {/* Subjects preview */}
       <div className="flex flex-wrap gap-1 mb-2">
         {researcher.subjects.slice(0, 4).map((subject, idx) => (
           <span
@@ -128,7 +125,6 @@ export function MultidisciplinaryResearcherCard({
         />
       </div>
 
-      {/* Footer metrics */}
       <div className="flex items-center gap-4 text-xs text-gray-600">
         <div className="flex items-center gap-1">
           <FileText className="w-3 h-3" />

@@ -1,101 +1,126 @@
 'use client';
 
-import { useState,useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MessageList } from './components/message-list';
 import { ChatInput } from './components/chat-input';
-import { Message, INITIAL_MESSAGES } from './data/mock';
 import { askAgent } from '../../lib/api/agent';
 
+export interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
+  sqlQuery?: string;
+  resultsCount?: number;
+}
 
 export default function ChatScreen() {
   const streamTimerRef = useRef<number | null>(null);
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
- const handleSubmit = async (e: React.FormEvent) => {
-  if (streamTimerRef.current) {
-    window.clearInterval(streamTimerRef.current);
-    streamTimerRef.current = null;
-  }
-  e.preventDefault();
-  const userText = input.trim();
-  if (!userText || isLoading) return;
-
-  const now = Date.now();
-
-  setMessages(prev => [
-    ...prev,
+  const [messages, setMessages] = useState<Message[]>([
     {
-      id: now.toString(),
-      role: 'user',
-      content: userText,
-      timestamp: now,
+      id: 'init',
+      role: 'assistant',
+      content: t('chat.initialGreeting'),
+      timestamp: Date.now(),
     },
   ]);
 
-  setInput('');
-  setIsLoading(true);
-  
-  try {
-    console.log('Sending to agent:', userText);
-    const response = await askAgent({ message: userText });
-    console.log('Agent response:', response);
-    const assistantId = (Date.now() + 1).toString();
+  // Update the initial greeting message text when language changes
+  useEffect(() => {
+    setMessages(prev =>
+      prev.map(m =>
+        m.id === 'init'
+          ? { ...m, content: t('chat.initialGreeting') }
+          : m
+      )
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.language]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const userText = input.trim();
+    if (!userText || isLoading) return;
+
+    // Clear any old interval (in case)
+    if (streamTimerRef.current) {
+      window.clearInterval(streamTimerRef.current);
+      streamTimerRef.current = null;
+    }
+
+    const now = Date.now();
+
     setMessages(prev => [
       ...prev,
       {
-        id: assistantId,
-        role: 'assistant',
-        content: '',
-        timestamp: Date.now(),
+        id: now.toString(),
+        role: 'user',
+        content: userText,
+        timestamp: now,
       },
     ]);
 
-    // 2) קבל תשובה מלאה מהשרת
+    setInput('');
+    setIsLoading(true);
 
-    setIsLoading(false);
+    try {
+      // Ask the agent
+      const response = await askAgent({ message: userText });
+      setIsLoading(false);
+      // Add an empty assistant message for streaming reply
+      const assistantId = (Date.now() + 1).toString();
+      setMessages(prev => [
+        ...prev,
+        {
+          id: assistantId,
+          role: 'assistant',
+          content: '',
+          timestamp: Date.now(),
+        },
+      ]);
 
+      // Simulate streaming word by word
+      const parts = response.message.split(/(\s+)/);
+      let i = 0;
 
-    // 3) Fake streaming: מילה/רווח בקצב קבוע
-    const parts = response.message.split(/(\s+)/);
-    let i = 0;
+      streamTimerRef.current = window.setInterval(() => {
+        const next = parts[i] ?? "";
 
-    streamTimerRef.current = window.setInterval(() => {
-      const next = parts[i] ?? "";
+        setMessages(prev =>
+          prev.map(m =>
+            m.id === assistantId
+              ? { ...m, content: m.content + next }
+              : m
+          )
+        );
 
-      setMessages(prev =>
-        prev.map(m =>
-          m.id === assistantId
-            ? { ...m, content: m.content + next }
-            : m
-        )
-      );
-
-      i++;
-      if (i >= parts.length) {
-        if (streamTimerRef.current) {
-          window.clearInterval(streamTimerRef.current);
-          streamTimerRef.current = null;
+        i++;
+        if (i >= parts.length) {
+          if (streamTimerRef.current) {
+            window.clearInterval(streamTimerRef.current);
+            streamTimerRef.current = null;
+          }
+          setIsLoading(false);
         }
-        setIsLoading(false);
-      }
-    }, 20); // 15–35ms בדרך כלל נראה טוב
-  } catch (err: any) {
-    setMessages(prev => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content: err?.message || 'Server error',
-        timestamp: Date.now(),
-      },
-    ]);
-    setIsLoading(false);
-  }
-};
+      }, 20);
+    } catch (err: any) {
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: err?.message || 'Server error',
+          timestamp: Date.now(),
+        },
+      ]);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="h-full flex flex-col min-h-0">

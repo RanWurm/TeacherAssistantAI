@@ -4,7 +4,7 @@ import {
   getOverviewInsights,
   getTrendsInsights,
   getResearchersInsights,
-  getJournalsInsights,
+  getSourcesInsights,
   getCrossInsights,
 } from "../services/insightsService";
 
@@ -49,14 +49,14 @@ export async function researchersInsightsHandler(req: Request, res: Response) {
   }
 }
 
-export async function journalsInsightsHandler(req: Request, res: Response) {
+export async function sourcesInsightsHandler(req: Request, res: Response) {
   try {
     const timeRange = extractTimeRange(req);
-    const data = await getJournalsInsights(timeRange);
+    const data = await getSourcesInsights(timeRange);
     res.json(data);
   } catch (err: any) {
     console.error(err);
-    res.status(400).json({ error: err.message || "Journals insights failed" });
+    res.status(400).json({ error: err.message || "Sources insights failed" });
   }
 }
 
