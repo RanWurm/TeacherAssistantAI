@@ -32,7 +32,6 @@ export function buildArticlesByIdsQuery(articleIds: number[]) {
       "src.name AS source",
       "src.type AS source_type",
       "src.publisher AS publisher",
-      "src.impact_factor AS impact_factor",
       "GROUP_CONCAT(DISTINCT au.name) AS authors",
       "GROUP_CONCAT(DISTINCT s.subject_name) AS subjects",
       "GROUP_CONCAT(DISTINCT k.keyword) AS keywords",

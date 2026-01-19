@@ -186,7 +186,6 @@ export async function getPaperDetails(articleId: number) {
       src.name AS source_name,
       src.type AS source_type,
       src.publisher,
-      src.impact_factor
     FROM Articles a
     LEFT JOIN Sources src ON a.source_id = src.source_id
     WHERE a.article_id = ?

@@ -2,6 +2,7 @@ import { query } from "../db";
 import { buildArticleIdsQuery } from "../db/search/ArticleSearchIdsQuery";
 import { buildArticlesByIdsQuery } from "../db/search/ArticleSearchQuery";
 import { ArticleSearchFilters } from "../types/ArticleSearchFilters";
+import { incrementArticleView } from "../agent/db";
 
 export async function searchArticles(
   filters: ArticleSearchFilters & {
@@ -50,4 +51,10 @@ export async function searchArticles(
     page,
     pageSize,
   };
+}
+
+export async function increaseViews(articleId: number) {
+  console.log(`[Service] Calling incrementArticleView for article ${articleId}`);
+  await incrementArticleView(articleId);
+  console.log(`[Service] Successfully incremented view for article ${articleId}`);
 }

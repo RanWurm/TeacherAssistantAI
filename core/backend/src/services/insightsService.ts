@@ -24,8 +24,10 @@ import {
 
 // ---- Researchers queries ----
 import {
-  buildTopResearchersQuery,
-  buildMultidisciplinaryResearchersQuery,
+  buildTopResearchersCandidatesQuery,
+  buildTopResearchersDetailsQuery,
+  buildMultidisciplinaryResearchersCandidatesQuery,
+  buildMultidisciplinaryResearchersDetailsQuery
 } from "../db/insights/researchersQueries";
 
 // ---- Sources queries ----
@@ -89,37 +91,43 @@ export async function getOverviewInsights(
 /* =========================
    Trends
 ========================= */
-
 export async function getTrendsInsights(
   timeRange: string
 ): Promise<TrendsInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
+  // 1. Get trending topics (top N keywords)
   const trendingQ = buildTrendingTopicsQuery(fromYear, 5);
   const trendingTopics = await query<any>(trendingQ.sql, trendingQ.params);
-
   const topKeywords = trendingTopics.map(t => t.keyword);
 
-  const growthQ = buildKeywordGrowthQuery(topKeywords, fromYear);
-  const keywordGrowth = growthQ.sql
-    ? await query<any>(growthQ.sql, growthQ.params)
-    : [];
+  // 2. Get their keyword growth (yearly article counts per keyword)
+  let keywordGrowth: any[] = [];
+  if (topKeywords.length) {
+    const growthQ = buildKeywordGrowthQuery(topKeywords, fromYear);
+    if (growthQ.sql) {
+      keywordGrowth = await query<any>(growthQ.sql, growthQ.params);
+    }
+  }
 
-  const crossQ = buildKeywordCrossDomainQuery(topKeywords, fromYear);
-
-  const keywordCrossDomainRaw = crossQ.sql
-    ? await query<any>(crossQ.sql, crossQ.params)
-    : [];
-
-  const keywordCrossDomain = keywordCrossDomainRaw.map(row => ({
-    keyword: row.keyword,
-    subjectCount: Number(row.subjectCount),
-    articleCount: Number(row.articleCount),
-    subjects:
-      typeof row.subjects === 'string' && row.subjects.length > 0
-        ? row.subjects.split('||')
-        : [],
-  }));
+  // 3. Get their cross-domain stats (count of unique subjects for each keyword)
+  let keywordCrossDomain: any[] = [];
+  if (topKeywords.length) {
+    // Use buildKeywordCrossDomainQuery directly (from file_context_1)
+    const crossDomainQ = buildKeywordCrossDomainQuery(topKeywords, fromYear, 2); // at least 2 subjects
+    if (crossDomainQ.sql) {
+      const resultRows = await query<any>(crossDomainQ.sql, crossDomainQ.params);
+      keywordCrossDomain = resultRows.map(row => ({
+        keyword: row.keyword,
+        subjectCount: Number(row.subjectCount),
+        articleCount: Number(row.articleCount),
+        subjects:
+          typeof row.subjects === 'string' && row.subjects.length > 0
+            ? row.subjects.split('||')
+            : [],
+      }));
+    }
+  }
 
   return {
     trendingTopics,
@@ -127,6 +135,7 @@ export async function getTrendsInsights(
     keywordCrossDomain,
   };
 }
+
 
 /* =========================
    Researchers
@@ -136,34 +145,63 @@ export async function getResearchersInsights(
 ): Promise<ResearchersInsights> {
   const fromYear = timeRangeToFromYear(timeRange);
 
-  const topQ = buildTopResearchersQuery(fromYear, 5);
-  const multiQ = buildMultidisciplinaryResearchersQuery(fromYear, 3, 5);
+  // Step 1: Top researchers (by citations)
+  // Get candidate top researcher IDs
+  const candidatesQuery = buildTopResearchersCandidatesQuery(fromYear, 5);
+  const candidateRows = await query<any>(candidatesQuery.sql, candidatesQuery.params);
+  const candidateIds = candidateRows.map((row: any) => Number(row.author_id));
 
-  const topResearchersRaw = await query<any>(topQ.sql, topQ.params);
-  const multidisciplinaryResearchersRaw = await query<any>(
-    multiQ.sql,
-    multiQ.params
-  );
+  // Now get full stats for these top researchers
+  const topQ = buildTopResearchersDetailsQuery(candidateIds, fromYear);
+  const topResearchersRaw = topQ.sql ? (await query<any>(topQ.sql, topQ.params)) : [];
 
+  // Step 2: Multidisciplinary researchers (multiple subjects)
+  // Get candidate multidisciplinary researcher IDs
+  const multiCandidatesQuery = buildMultidisciplinaryResearchersCandidatesQuery(fromYear, 3, 5);
+  const multiCandidateRows = await query<any>(multiCandidatesQuery.sql, multiCandidatesQuery.params);
+  const multiCandidateIds = multiCandidateRows.map((row: any) => Number(row.author_id));
+
+  // Now get full stats for multidisciplinary researchers
+  const multiQ = buildMultidisciplinaryResearchersDetailsQuery(multiCandidateIds, fromYear);
+  const multidisciplinaryResearchersRaw = multiQ.sql ? (await query<any>(multiQ.sql, multiQ.params)) : [];
+
+  // Format "top researchers"
   const topResearchers = topResearchersRaw.map(r => ({
-    ...r,
-    institutions:
-      typeof r.institutions === 'string'
-        ? r.institutions.split('||')
-        : Array.isArray(r.institutions)
-          ? r.institutions
-          : [],
+    author_id: Number(r.author_id),
+    name: r.name,
+    articleCount: Number(r.articleCount ?? 0),
+    totalCitations: Number(r.totalCitations ?? 0),
+    avgCitationsPerArticle:
+      r.avgCitationsPerArticle === null || r.avgCitationsPerArticle === undefined
+        ? null
+        : Number(r.avgCitationsPerArticle),
+    uniqueJournals: Number(r.uniqueJournals ?? 0),
+    uniqueSubjects: Number(r.uniqueSubjects ?? 0),
+    mostCitedArticleCitations:
+      typeof r.mostCitedArticleCitations === 'number'
+        ? r.mostCitedArticleCitations
+        : Number(r.mostCitedArticleCitations ?? 0),
+    firstPublicationYear:
+      r.firstPublicationYear ? Number(r.firstPublicationYear) : null,
+    lastPublicationYear:
+      r.lastPublicationYear ? Number(r.lastPublicationYear) : null,
   }));
 
+  // Format "multidisciplinary researchers"
   const multidisciplinaryResearchers = multidisciplinaryResearchersRaw.map(r => ({
     author_id: Number(r.author_id),
     name: r.name,
-    articleCount: Number(r.articleCount),
-    totalCitations: Number(r.totalCitations),
-    avgCitationsPerArticle: r.avgCitationsPerArticle === null ? null : Number(r.avgCitationsPerArticle),
-    uniqueSources: Number(r.uniqueSources ?? 0),
-    uniqueSubjects: Number(r.uniqueSubjects ?? 0),
-    institutions: typeof r.institutions === "string" && r.institutions.length > 0 ? r.institutions.split("||") : [],
+    articleCount: Number(r.articleCount ?? 0),
+    subjectCount: Number(r.subjectCount ?? 0),
+    totalCitations: Number(r.totalCitations ?? 0),
+    avgCitationsPerArticle:
+      r.avgCitationsPerArticle === null || r.avgCitationsPerArticle === undefined
+        ? null
+        : Number(r.avgCitationsPerArticle),
+    subjects:
+      typeof r.subjects === "string" && r.subjects.length > 0
+        ? r.subjects.split("||")
+        : [],
   }));
 
   return {

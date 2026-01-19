@@ -69,7 +69,7 @@ function normalizeWork(work) {
     type: work?.type || null,
     citation_count: work?.cited_by_count ?? null,
     article_url: pickArticleUrl(work),
-    source: sourceName ? { name: sourceName, type: sourceType, impact_factor: null, publisher } : null,
+    source: sourceName ? { name: sourceName, type: sourceType, publisher } : null,
     authors,
     subjects,
     keywords,
@@ -80,8 +80,8 @@ async function upsertSource(conn, source) {
   if (!source?.name) return null;
 
   await conn.execute(
-    `INSERT IGNORE INTO Sources (name, type, impact_factor, publisher) VALUES (?, ?, ?, ?)`,
-    [source.name, source.type, source.impact_factor, source.publisher]
+    `INSERT IGNORE INTO Sources (name, type, publisher) VALUES (?, ?, ?, ?)`,
+    [source.name, source.type, source.publisher]
   );
 
   const [rows] = await conn.execute(

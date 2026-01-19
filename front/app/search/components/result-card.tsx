@@ -9,6 +9,7 @@ import type { Paper } from '../page';
 import { useTranslation } from 'react-i18next';
 import { splitCSV } from '../../../hooks/useArticlesSearch';
 import { useState } from 'react';
+import { incrementArticleView } from '../../../hooks/useArticleView';
 
 interface ResultCardProps {
   paper: Paper & { abstract?: string };
@@ -57,6 +58,12 @@ export function ResultCard({ paper }: ResultCardProps) {
             ${isRTL ? 'left-3 sm:left-5' : 'right-3 sm:right-5'} top-3 sm:top-5`}
           style={{ color: 'var(--on-primary)' }}
           title={t('search.result.openDoi')}
+          onClick={async () => {
+            // "paper" always has article_id (from backend type).
+            if (paper.article_id) {
+              incrementArticleView(paper.article_id as number);
+            }
+          }}
         >
           <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
         </a>

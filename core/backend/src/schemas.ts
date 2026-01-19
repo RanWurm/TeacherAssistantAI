@@ -3,7 +3,6 @@ export interface Source {
   source_id: number;
   name: string;
   type: string | null;
-  impact_factor: number | null;
   publisher: string | null;
 }
 

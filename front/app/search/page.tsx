@@ -22,14 +22,13 @@ export interface Paper {
   article_url?: string | null;
   journal?: string | null;
   publisher?: string | null;
-  impact_factor?: number | null;
   authors?: string | null;
   subjects?: string | null;
   keywords?: string | null;
 }
 
 const INITIAL_YEAR_RANGE = { min: 2015, max: 2024 };
-type SortOption = 'citations' | 'year' | 'impact';
+type SortOption = 'citations' | 'year';
 
 export default function SearchPage() {
   const { t } = useTranslation();
@@ -214,7 +213,7 @@ export default function SearchPage() {
                 total={total}
                 sortBy={sortBy}
                 setSortBy={(v: string) => {
-                  if (v === 'citations' || v === 'year' || v === 'impact') {
+                  if (v === 'citations' || v === 'year') {
                     setSortBy(v as SortOption);
                   }
                 }}

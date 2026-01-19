@@ -28,20 +28,32 @@ USE teacher_assistant_ai;
 
 ### 2. Create Schema
 
-The database schema defines all required tables. Run:
+To set up the database structure, you need to execute the schema file that creates all the required tables and indexes. In your MySQL client (such as MySQL CLI or MySQL Workbench), run the `core/schema.sql` file against the `teacher_assistant_ai` database.
+
+If you are using the MySQL command line, you can do this by running:
 
 ```sh
 mysql -u root -p teacher_assistant_ai < core/schema.sql
 ```
 
-This creates tables for:
+After you enter your MySQL password, this command will load and execute all the SQL statements in `core/schema.sql`, creating the tables, relationships, and indexes needed for the project. Make sure your current directory is the project root (so that the path to `core/schema.sql` is correct), or adjust the path as necessary.
 
-- Articles
-- Authors
-- Journals
-- Subjects
-- Keywords
-- Relation tables (many-to-many)
+This schema sets up the following tables:
+
+- **Sources**: Information about publication sources
+- **Articles**: Stores articles and metadata
+- **Authors**: Stores author details
+- **Subjects**: Controlled vocabulary for classification
+- **Keywords**: For tagging articles
+- **Institutions**: For author affiliations
+- **Relation Tables** (many-to-many relationships):
+  - ArticlesAuthors (links articles and authors)
+  - ArticlesSubjects (links articles and subjects)
+  - ArticlesKeywords (links articles and keywords)
+  - ArticleAuthorInstitutions (links articles, authors, and institutions)
+- **ArticleViews**: Tracks how often articles are viewed
+
+All relevant indexes and uniqueness constraints are also created.
 
 ---
 
@@ -57,6 +69,7 @@ DB_USER=root
 DB_PASS=YOUR_PASSWORD
 DB_NAME=teacher_assistant_ai
 PORT=3001
+DB_PORT=3306
 
 # CORS_ORIGIN allows you to specify which frontend URLs can connect to the backend API.
 # Use a comma-separated list for multiple origins. For local development, keep as below.

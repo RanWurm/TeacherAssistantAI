@@ -20,7 +20,6 @@ CREATE TABLE Sources (
     source_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     type VARCHAR(64),
-    impact_factor FLOAT,
     publisher VARCHAR(255),
     UNIQUE(name)
 );

@@ -2,7 +2,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import { router as articlesRouter } from "./routes/articles";
-import { router as sourcesRouter } from "./routes/sources";
 import { router as filtersRouter } from "./routes/filters";
 import { router as insightsRouter } from "./routes/insights";
 import chatRouter from "./routes/chat";
@@ -61,7 +60,6 @@ function getOrCreateSession(sessionId: string): Orchestrator {
 
 // Register routers
 app.use("/api/articles", articlesRouter);
-app.use("/api/sources", sourcesRouter);
 app.use("/api/filters", filtersRouter);
 app.use("/api/insights", insightsRouter);
 app.use("/chat", chatRouter);

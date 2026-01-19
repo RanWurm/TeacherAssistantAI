@@ -39,13 +39,13 @@ export interface TrendingTopic {
   latestYear: number | null;
 }
 
-export interface KeywordGrowth {
+export interface KeywordGrowthPoint {
   keyword: string;
   year: number;
   articleCount: number;
 }
 
-export interface KeywordCrossDomain {
+export interface KeywordCrossDomainStats {
   keyword: string;
   subjectCount: number;
   articleCount: number;
@@ -54,28 +54,39 @@ export interface KeywordCrossDomain {
 
 export interface TrendsInsights {
   trendingTopics: TrendingTopic[];
-  keywordGrowth: KeywordGrowth[];
-  keywordCrossDomain: KeywordCrossDomain[];
+  keywordGrowth: KeywordGrowthPoint[];
+  keywordCrossDomain: KeywordCrossDomainStats[];
 }
+
 
 /* ---------- Researchers ---------- */
 
-export interface ResearcherStats {
+export interface TopResearcherStats {
   author_id: number;
   name: string;
   articleCount: number;
   totalCitations: number;
   avgCitationsPerArticle: number | null;
-  uniqueSources: number;
+  uniqueJournals: number;
   uniqueSubjects: number;
-  mostCitedArticleCitations?: number;
-  firstPublicationYear?: number;
-  lastPublicationYear?: number;
+  mostCitedArticleCitations: number;
+  firstPublicationYear: number | null;
+  lastPublicationYear: number | null;
+}
+
+export interface MultidisciplinaryResearcherStats {
+  author_id: number;
+  name: string;
+  articleCount: number;
+  subjectCount: number;
+  totalCitations: number;
+  avgCitationsPerArticle: number | null;
+  subjects: string[];
 }
 
 export interface ResearchersInsights {
-  topResearchers: ResearcherStats[];
-  multidisciplinaryResearchers: ResearcherStats[];
+  topResearchers: TopResearcherStats[];
+  multidisciplinaryResearchers: MultidisciplinaryResearcherStats[];
 }
 
 /* ---------- Sources ---------- */
@@ -91,7 +102,6 @@ export interface SourceStats {
   subjectCount: number;
 
   totalCitations: number;
-  impactFactor: number | null;
 }
 
 export interface SubjectImpactPoint {
@@ -99,7 +109,6 @@ export interface SubjectImpactPoint {
   sourceName: string;
   sourceType: string | null;
   subjectCount: number;
-  impactFactor: number | null;
   articleCount: number;
 }
 

@@ -384,7 +384,6 @@ function formatPaperDetails(article: any) {
           name: article.source_name,
           type: article.source_type,
           publisher: article.publisher,
-          impact_factor: article.impact_factor,
         }
       : null,
     authors: article.authors?.slice(0, 10) || [],

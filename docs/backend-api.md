@@ -75,7 +75,6 @@ Search for academic articles using multiple optional filters.
         "journal_id": 51,
         "name": "Journal of Bioinformatics",
         "publisher": "Springer",
-        "impact_factor": null
       },
       "authors": [
         {

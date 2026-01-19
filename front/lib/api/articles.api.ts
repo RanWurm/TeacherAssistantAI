@@ -17,3 +17,10 @@ export function searchArticles(
 ) {
   return apiRequest<SearchArticlesResponse>('/api/articles/search', 'POST', filters);
 }
+
+export async function increaseViews(articleId: number): Promise<void> {
+  try {
+    await apiRequest<void>(`/api/articles/${articleId}/increment-view`, 'POST');
+  } catch (err) {
+  }
+}
