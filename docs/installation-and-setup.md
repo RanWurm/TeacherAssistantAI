@@ -67,7 +67,7 @@ Create a `.env` file inside `core/backend/` with:
 DB_HOST=localhost
 DB_USER=root
 DB_PASS=YOUR_PASSWORD
-DB_NAME=teacher_assistant_ai
+DB_NAME==db06
 PORT=3001
 DB_PORT=3306
 

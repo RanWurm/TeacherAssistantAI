@@ -76,7 +76,8 @@ Use the chat interface to interact with the AI agent.
 The agent operates through predefined tools and has controlled access to the database.
 
 <div align="center">
-<img src="docs/screen/chat page.png" alt="Screenshot: chat with AI agent" width="650"/>
+<img width="1254" height="903" alt="chat page" src="https://github.com/user-attachments/assets/0634dcca-a7a0-4e66-b49a-11a8701912f4" />
+
 </div>
 
 ---
@@ -110,7 +111,8 @@ Use this flow to search for academic papers based on general research topics or 
 
 
 <div align="center">
-<img src="docs/screen/search page.png" alt="Screenshot: Search page with filters sidebar and results list" width="650"/>
+<img width="1268" height="905" alt="search page" src="https://github.com/user-attachments/assets/63bcb7cb-440d-4450-b7c3-1da0b2228171" />
+
 </div>
 
 ---
@@ -138,7 +140,8 @@ Use this flow to find papers by specific authors or by keywords.
 - Type
 
 <div align="center">
-<img src="docs/screen/search by title page.png" alt="Screenshot: Search by author or keyword" width="650"/>
+<img width="1260" height="624" alt="search by title page" src="https://github.com/user-attachments/assets/5b2c6916-36e6-4d84-9006-ff254fc5b43c" />
+
 </div>
 
 ---
@@ -162,8 +165,9 @@ The statistics dashboard is organized into analytical sections.
 - Most cited authors and institutions
 
 <div align="center">
-<img src="docs/screen/stats page.png" alt="Screenshot: Overview statistics" width="650"/>
+<img width="1709" height="1080" alt="image" src="https://github.com/user-attachments/assets/62723fdb-4d47-45e8-a9a8-99a0ae108202" />
 </div>
+
 ---
 
 ## 4. Example Usage Scenario
