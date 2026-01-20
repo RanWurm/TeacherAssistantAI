@@ -415,7 +415,8 @@
             "keyword": "Keyword",
             "language": "Language",
             "type": "Type",
-            "openDoi": "Open article on external site"
+            "openDoi": "Open article on external site",
+            "views": "Views"
         },
         "searchByTitle": {
             "inputPlaceholder": "Enter article title...",
