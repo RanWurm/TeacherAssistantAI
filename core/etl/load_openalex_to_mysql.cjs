@@ -80,7 +80,7 @@ async function upsertSource(conn, source) {
   if (!source?.name) return null;
 
   await conn.execute(
-    `INSERT IGNORE INTO Sources (name, type, publisher) VALUES (?, ?, ?, ?)`,
+    `INSERT IGNORE INTO Sources (name, type, publisher) VALUES (?, ?, ?)`,
     [source.name, source.type, source.publisher]
   );
 
