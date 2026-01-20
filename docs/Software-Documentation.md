@@ -842,104 +842,104 @@ The TeacherAssistantAI project emphasizes modularity, security, and clear separa
 The high-level directory structure is:
 
 ```
-TeacherAssistantAI
-├── core
-│   ├── backend
-│   │   ├── src
-│   │   │   ├── agent
-│   │   │   │   ├── agents
-│   │   │   │   │   ├── executor.ts
-│   │   │   │   │   ├── index.ts
-│   │   │   │   │   ├── orchestrator.ts
-│   │   │   │   │   └── planner.ts
-│   │   │   │   ├── types
-│   │   │   │   │   └── plan.ts
-│   │   │   │   ├── _archive_agent.txt
-│   │   │   │   ├── db.ts
-│   │   │   │   ├── pdf.ts
-│   │   │   │   ├── server.ts
-│   │   │   │   ├── strategies.ts
-│   │   │   │   ├── tools.ts
-│   │   │   │   └── types.ts
-│   │   │   ├── controllers
-│   │   │   │   ├── articlesController.ts
-│   │   │   │   ├── filters.ts
-│   │   │   │   └── insightsController.ts
-│   │   │   ├── db
-│   │   │   │   ├── insights
-│   │   │   │   │   ├── crossQueries.ts
-│   │   │   │   │   ├── overviewQueries.ts
-│   │   │   │   │   ├── researchersQueries.ts
-│   │   │   │   │   ├── sourcesQueries.ts
-│   │   │   │   │   └── trendsQueries.ts
-│   │   │   │   ├── search
-│   │   │   │   │   ├── ArticleSearchIdsQuery.ts
-│   │   │   │   │   └── ArticleSearchQuery.ts
-│   │   │   │   └── queryBuilder.ts
-│   │   │   ├── routes
-│   │   │   │   ├── articles.ts
-│   │   │   │   ├── chat.ts
-│   │   │   │   ├── filters.ts
-│   │   │   │   └── insights.ts
-│   │   │   ├── services
-│   │   │   │   ├── articlesService.ts
-│   │   │   │   ├── filters.ts
-│   │   │   │   └── insightsService.ts
-│   │   │   ├── types
-│   │   │   │   ├── ArticleSearchFilters.ts
-│   │   │   │   └── insights.types.ts
-│   │   │   ├── validation
-│   │   │   │   ├── articleSearchSchema.ts
-│   │   │   │   └── filtersSchemas.ts
-│   │   │   ├── app.ts
-│   │   │   ├── db.ts
-│   │   │   └── schemas.ts
-│   ├── etl
+TeacherAssistantAI/
+├── core/
+│   ├── backend/             # API server (Express + TypeScript)
+│   │   └── src/
+│   │       ├── agent/       # LLM, chat/agent logic
+│   │       │   ├── agents/
+│   │       │   │   ├── executor.ts
+│   │       │   │   ├── index.ts
+│   │       │   │   ├── orchestrator.ts
+│   │       │   │   └── planner.ts
+│   │       │   ├── types/
+│   │       │   │   └── plan.ts
+│   │       │   ├── _archive_agent.txt
+│   │       │   ├── db.ts
+│   │       │   ├── pdf.ts
+│   │       │   ├── server.ts
+│   │       │   ├── strategies.ts
+│   │       │   ├── tools.ts
+│   │       │   └── types.ts
+│   │       ├── controllers/ # REST API controllers
+│   │       │   ├── articlesController.ts
+│   │       │   ├── filters.ts
+│   │       │   └── insightsController.ts
+│   │       ├── db/          # Database logic & queries
+│   │       │   ├── insights/
+│   │       │   │   ├── crossQueries.ts
+│   │       │   │   ├── overviewQueries.ts
+│   │       │   │   ├── researchersQueries.ts
+│   │       │   │   ├── sourcesQueries.ts
+│   │       │   │   └── trendsQueries.ts
+│   │       │   ├── search/
+│   │       │   │   ├── ArticleSearchIdsQuery.ts
+│   │       │   │   └── ArticleSearchQuery.ts
+│   │       │   └── queryBuilder.ts
+│   │       ├── routes/      # Express route handlers
+│   │       │   ├── articles.ts
+│   │       │   ├── chat.ts
+│   │       │   ├── filters.ts
+│   │       │   └── insights.ts
+│   │       ├── services/    # Service/business logic layer
+│   │       │   ├── articlesService.ts
+│   │       │   ├── filters.ts
+│   │       │   └── insightsService.ts
+│   │       ├── types/       # Shared TypeScript types
+│   │       │   ├── ArticleSearchFilters.ts
+│   │       │   └── insights.types.ts
+│   │       ├── validation/  # Validation logic (schemas, input)
+│   │       │   ├── articleSearchSchema.ts
+│   │       │   └── filtersSchemas.ts
+│   │       ├── app.ts
+│   │       ├── db.ts
+│   │       └── schemas.ts
+│   ├── etl/                 # OpenAlex ingestion scripts
 │   │   ├── fetch_openalex.cjs
 │   │   ├── load_openalex_to_mysql.cjs
-│   └── schema.sql
-├── front
-│   ├── app
-│   │   ├── chat
-│   │   │   ├── components
+│   └── schema.sql           # Database schema
+├── front/                     # Next.js frontend
+│   ├── app/                   # Application routes & layouts (Next.js app router)
+│   │   ├── chat/
+│   │   │   ├── components/
 │   │   │   │   ├── chat-input.tsx
 │   │   │   │   ├── message-item.tsx
 │   │   │   │   ├── message-list.tsx
 │   │   │   │   └── MessageTime.tsx
 │   │   │   └── page.tsx
-│   │   ├── insights
-│   │   │   ├── components
-│   │   │   │   ├── cross-analysis
+│   │   ├── insights/
+│   │   │   ├── components/
+│   │   │   │   ├── cross-analysis/
 │   │   │   │   │   ├── cross-analysis-view.tsx
 │   │   │   │   │   ├── language-impact-bar-chart.tsx
 │   │   │   │   │   ├── multidisciplinary-vs-single.tsx
 │   │   │   │   │   └── subject-source-heatmap.tsx
-│   │   │   │   ├── overview
+│   │   │   │   ├── overview/
 │   │   │   │   │   ├── metrics-cards.tsx
 │   │   │   │   │   ├── overview-view.tsx
 │   │   │   │   │   └── publications-timeline.tsx
-│   │   │   │   ├── researchers
+│   │   │   │   ├── researchers/
 │   │   │   │   │   ├── multidisciplinary-researcher-card.tsx
 │   │   │   │   │   ├── multidisciplinary-researchers-grid.tsx
 │   │   │   │   │   ├── researcher-grid.tsx
 │   │   │   │   │   ├── researcher-profile-card.tsx
 │   │   │   │   │   └── researchers-view.tsx
-│   │   │   │   ├── sources
+│   │   │   │   ├── sources/
 │   │   │   │   │   ├── citation-volatility-table.tsx
 │   │   │   │   │   ├── sources-view.tsx
 │   │   │   │   │   └── top-sources-table.tsx
-│   │   │   │   ├── trends
+│   │   │   │   ├── trends/
 │   │   │   │   │   ├── keyword-cross-domain.tsx
 │   │   │   │   │   ├── keyword-growth-table.tsx
 │   │   │   │   │   ├── trending-topics-table.tsx
 │   │   │   │   │   └── trends-view.tsx
 │   │   │   │   ├── insights-header.tsx
 │   │   │   │   └── view-tabs.tsx
-│   │   │   ├── types
+│   │   │   ├── types/
 │   │   │   │   └── insights.types.ts
 │   │   │   └── page.tsx
-│   │   ├── search
-│   │   │   ├── components
+│   │   ├── search/
+│   │   │   ├── components/
 │   │   │   │   ├── AsyncMultiSelect.tsx
 │   │   │   │   ├── filters-sidebar.tsx
 │   │   │   │   ├── pagination.tsx
@@ -951,19 +951,19 @@ TeacherAssistantAI
 │   │   │   └── page.tsx
 │   │   ├── layout.tsx
 │   │   └── page.tsx
-│   ├── components
-│   │   ├── layout
+│   ├── components/
+│   │   ├── layout/
 │   │   │   └── HtmlDirection.tsx
-│   │   ├── nav
+│   │   ├── nav/
 │   │   │   ├── LanguageToggle.tsx
 │   │   │   ├── nav.config.ts
 │   │   │   ├── NavLinks.tsx
 │   │   │   ├── NavLogo.tsx
 │   │   │   └── TopNav.tsx
-│   │   └── ui
+│   │   └── ui/
 │   │       └── Loader.tsx
-│   ├── hooks
-│   │   ├── insights
+│   ├── hooks/
+│   │   ├── insights/
 │   │   │   ├── useInsightsCross.ts
 │   │   │   ├── useInsightsOverview.ts
 │   │   │   ├── useInsightsResearchers.ts
@@ -972,29 +972,29 @@ TeacherAssistantAI
 │   │   ├── useArticlesSearch.ts
 │   │   ├── useArticleView.ts
 │   │   └── useFilterOptions.ts
-│   ├── i18n
+│   ├── i18n/
 │   │   ├── en.json
 │   │   ├── he.json
 │   │   ├── I18nProvider.tsx
 │   │   └── index.ts
-│   ├── lib
-│   │   ├── api
+│   ├── lib/
+│   │   ├── api/
 │   │   │   ├── agent.ts
 │   │   │   ├── articles.api.ts
 │   │   │   ├── client.ts
 │   │   │   ├── filters.api.ts
 │   │   │   └── insights.api.ts
-│   │   └── types
-│   │       ├── filters
+│   │   └── types/
+│   │       ├── filters/
 │   │       │   └── ArticleSearchFilters.ts
-│   │       ├── insights
+│   │       ├── insights/
 │   │       │   ├── CrossAnalysis.ts
 │   │       │   ├── Overview.ts
 │   │       │   ├── Researchers.ts
 │   │       │   ├── Sources.ts
 │   │       │   └── Trends.ts
 │   │       └── article.ts
-│   ├── styles
+│   ├── styles/
 │   │   ├── globals.css
 │   │   └── variables.css
 ```

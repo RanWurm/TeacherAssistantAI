@@ -167,11 +167,31 @@ cd front
 npm install
 ```
 
-### 10. Start Frontend Server
+### 10. Start the Frontend in Development Mode
+
+To start the frontend with hot-reloading for development, run:
 
 ```sh
 npm run dev
 ```
+
+Frontend will be available at:  
+http://localhost:3000
+
+### 11. Production Build (Optional)
+
+To build the frontend for production deployment:
+
+```sh
+npm run build
+```
+
+You can then serve the production build locally with:
+
+```sh
+npm start
+```
+
 
 Frontend available at:  
 http://localhost:3000
