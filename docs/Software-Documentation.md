@@ -98,6 +98,9 @@ All other indexes are manually designed based on observed query patterns and per
 
 See: 📊 Separate schema diagram for a visual overview of entities, relationships, and indexed fields.
 
+<img width="1344" height="645" alt="image" src="https://github.com/user-attachments/assets/9b279f1e-523e-41c9-9bcb-c9e8c132ab8e" />
+
+
 ---
 
 ## Part III – Queries & Analytics
