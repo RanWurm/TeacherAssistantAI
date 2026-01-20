@@ -2,9 +2,9 @@
    Cross Analysis
 ========================= */
 
-export interface SubjectJournalHeatmapCell {
+export interface SubjectSourceHeatmapCell {
     subject: string;
-    journal: string;
+    source: string;
     articleCount: number;
   }
   
@@ -20,11 +20,11 @@ export interface SubjectJournalHeatmapCell {
     avgCitations: number;
     totalCitations: number;
     authors: number;
-    journals: number;
+    sources: number;
   }
   
   export interface CrossInsights {
-    subjectJournalHeatmap: SubjectJournalHeatmapCell[];
+    subjectSourceHeatmap: SubjectSourceHeatmapCell[];
     languageImpact: LanguageImpact[];
     multidisciplinaryVsSingle: MultidisciplinaryVsSingle | null;
   }
