@@ -66,18 +66,37 @@ Data ingestion consists of two primary stages:
 
 ### 2. Keys & Indexes
 
-- All tables have primary keys (auto-incrementing IDs).
-- Unique constraints on OpenAlex identifiers.
-- Extensive indexing is used for:
-  - Year
-  - Citation count
-  - Name/label fields
-  - Keywords
-  - View counts
-- `FULLTEXT` index is applied to article titles for efficient search.
-- Indexes are a mix of automatic (for PKs) and manual for query optimization.
+All tables define primary keys based on auto-incrementing integer IDs.
+Unique constraints are enforced on external OpenAlex identifiers (e.g., articles, authors, institutions) to prevent duplication.
+Indexes are explicitly and manually defined to support the system’s core access patterns and analytics workloads.
 
-> **See: 📊 Separate schema diagram for visual reference.**
+*Indexing strategy includes:*
+
+- *Temporal filtering:*  
+  Index on Articles(year) for efficient year-range queries.
+
+- *Ranking and sorting:*  
+  Composite index on Articles(citation_count DESC, year DESC) optimized for ordered result sets (e.g., top-cited recent articles).
+
+- *Textual access:*  
+  - FULLTEXT index on Articles(title) to support fast title-based search.  
+  - Prefix index on Articles(article_url(100)) for URL-based filtering.
+
+- *Lookup and filtering:*  
+  Indexes on Authors(name), Subjects(subject_name), and Keywords(keyword) to accelerate filter resolution.
+
+- *Many-to-many joins:*  
+  Indexes on foreign keys such as ArticlesAuthors(author_id) and  
+  ArticleAuthorInstitutions(author_id, institution_id) to optimize join-heavy analytical queries.
+
+- *Behavioral analytics:*  
+  Descending index on ArticleViews(view_count) to support popularity-based ranking.
+
+Primary-key indexes are created automatically by MySQL.
+
+All other indexes are manually designed based on observed query patterns and performance considerations.
+
+See: 📊 Separate schema diagram for a visual overview of entities, relationships, and indexed fields.
 
 ---
 
