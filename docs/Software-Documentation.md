@@ -260,7 +260,7 @@ Used for exploratory research statistics and reporting.
 ```sql
 SELECT
   t.type,
-  COUNT(*)                          AS articles,
+  COUNT(DISTINCT t.article_id)      AS articles,
   AVG(t.citation_count)             AS avgCitations,
   SUM(t.citation_count)             AS totalCitations,
   COUNT(DISTINCT aa.author_id)      AS authors,
