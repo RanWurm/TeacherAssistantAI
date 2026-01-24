@@ -1,6 +1,7 @@
 # 🚀 Installation & Setup
 
-This document explains how to **set up, build, and run** the TeacherAssistantAI project locally.
+This document explains how to **set up, build, and run** the TeacherAssistantAI project locally.  
+**Note:** On the BIU server, the database is named `db06` instead of `teacher_assistant_ai`.
 
 ---
 
@@ -26,15 +27,27 @@ CREATE DATABASE teacher_assistant_ai;
 USE teacher_assistant_ai;
 ```
 
+> **Note:** If you are setting up the project on the BIU server, use `db06` as the database name:
+> ```sql
+> CREATE DATABASE db06;
+> USE db06;
+> ```
+
 ### 2. Create Schema
 
-To set up the database structure, you need to execute the schema file that creates all the required tables and indexes. In your MySQL client (such as MySQL CLI or MySQL Workbench), run the `core/schema.sql` file against the `teacher_assistant_ai` database.
+To set up the database structure, you need to execute the schema file that creates all the required tables and indexes. In your MySQL client (such as MySQL CLI or MySQL Workbench), run the `core/schema.sql` file against the `teacher_assistant_ai` database  
+(**or `db06` on the BIU server**).
 
 If you are using the MySQL command line, you can do this by running:
 
 ```sh
 mysql -u root -p teacher_assistant_ai < core/schema.sql
 ```
+
+> **Note:** On the BIU server, use:
+> ```sh
+> mysql -u root -p db06 < core/schema.sql
+> ```
 
 After you enter your MySQL password, this command will load and execute all the SQL statements in `core/schema.sql`, creating the tables, relationships, and indexes needed for the project. Make sure your current directory is the project root (so that the path to `core/schema.sql` is correct), or adjust the path as necessary.
 
@@ -67,7 +80,7 @@ Create a `.env` file inside `core/backend/` with:
 DB_HOST=localhost
 DB_USER=root
 DB_PASS=YOUR_PASSWORD
-DB_NAME==db06
+DB_NAME=teacher_assistant_ai
 PORT=3001
 DB_PORT=3306
 
@@ -80,6 +93,12 @@ CORS_ORIGIN=http://localhost:3000
 GROQ_API_KEY=your_groq_api_key_here
 
 ```
+
+> **Important:**  
+> On the BIU server, use `db06` for `DB_NAME`:
+> ```
+> DB_NAME=db06
+> ```
 
 ---
 
@@ -119,6 +138,11 @@ SELECT COUNT(*) FROM Journals;
 SELECT COUNT(*) FROM Subjects;
 SELECT COUNT(*) FROM Keywords;
 ```
+
+> **Note:** If you are on the BIU server, replace `teacher_assistant_ai` with `db06`:
+> ```sql
+> USE db06;
+> ```
 
 ---
 
@@ -192,7 +216,6 @@ You can then serve the production build locally with:
 npm start
 ```
 
-
 Frontend available at:  
 http://localhost:3000
 
@@ -218,9 +241,9 @@ You can run these with:
 
 To run the project end-to-end:
 
-1. Create the database
+1. Create the database (`teacher_assistant_ai`, or `db06` on the BIU server)
 2. Run schema.sql
-3. Configure backend `.env`
+3. Configure backend `.env` (set `DB_NAME` appropriately for your environment)
 4. Run ETL (fetch + load)
 5. Start backend
 6. Start frontend
